@@ -22,27 +22,62 @@ export default class Operation {
   }
 
   sr(register) {
-    this.resolver.add('storeRegister', register);
+    this.resolver.add('storeToRegister', register);
     return this;
   }
 
   rm(offset) {
-    this.resolver.add('readMemory', offset);
+    this.resolver.add('readFromMemory', offset);
     return this;
   }
 
   sda(offset) {
-    this.resolver.add('saveDirectAddress', offset);
+    this.resolver.add('saveToddress', offset);
     return this;
   }
 
   rra(register) {
-    this.resolver.add('readAddressAtRegister', register);
+    this.resolver.add('readFromAddressAtRegister', register);
     return this;
   }
 
   sra(register, offset) {
-    this.resolver.add('storeAddressAtRegister', register, offset);
+    this.resolver.add('storeToAddressAtRegister', register, offset);
+    return this;
+  }
+
+  sumb() {
+    this.resolver.add('sumByte');
+    return this;
+  }
+
+  inc(register) {
+    this.resolver.add('incrementRegister', register);
+    return this;
+  }
+
+  dec(register) {
+    this.resolver.add('decrementRegister', register);
+    return this;
+  }
+
+  sumr(register) {
+    this.resolver.add('sumToRegister', register);
+    return this;
+  }
+
+  subr(register) {
+    this.resolver.add('subtractFromRegister', register);
+    return this;
+  }
+
+  sumrc(register) {
+    this.resolver.add('sumToRegisterWithCarry', register);
+    return this;
+  }
+
+  subrc(register) {
+    this.resolver.add('subtractFromRegisterWithCarry', register);
     return this;
   }
 }

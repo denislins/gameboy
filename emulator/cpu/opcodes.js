@@ -117,9 +117,120 @@ class Opcodes {
     this.add(0x2a, 'LD A, (HL+)').inc('hl').rm().sr('a');
     this.add(0x22, 'LD (HL+), A').rr('a').sra('hl').inc('hl');
 
-    this.add(0xe0, 'LDH (n), A').rr('a').sda(0xff00);
-    this.add(0xf0, 'LDH A, (n)').rb(0xff00).sr('a');
+    this.add(0xe0, 'LDH (byte), A').rr('a').sda(0xff00);
+    this.add(0xf0, 'LDH A, (byte)').rb(0xff00).sr('a');
+
+    this.add(0x01, 'LD BC, word').rw().sr('bc');
+    this.add(0x11, 'LD DE, word').rw().sr('de');
+    this.add(0x21, 'LD HL, word').rw().sr('hl');
+    this.add(0x31, 'LD SP, word').rw().sr('sp');
+
+    this.add(0xf9, 'LD SP, HL').rr('hl').sr('sp');
+    this.add(0xf8, 'LD HL, SP + byte').rr('sp').sumb().sr('hl');
+
+    this.add(0x08, 'LD (word), SP').rr('sp').sda();
+
+    this.add(0xf5, 'PUSH AF').dec('sp').rr('a').sra('sp').dec('sp').rr('f').sra('sp');
+    this.add(0xc5, 'PUSH BC').dec('sp').rr('b').sra('sp').dec('sp').rr('c').sra('sp');
+    this.add(0xd5, 'PUSH DE').dec('sp').rr('d').sra('sp').dec('sp').rr('e').sra('sp');
+    this.add(0xe5, 'PUSH HL').dec('sp').rr('h').sra('sp').dec('sp').rr('l').sra('sp');
+
+    this.add(0xf1, 'POP AF').rra('sp').sr('f').inc('sp').rra('sp').sr('a').inc('sp');
+    this.add(0xc1, 'POP BC').rra('sp').sr('c').inc('sp').rra('sp').sr('b').inc('sp');
+    this.add(0xd1, 'POP DE').rra('sp').sr('e').inc('sp').rra('sp').sr('d').inc('sp');
+    this.add(0xe1, 'POP HL').rra('sp').sr('l').inc('sp').rra('sp').sr('h').inc('sp');
+
+    this.add(0x87, 'ADD A, A').rr('a').sumr('a').sr('a');
+    this.add(0x80, 'ADD A, B').rr('b').sumr('a').sr('a');
+    this.add(0x81, 'ADD A, C').rr('c').sumr('a').sr('a');
+    this.add(0x82, 'ADD A, D').rr('d').sumr('a').sr('a');
+    this.add(0x83, 'ADD A, E').rr('e').sumr('a').sr('a');
+    this.add(0x84, 'ADD A, H').rr('h').sumr('a').sr('a');
+    this.add(0x85, 'ADD A, L').rr('l').sumr('a').sr('a');
+
+    this.add(0x86, 'ADD A, (HL)').rr('hl').rm().sumr('a').sr('a');
+    this.add(0xc6, 'ADD A, byte').rb().sumr('a').sr('a');
+
+    this.add(0x8f, 'ADC A, A').rr('a').sumrc('a').sr('a');
+    this.add(0x88, 'ADC A, B').rr('b').sumrc('a').sr('a');
+    this.add(0x89, 'ADC A, C').rr('c').sumrc('a').sr('a');
+    this.add(0x8a, 'ADC A, D').rr('d').sumrc('a').sr('a');
+    this.add(0x8b, 'ADC A, E').rr('e').sumrc('a').sr('a');
+    this.add(0x8c, 'ADC A, H').rr('h').sumrc('a').sr('a');
+    this.add(0x8d, 'ADC A, L').rr('l').sumrc('a').sr('a');
+
+    this.add(0x8e, 'ADC A, (HL)').rr('hl').rm().sumrc('a').sr('a');
+    this.add(0xce, 'ADC A, byte').rb().sumrc('a').sr('a');
+
+    this.add(0x97, 'SUB A, A').rr('a').subr('a').sr('a');
+    this.add(0x90, 'SUB A, B').rr('b').subr('a').sr('a');
+    this.add(0x91, 'SUB A, C').rr('c').subr('a').sr('a');
+    this.add(0x92, 'SUB A, D').rr('d').subr('a').sr('a');
+    this.add(0x93, 'SUB A, E').rr('e').subr('a').sr('a');
+    this.add(0x94, 'SUB A, H').rr('h').subr('a').sr('a');
+    this.add(0x95, 'SUB A, L').rr('l').subr('a').sr('a');
+
+    this.add(0x96, 'SUB A, (HL)').rr('hl').rm().subr('a').sr('a');
+    this.add(0xd6, 'SUB A, byte').rb().subr('a').sr('a');
+
+    this.add(0x9f, 'SBC A, A').rr('a').subrc('a').sr('a');
+    this.add(0x98, 'SBC A, B').rr('b').subrc('a').sr('a');
+    this.add(0x99, 'SBC A, C').rr('c').subrc('a').sr('a');
+    this.add(0x9a, 'SBC A, D').rr('d').subrc('a').sr('a');
+    this.add(0x9b, 'SBC A, E').rr('e').subrc('a').sr('a');
+    this.add(0x9c, 'SBC A, H').rr('h').subrc('a').sr('a');
+    this.add(0x9d, 'SBC A, L').rr('l').subrc('a').sr('a');
+
+    this.add(0x9e, 'SBC A, (HL)').rr('hl').rm().subrc('a').sr('a');
+
+    this.add(0xa7, 'AND A, A').rr('a').and('a').sr('a');
+    this.add(0xa0, 'AND A, B').rr('b').and('a').sr('a');
+    this.add(0xa1, 'AND A, C').rr('c').and('a').sr('a');
+    this.add(0xa2, 'AND A, D').rr('d').and('a').sr('a');
+    this.add(0xa3, 'AND A, E').rr('e').and('a').sr('a');
+    this.add(0xa4, 'AND A, H').rr('h').and('a').sr('a');
+    this.add(0xa5, 'AND A, L').rr('l').and('a').sr('a');
+
+    this.add(0xa6, 'AND A, (HL)').rr('hl').rm().and('a').sr('a');
+    this.add(0xe6, 'AND A, byte').rb().and('a').sr('a');
+
+    this.add(0xb7, 'OR A, A').rr('a').or('a').sr('a');
+    this.add(0xb0, 'OR A, B').rr('b').or('a').sr('a');
+    this.add(0xb1, 'OR A, C').rr('c').or('a').sr('a');
+    this.add(0xb2, 'OR A, D').rr('d').or('a').sr('a');
+    this.add(0xb3, 'OR A, E').rr('e').or('a').sr('a');
+    this.add(0xb4, 'OR A, H').rr('h').or('a').sr('a');
+    this.add(0xb5, 'OR A, L').rr('l').or('a').sr('a');
+
+    this.add(0xb6, 'OR A, (HL)').rr('hl').rm().or('a').sr('a');
+    this.add(0xf6, 'OR A, byte').rb().or('a').sr('a');
+
+    this.add(0xaf, 'XOR A, A').rr('a').xor('a').sr('a');
+    this.add(0xa8, 'XOR A, B').rr('b').xor('a').sr('a');
+    this.add(0xa9, 'XOR A, C').rr('c').xor('a').sr('a');
+    this.add(0xaa, 'XOR A, D').rr('d').xor('a').sr('a');
+    this.add(0xab, 'XOR A, E').rr('e').xor('a').sr('a');
+    this.add(0xac, 'XOR A, H').rr('h').xor('a').sr('a');
+    this.add(0xad, 'XOR A, L').rr('l').xor('a').sr('a');
+
+    this.add(0xae, 'XOR A, (HL)').rr('hl').rm().xor('a').sr('a');
+    this.add(0xee, 'XOR A, byte').rb().xor('a').sr('a');
+
+    this.add(0xbf, 'CP A, A').rr('a').subr('a');
+    this.add(0xb8, 'CP A, B').rr('b').subr('a');
+    this.add(0xb9, 'CP A, C').rr('c').subr('a');
+    this.add(0xba, 'CP A, D').rr('d').subr('a');
+    this.add(0xbb, 'CP A, E').rr('e').subr('a');
+    this.add(0xbc, 'CP A, H').rr('h').subr('a');
+    this.add(0xbd, 'CP A, L').rr('l').subr('a');
+
+    this.add(0xbe, 'CP A, (HL)').rr('hl').rm().subr('a');
+    this.add(0xfe, 'CP A, byte').rb().subr('a');
+
+    this.add(0xbf, 'INC A')
   }
 }
 
 export default new Opcodes();
+
+// do I need to mask results?
