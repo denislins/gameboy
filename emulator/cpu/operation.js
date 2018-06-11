@@ -51,12 +51,12 @@ export default class Operation {
     return this;
   }
 
-  inc(register) {
+  incr(register) {
     this.resolver.add('incrementRegister', register);
     return this;
   }
 
-  dec(register) {
+  decr(register) {
     this.resolver.add('decrementRegister', register);
     return this;
   }
@@ -78,6 +78,131 @@ export default class Operation {
 
   subrc(register) {
     this.resolver.add('subtractFromRegisterWithCarry', register);
+    return this;
+  }
+
+  and(register) {
+    this.resolver.add('logicalAnd', register);
+    return this;
+  }
+
+  or(register) {
+    this.resolver.add('logicalOr', register);
+    return this;
+  }
+
+  xor(register) {
+    this.resolver.add('logicalXor', register);
+    return this;
+  }
+
+  inc() {
+    this.resolver.add('incrementValue');
+    return this;
+  }
+
+  dec(value) {
+    this.resolver.add('decrementValue');
+    return this;
+  }
+
+  swap() {
+    this.resolver.add('swapValue');
+    return this;
+  }
+
+  da() {
+    this.resolver.add('decimalAdjust');
+    return this;
+  }
+
+  cpl() {
+    this.resolver.add('complementValue');
+    return this;
+  }
+
+  ccf() {
+    this.resolver.add('complementCarryFlag');
+    return this;
+  }
+
+  scf() {
+    this.resolver.add('setCarryFlag');
+    return this;
+  }
+
+  nop() {
+    this.resolver.add('noOperation');
+    return this;
+  }
+
+  halt() {
+    this.resolver.add('halt');
+    return this;
+  }
+
+  stop() {
+    this.resolver.add('stop');
+    return this;
+  }
+
+  ti(enable) {
+    this.resolver.add('toggleInterrupts', enable);
+    return this;
+  }
+
+  rtl() {
+    this.resolver.add('rotateLeft');
+    return this;
+  }
+
+  rtr() {
+    this.resolver.add('rotateRight');
+    return this;
+  }
+
+  rtlc() {
+    this.resolver.add('rotateLeftUsingCarry');
+    return this;
+  }
+
+  rtrc() {
+    this.resolver.add('rotateRightUsingCarry');
+    return this;
+  }
+
+  shl() {
+    this.resolver.add('shiftLeft');
+    return this;
+  }
+
+  shra() {
+    this.resolver.add('arithmeticShiftRight');
+    return this;
+  }
+
+  shrl() {
+    this.resolver.add('logicalShiftRight');
+    return this;
+  }
+
+  bit(bit) {
+    this.resolver.add('testBit', bit);
+    return this;
+  }
+
+  setb(bit) {
+    this.resolver.add('setBit', bit);
+    return this;
+  }
+
+  resb(bit) {
+    this.resolver.add('resetBit', bit);
+    return this;
+  }
+
+  cf(flag, value) {
+    this.resolver.add('checkFlag', flag, value);
     return this;
   }
 }
