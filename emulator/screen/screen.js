@@ -3,6 +3,8 @@ import Pixel from './pixel.js';
 export default class Screen {
   constructor(canvas) {
     this.canvas = canvas;
+    this.context = this.canvas.getContext('2d');
+
     this.width = 160;
     this.height = 144;
   }
@@ -32,7 +34,11 @@ export default class Screen {
 
   draw() {
     this.requestId = requestAnimationFrame(() => {
-      this.pixels.forEach(pixel => pixel.draw());
+      const image = this.context.createImageData(this.canvas.width, this.canvas.height);
+
+      this.pixels.forEach(pixel => pixel.draw(image));
+      this.context.putImageData(image, 0, 0);
+
       this.draw();
     });
   }

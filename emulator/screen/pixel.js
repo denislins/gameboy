@@ -1,7 +1,6 @@
 export default class Pixel {
   constructor(screen, row, column) {
     this.canvas = screen.canvas;
-    this.context = this.canvas.getContext('2d', { alpha: false });
 
     this.width = Math.floor(this.canvas.width / screen.width);
     this.height = Math.floor(this.canvas.height / screen.height);
@@ -10,21 +9,27 @@ export default class Pixel {
     this.column = column;
   }
 
-  draw() {
-    const newColor = this.getColor();
+  draw(image) {
+    this.randomizeColor();
 
-    if (newColor !== this.color) {
-      this.color = newColor;
+    let index;
 
-      this.context.fillStyle = this.color;
-      this.context.fillRect(this.column * this.width, this.row * this.height, this.width, this.height);
+    for (let w = 0; w < this.width; w++) {
+      for (let h = 0; h < this.height; h++) {
+        index = w * 4 + this.column * this.width * 4 +
+          this.row * this.canvas.width * this.height * 4 + h * this.canvas.width * 4;
+
+        image.data[index + 3] = this.color;
+      }
     }
   }
 
-  getColor() {
-    const colors = ['#333333', '#666666', '#999999', '#CCCCCC'];
+  randomizeColor() {
+    const colors = [255, 192, 96, 0];
     const index = Math.floor(Math.random() * colors.length);
 
-    return colors[index];
+    if (colors[index] !== this.color) {
+      this.color = colors[index];
+    }
   }
 }

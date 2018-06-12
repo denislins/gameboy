@@ -11,6 +11,11 @@ export default class Operation {
     return this;
   }
 
+  rsb() {
+    this.resolver.add('readSignedByte');
+    return this;
+  }
+
   rw() {
     this.resolver.add('readWord');
     return this;
@@ -23,6 +28,11 @@ export default class Operation {
 
   sr(register) {
     this.resolver.add('storeToRegister', register);
+    return this;
+  }
+
+  ar(register) {
+    this.resolver.add('addToRegister', register);
     return this;
   }
 
@@ -46,8 +56,8 @@ export default class Operation {
     return this;
   }
 
-  sumb() {
-    this.resolver.add('sumByte');
+  sumsb() {
+    this.resolver.add('sumSignedByte');
     return this;
   }
 

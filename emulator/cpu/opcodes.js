@@ -129,7 +129,7 @@ class Opcodes {
     this.table.add(0x31, 'LD SP, word').rw().sr('sp');
 
     this.table.add(0xf9, 'LD SP, HL').rr('hl').sr('sp');
-    this.table.add(0xf8, 'LD HL, SP + byte').rr('sp').sumb().sr('hl');
+    this.table.add(0xf8, 'LD HL, SP + byte').rr('sp').sumsb().sr('hl');
 
     this.table.add(0x08, 'LD (word), SP').rr('sp').sda();
 
@@ -255,7 +255,7 @@ class Opcodes {
     this.table.add(0x29, 'ADD HL, HL').rr('hl').sumr('hl').sr('hl');
     this.table.add(0x39, 'ADD HL, SP').rr('sp').sumr('hl').sr('hl');
 
-    this.table.add(0xe8, 'ADD HL, byte').rb().sumr('hl').sr('hl');
+    this.table.add(0xe8, 'ADD HL, byte').rsb().sumr('hl').sr('hl');
 
     this.table.add(0x03, 'INC BC').incr('bc');
     this.table.add(0x03, 'INC DE').incr('de');
@@ -290,11 +290,21 @@ class Opcodes {
 
     this.table.add(0xc3, 'JP word').rw().sr('pc');
 
-    this.table.add(0xc2, 'JP NZ, word').rw().cf('z', false).sr('pc');
-    this.table.add(0xca, 'JP Z, word').rw().cf('z', true).sr('pc');
+    this.table.add(0xc2, 'JP NZ, word').cf('z', false).rw().sr('pc');
+    this.table.add(0xca, 'JP Z, word').cf('z', true).rw().sr('pc');
 
-    this.table.add(0xd2, 'JP NC, word').rw().cf('c', false).sr('pc');
-    this.table.add(0xda, 'JP C, word').rw().cf('c', true).sr('pc');
+    this.table.add(0xd2, 'JP NC, word').cf('c', false).rw().sr('pc');
+    this.table.add(0xda, 'JP C, word').cf('c', true).rw().sr('pc');
+
+    this.table.add(0xe9, 'JP (HL)').rr('hl').rm().sr('pc');
+
+    this.table.add(0x18, 'JR byte').rsb().ar('pc');
+
+    this.table.add(0x20, 'JR NZ, word').cf('z', false).rsb().ar('pc');
+    this.table.add(0x28, 'JR Z, word').cf('z', true).rsb().ar('pc');
+
+    this.table.add(0x30, 'JR NC, word').cf('c', false).rsb().ar('pc');
+    this.table.add(0x38, 'JR C, word').cf('c', true).rsb().ar('pc');
   }
 
   initCbOpcodeTable() {
