@@ -1,9 +1,14 @@
 import Resolver from './resolver.js';
 
-export default class Operation {
-  constructor(repr) {
+export default class Instruction {
+  constructor(cycles, repr) {
+    this.cycles = cycles;
     this.repr = repr;
     this.resolver = new Resolver();
+  }
+
+  execute() {
+    this.resolver.resolve();
   }
 
   rb() {
@@ -36,13 +41,18 @@ export default class Operation {
     return this;
   }
 
+  sva(register, value) {
+    this.resolver.add('storeValueToRegister', register, value);
+    return;
+  }
+
   rm(offset) {
     this.resolver.add('readFromMemory', offset);
     return this;
   }
 
   sda(offset) {
-    this.resolver.add('saveToddress', offset);
+    this.resolver.add('storeToAddress', offset);
     return this;
   }
 
@@ -68,6 +78,16 @@ export default class Operation {
 
   decr(register) {
     this.resolver.add('decrementRegister', register);
+    return this;
+  }
+
+  push() {
+    this.resolver.add('push');
+    return this;
+  }
+
+  pop() {
+    this.resolver.add('pop');
     return this;
   }
 

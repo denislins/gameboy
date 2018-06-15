@@ -19,12 +19,15 @@
   <canvas id="screen" width="480" height="432"></canvas>
   <script type="module">
     import Screen from './emulator/screen/screen.js';
-    import Opcodes from './emulator/cpu/opcodes.js';
 
     const canvas = document.getElementById('screen');
     const screen = new Screen(canvas);
 
     // screen.on();
+
+    import CPU from './emulator/cpu/cpu.js';
+
+    CPU.testRun();
   </script>
 </body>
 </html>
