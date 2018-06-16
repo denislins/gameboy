@@ -46,8 +46,8 @@ export default class Instruction {
     return;
   }
 
-  rm(offset) {
-    this.resolver.add('readFromMemory', offset);
+  rm() {
+    this.resolver.add('readFromMemory');
     return this;
   }
 
@@ -71,13 +71,13 @@ export default class Instruction {
     return this;
   }
 
-  incr(register) {
-    this.resolver.add('incrementRegister', register);
+  incr(register, setFlags = true) {
+    this.resolver.add('incrementRegister', register, setFlags);
     return this;
   }
 
-  decr(register) {
-    this.resolver.add('decrementRegister', register);
+  decr(register, setFlags = true) {
+    this.resolver.add('decrementRegister', register, setFlags);
     return this;
   }
 
@@ -233,6 +233,11 @@ export default class Instruction {
 
   cf(flag, value) {
     this.resolver.add('checkFlag', flag, value);
+    return this;
+  }
+
+  sumw(value) {
+    this.resolver.add('sumWord', value);
     return this;
   }
 }

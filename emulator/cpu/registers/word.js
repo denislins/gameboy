@@ -8,14 +8,10 @@ export default class WordRegister {
   }
 
   setValue(value) {
-    this.value = value;
+    this.value = value & 0xFFFF;
   }
 
   getValue() {
     return this.value;
-  }
-
-  sumValue(value) {
-    this.value = (this.value + value) & 0xFFFF;
   }
 }

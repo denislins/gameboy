@@ -8,14 +8,10 @@ export default class ByteRegister {
   }
 
   setValue(value) {
-    this.value = value;
+    this.value = value & 0xFF;
   }
 
   getValue() {
     return this.value;
-  }
-
-  sumValue(value) {
-    this.value = (this.value + value) & 0xFF;
   }
 }

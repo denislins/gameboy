@@ -41,7 +41,7 @@ export default class Resolver {
   }
 
   readSignedByte() {
-    let byte = rom.shift();
+    let byte = this.readByte();
     const mask = 1 << 7;
 
     if ((byte & mask) !== 0) {
@@ -52,33 +52,34 @@ export default class Resolver {
   }
 
   readWord() {
-    const byte1 = rom.shift();
-    const byte2 = rom.shift();
+    const byte1 = this.readByte();
+    const byte2 = this.readByte();
 
-    return (byte1 << 8) | byte2;
+    return (byte2 << 8) | byte1;
   }
 
   readRegister(register) {
     return this.registers.get(register).getValue();
   }
 
-  storeToRegister(register, offset, value) {
+  storeToRegister(register, value) {
     this.registers.get(register).setValue(value);
   }
 
   addToRegister(register, value) {
-    this.registers.get(register).sumValue(value);
+    value += this.readRegister(register);
+    this.storeToRegister(register, value);
   }
 
-  sva(register, value) {
-    // ('storeValueToRegister', register, value);
+  maskRegisterValue(register, value) {
+    this.registers.get(register).mask(value);
   }
 
-  readFromMemory(offset, address) {
-    if (offset) {
-      address += offset;
-    }
+  storeValueToRegister(register, value) {
+    this.storeToRegister(register, value);
+  }
 
+  readFromMemory(address) {
     return this.memory.get(address);
   }
 
@@ -100,71 +101,155 @@ export default class Resolver {
   }
 
   storeToAddressAtRegister(register, offset, value) {
-    const address = this.readRegister(register) + (offset || 0);
+    const baseAddress = this.readRegister(register);
+    const address = (baseAddress + (offset || 0)) & 0xFFFF;
+
     this.memory.set(address, value);
   }
 
-  sumsb() {
-    // ('sumSignedByte');
+  sumSignedByte(value) {
+    const byte = this.readSignedByte();
+
+    this.flags.set('z', false);
+    this.flags.set('n', false);
+
+    // TODO: need help
+
+    if (byte >= 0) {
+      this.flags.set('c', false);
+    } else {
+
+    }
   }
 
-  incrementRegister(register) {
+  incrementRegister(register, setFlags) {
     const currentValue = this.readRegister(register);
 
     this.addToRegister(register, 1);
-    const newValue = this.readRegister(register);
 
-    this.flags.set('z', newValue === 0);
-    this.flags.set('n', false);
-    // this.flags.set('h', true); TODO
+    if (setFlags) {
+      const newValue = this.readRegister(register);
+
+      this.flags.set('z', newValue === 0);
+      this.flags.set('n', false);
+      this.flags.set('h', (currentValue & 0xF) === 0xF);
+    }
 
     return currentValue;
   }
 
-  decrementRegister(register) {
+  decrementRegister(register, setFlags) {
     const currentValue = this.readRegister(register);
 
     this.addToRegister(register, -1);
 
+    if (setFlags) {
+      const newValue = this.readRegister(register);
+
+      this.flags.set('z', newValue === 0);
+      this.flags.set('n', true);
+      this.flags.set('h', (currentValue & 0xF) === 0);
+    }
+
     return currentValue;
   }
 
-  push() {
-    // ('push');
+  push(value) {
+    this.decrementRegister('sp');
+    this.memory.set(this.readRegister(sp), value >> 8);
+    this.decrementRegister('sp');
+    this.memory.set(this.readRegister(sp), value & 0xFF);
   }
 
   pop() {
-    // ('pop');
+    const byte1 = this.incrementRegister('sp');
+    const byte2 = this.incrementRegister('sp');
+
+    return byte2 << 8 | byte1;
   }
 
   sumToRegister(register, value) {
-    return (this.readRegister(register) + value) & 0xFF;
+    const currentValue = this.readRegister(register);
+    value += currentValue;
+
+    this.flags.set('n', false);
+    this.flags.set('z', (value & 0xFF) === 0);
+    this.flags.set('h', (currentValue & 0xF) + (value & 0xF) > 0xF);
+    this.flags.set('c', value > 0xFF);
+
+    return value;
   }
 
   subtractFromRegister(register, value) {
-    return (this.readRegister(register) - value) & 0xFF;
+    const currentValue = this.readRegister(register);
+    value = currentValue - value;
+
+    this.flags.set('n', true);
+    this.flags.set('z', (value & 0xFF) === 0);
+    this.flags.set('h', (currentValue & 0xF) < (value & 0xF));
+    this.flags.set('c', currentValue < value);
+
+    return value;
   }
 
   sumToRegisterWithCarry(register, value) {
+    const currentValue = this.readRegister(register);
     const carry = this.flags.get('c');
-    return (this.readRegister(register) + value + carry) & 0xFF;
+
+    value += currentValue + carry;
+
+    this.flags.set('n', false);
+    this.flags.set('z', (value & 0xFF) === 0);
+    // TODO: understand why \/
+    this.flags.set('h', (currentValue & 0xF) + (value & 0xF) + carry > 0xF);
+    this.flags.set('c', value > 0xFF);
+
+    return value;
   }
 
   subtractFromRegisterWithCarry(register, value) {
-    const carry = this.flags.get('c');
-    return (this.readRegister(register) - value - carry) & 0xFF;
+    const currentValue = this.readRegister(register);
+    value = currentValue - value - carry;
+
+    this.flags.set('n', true);
+    this.flags.set('z', (value & 0xFF) === 0);
+    this.flags.set('h', ((currentValue + carry) & 0xF) < (value & 0xF));
+    this.flags.set('c', (currentValue + carry) < value);
+
+    return value;
   }
 
   and(register) {
-    return this.readRegister(register) & value;
+    const result = this.readRegister(register) & value;
+
+    this.flags.set('z', result === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', true);
+    this.flags.set('c', false);
+
+    return result;
   }
 
   or(register) {
-    return this.readRegister(register) | value;
+    const result = this.readRegister(register) | value;
+
+    this.flags.set('z', result === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', false);
+
+    return result;
   }
 
   logicalXor(register, value) {
-    return this.readRegister(register) ^ value;
+    const result = this.readRegister(register) ^ value;
+
+    this.flags.set('z', result === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', false);
+
+    return result;
   }
 
   inc() {
@@ -259,5 +344,9 @@ export default class Resolver {
     if (this.flags.get(flag) !== value) {
       this.resolved = true;
     }
+  }
+
+  sumWord(value, previousValue) {
+    return (value + previousValue) & 0xFFFF;
   }
 }

@@ -21,8 +21,4 @@ export default class CompositeRegister {
 
     return (valueA << 8) | valueB;
   }
-
-  sumValue(value) {
-    this.setValue((this.value + value) & 0xFFFF);
-  }
 }

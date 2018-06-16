@@ -110,17 +110,17 @@ class Opcodes {
     this.instructions.add(0xFA, 16, 'LD A, (word)').rw().rm().sr('a');
     this.instructions.add(0xEA, 16, 'LD (word), A').rr('a').sda();
 
-    this.instructions.add(0xF2, 8, 'LD A, (C)').rr('c').rm(0xFF00).sr('a');
+    this.instructions.add(0xF2, 8, 'LD A, (C)').rr('c').sumw(0xFF00).rm().sr('a');
     this.instructions.add(0xE2, 8, 'LD (C), A').rr('a').sra('c', 0xFF00);
 
-    this.instructions.add(0x3A, 8, 'LD A, (HL-)').decr('hl').rm().sr('a');
-    this.instructions.add(0x32, 8, 'LD (HL-), A').rr('a').sra('hl').decr('hl');
+    this.instructions.add(0x3A, 8, 'LD A, (HL-)').decr('hl', false).rm().sr('a');
+    this.instructions.add(0x32, 8, 'LD (HL-), A').rr('a').sra('hl').decr('hl', false);
 
-    this.instructions.add(0x2A, 8, 'LD A, (HL+)').incr('hl').rm().sr('a');
-    this.instructions.add(0x22, 8, 'LD (HL+), A').rr('a').sra('hl').incr('hl');
+    this.instructions.add(0x2A, 8, 'LD A, (HL+)').incr('hl', false).rm().sr('a');
+    this.instructions.add(0x22, 8, 'LD (HL+), A').rr('a').sra('hl').incr('hl', false);
 
     this.instructions.add(0xE0, 12, 'LDH (byte), A').rr('a').sda(0xFF00);
-    this.instructions.add(0xF0, 12, 'LDH A, (byte)').rb(0xFF00).sr('a');
+    this.instructions.add(0xF0, 12, 'LDH A, (byte)').rb().sumw(0xFF00).sr('a');
 
     this.instructions.add(0x01, 12, 'LD BC, word').rw().sr('bc');
     this.instructions.add(0x11, 12, 'LD DE, word').rw().sr('de');
