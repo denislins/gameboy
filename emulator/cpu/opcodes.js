@@ -250,25 +250,24 @@ class Opcodes {
 
     this.instructions.add(0x35, 12, 'DEC (HL)').rr('hl').rm().dec().sra('hl');
 
-    this.instructions.add(0x09, 8, 'ADD HL, BC').rr('bc').sumr('hl').sr('hl');
-    this.instructions.add(0x19, 8, 'ADD HL, DE').rr('de').sumr('hl').sr('hl');
-    this.instructions.add(0x29, 8, 'ADD HL, HL').rr('hl').sumr('hl').sr('hl');
-    this.instructions.add(0x39, 8, 'ADD HL, SP').rr('sp').sumr('hl').sr('hl');
+    this.instructions.add(0x09, 8, 'ADD HL, BC').rr('bc').sumwr('hl').sr('hl');
+    this.instructions.add(0x19, 8, 'ADD HL, DE').rr('de').sumwr('hl').sr('hl');
+    this.instructions.add(0x29, 8, 'ADD HL, HL').rr('hl').sumwr('hl').sr('hl');
+    this.instructions.add(0x39, 8, 'ADD HL, SP').rr('sp').sumwr('hl').sr('hl');
 
-    this.instructions.add(0xE8, 16, 'ADD SP, byte').rsb().sumr('hl').sr('hl');
+    this.instructions.add(0xE8, 16, 'ADD SP, byte').rr('sp').sumsb().sr('sp');
 
-    this.instructions.add(0x03, 8, 'INC BC').incr('bc');
-    this.instructions.add(0x13, 8, 'INC DE').incr('de');
-    this.instructions.add(0x23, 8, 'INC HL').incr('hl');
-    this.instructions.add(0x33, 8, 'INC SP').incr('sp');
+    this.instructions.add(0x03, 8, 'INC BC').rr('bc').inc().sr('bc');
+    this.instructions.add(0x13, 8, 'INC DE').rr('de').inc().sr('de');
+    this.instructions.add(0x23, 8, 'INC HL').rr('hl').inc().sr('hl');
+    this.instructions.add(0x33, 8, 'INC SP').rr('sp').inc().sr('sp');
 
-    this.instructions.add(0x0B, 8, 'DEC BC').decr('bc');
-    this.instructions.add(0x1B, 8, 'DEC DE').decr('de');
-    this.instructions.add(0x2B, 8, 'DEC HL').decr('hl');
-    this.instructions.add(0x3B, 8, 'DEC SP').decr('sp');
+    this.instructions.add(0x0B, 8, 'DEC BC').rr('bc').dec().sr('bc');
+    this.instructions.add(0x1B, 8, 'DEC DE').rr('de').dec().sr('de');
+    this.instructions.add(0x2B, 8, 'DEC HL').rr('hl').dec().sr('hl');
+    this.instructions.add(0x3B, 8, 'DEC SP').rr('sp').dec().sr('sp');
 
     this.instructions.add(0x27, 4, 'DAA').rr('a').da().sr('a');
-
     this.instructions.add(0x2F, 4, 'CPL').rr('a').cpl().sr('a');
 
     this.instructions.add(0x3F, 4, 'CCF').ccf();

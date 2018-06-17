@@ -156,9 +156,10 @@ export default class Resolver {
 
   push(value) {
     this.decrementRegister('sp');
-    this.memory.set(this.readRegister(sp), value >> 8);
+    this.memory.set(this.readRegister('sp'), value >> 8);
+
     this.decrementRegister('sp');
-    this.memory.set(this.readRegister(sp), value & 0xFF);
+    this.memory.set(this.readRegister('sp'), value & 0xFF);
   }
 
   pop() {
@@ -168,7 +169,7 @@ export default class Resolver {
     return byte2 << 8 | byte1;
   }
 
-  sumToRegister(register, value) {
+  sumToRegisterValue(register, value) {
     const currentValue = this.readRegister(register);
     value += currentValue;
 
@@ -180,7 +181,7 @@ export default class Resolver {
     return value;
   }
 
-  subtractFromRegister(register, value) {
+  subtractFromRegisterValue(register, value) {
     const currentValue = this.readRegister(register);
     value = currentValue - value;
 
@@ -192,7 +193,7 @@ export default class Resolver {
     return value;
   }
 
-  sumToRegisterWithCarry(register, value) {
+  sumToRegisterValueWithCarry(register, value) {
     const currentValue = this.readRegister(register);
     const carry = this.flags.get('c');
 
@@ -207,7 +208,7 @@ export default class Resolver {
     return value;
   }
 
-  subtractFromRegisterWithCarry(register, value) {
+  subtractFromRegisterValueWithCarry(register, value) {
     const currentValue = this.readRegister(register);
     value = currentValue - value - carry;
 
@@ -215,6 +216,17 @@ export default class Resolver {
     this.flags.set('z', (value & 0xFF) === 0);
     this.flags.set('h', ((currentValue + carry) & 0xF) < (value & 0xF));
     this.flags.set('c', (currentValue + carry) < value);
+
+    return value;
+  }
+
+  sumWordToRegisterValue(register, value) {
+    const currentValue = this.readRegister(register);
+    value += currentValue;
+
+    this.flags.set('n', false);
+    this.flags.set('h', (currentValue & 0xFFF) + (value & 0xFFF) > 0xFFF);
+    this.flags.set('c', value > 0xFFFF);
 
     return value;
   }
@@ -252,32 +264,72 @@ export default class Resolver {
     return result;
   }
 
-  inc() {
-    // ('incrementValue');
+  incrementValue(value) {
+    return value + 1;
   }
 
-  dec(value) {
-    // ('decrementValue');
+  decrementValue(value) {
+    return value - 1;
   }
 
-  swap() {
-    // ('swapValue');
+  swap(value) {
+    const result = ((value & 0xF) << 4) | (value >> 4);
+
+    this.flags.set('z', result === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', false);
+
+    return result;
   }
 
-  da() {
-    // ('decimalAdjust');
+  decimalAdjust(value) {
+    let correction = 0;
+
+    if (this.flags.get('h')) {
+      correction |= 0x6;
+    }
+
+    if (this.flags.get('c')) {
+      correction |= 0x60;
+    }
+
+    if (this.flags.get('n')) {
+      value -= correction;
+    } else {
+      if ((value & 0xF) > 0x9) {
+        correction |= 0x6;
+      }
+
+      if ((value >> 4) > 0x9) {
+        correction |= 0x60;
+      }
+
+      value += correction;
+    }
+
+    this.flags.set('z', (value & 0xFF) === 0);
+    this.flags.set('h', false);
+    this.flags.set('c', value > 0xFF);
   }
 
-  cpl() {
-    // ('complementValue');
+  complementValue(value) {
+    this.flags.set('n', true);
+    this.flags.set('h', true);
+
+    return ~value;
   }
 
-  ccf() {
-    // ('complementCarryFlag');
+  complementCarryFlag() {
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', !this.flags.get('c'));
   }
 
-  scf() {
-    // ('setCarryFlag');
+  setCarryFlag() {
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', true);
   }
 
   nop() {
@@ -296,32 +348,84 @@ export default class Resolver {
     // TODO
   }
 
-  rtl() {
-    // ('rotateLeft');
+  rotateLeft(value) {
+    const shifted = (value << 1) | (value >> 7);
+
+    this.flags.set('z', (shifted & 0xFF) === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', (shifted & 0x1) === 1);
+
+    return value;
   }
 
-  rtr() {
-    // ('rotateRight');
+  rotateRight(value) {
+    const shifted = (value & (1 << 7)) | (value >> 1);
+
+    this.flags.set('z', value === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', (value & 0x1) === 1);
+
+    return value;
   }
 
-  rotateLeftUsingCarry() {
-    // TODO
+  rotateLeftUsingCarry(value) {
+    const carry = this.flags.get('c') ? 1 : 0;
+    const shifted = (value << 1) | carry;
+
+    this.flags.set('z', (value & 0xFF) === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    // these C flags are all screwed up
+    this.flags.set('c', (shifted & 0x1) === 1);
+
+    return value;
   }
 
-  rtrc() {
-    // ('rotateRightUsingCarry');
+  rotateRightUsingCarry(value) {
+    const carry = this.flags.get('c') ? 1 : 0;
+    const shifted = (value & (carry << 7)) | (value >> 1);
+
+    this.flags.set('z', value === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', value & 0x1);
+
+    return value;
   }
 
-  shl() {
-    // ('shiftLeft');
+  shiftLeft(value) {
+    value = value << 1;
+
+    this.flags.set('z', (value & 0xFF) === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', value > 0xFF);
+
+    return value;
   }
 
-  shra() {
-    // ('arithmeticShiftRight');
+  arithmeticShiftRight(value) {
+    value = (value & (1 << 7)) | (value >> 1);
+
+    this.flags.set('z', value === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', value & 0x1);
+
+    return value;
   }
 
-  shrl() {
-    // ('logicalShiftRight');
+  logicalShiftRight(value) {
+    value = value >> 1;
+
+    this.flags.set('z', value === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', value & 0x1);
+
+    return value;
   }
 
   testBit(bit, value) {

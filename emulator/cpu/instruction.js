@@ -92,22 +92,27 @@ export default class Instruction {
   }
 
   sumr(register) {
-    this.resolver.add('sumToRegister', register);
+    this.resolver.add('sumToRegisterValue', register);
     return this;
   }
 
   subr(register) {
-    this.resolver.add('subtractFromRegister', register);
+    this.resolver.add('subtractFromRegisterValue', register);
     return this;
   }
 
   sumrc(register) {
-    this.resolver.add('sumToRegisterWithCarry', register);
+    this.resolver.add('sumToRegisterValueWithCarry', register);
     return this;
   }
 
   subrc(register) {
-    this.resolver.add('subtractFromRegisterWithCarry', register);
+    this.resolver.add('subtractFromRegisterValueWithCarry', register);
+    return this;
+  }
+
+  sumwr(register) {
+    this.resolver.add('sumWordToRegisterValue', register);
     return this;
   }
 
@@ -137,7 +142,7 @@ export default class Instruction {
   }
 
   swap() {
-    this.resolver.add('swapValue');
+    this.resolver.add('swap');
     return this;
   }
 
