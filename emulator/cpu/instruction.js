@@ -245,4 +245,9 @@ export default class Instruction {
     this.resolver.add('sumWord', value);
     return this;
   }
+
+  nia() {
+    this.resolver.add('nextInstructionAddress');
+    return this;
+  }
 }

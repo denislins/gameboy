@@ -305,13 +305,13 @@ class Opcodes {
     this.instructions.add(0x30, 8, 'JR NC, word').cf('c', false).rsb().ar('pc');
     this.instructions.add(0x38, 8, 'JR C, word').cf('c', true).rsb().ar('pc');
 
-    this.instructions.add(0xCD, 12, 'CALL word').rr('pc').push().rw().sr('pc');
+    this.instructions.add(0xCD, 12, 'CALL word').nia().push().rw().sr('pc');
 
-    this.instructions.add(0xC4, 12, 'CALL NZ, word').cf('z', false).rr('pc').push().rw().sr('pc');
-    this.instructions.add(0xCC, 12, 'CALL Z, word').cf('z', true).rr('pc').push().rw().sr('pc');
+    this.instructions.add(0xC4, 12, 'CALL NZ, word').cf('z', false).nia().push().rw().sr('pc');
+    this.instructions.add(0xCC, 12, 'CALL Z, word').cf('z', true).nia().push().rw().sr('pc');
 
-    this.instructions.add(0xD4, 12, 'CALL NC, word').cf('c', false).rr('pc').push().rw().sr('pc');
-    this.instructions.add(0xDC, 12, 'CALL C, word').cf('c', true).rr('pc').push().rw().sr('pc');
+    this.instructions.add(0xD4, 12, 'CALL NC, word').cf('c', false).nia().push().rw().sr('pc');
+    this.instructions.add(0xDC, 12, 'CALL C, word').cf('c', true).nia().push().rw().sr('pc');
 
     this.instructions.add(0xC7, 32, 'RST 00H').rr('pc').push().sva('pc', 0x00);
     this.instructions.add(0xCF, 32, 'RST 08H').rr('pc').push().sva('pc', 0x08);

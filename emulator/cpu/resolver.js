@@ -71,10 +71,6 @@ export default class Resolver {
     this.storeToRegister(register, value);
   }
 
-  maskRegisterValue(register, value) {
-    this.registers.get(register).mask(value);
-  }
-
   storeValueToRegister(register, value) {
     this.storeToRegister(register, value);
   }
@@ -87,7 +83,7 @@ export default class Resolver {
     let address;
 
     if (offset) {
-      address = (this.readByte() + offset) & 0xFFFF;
+      address = this.readByte() + offset;
     } else {
       address = this.readWord();
     }
@@ -102,7 +98,7 @@ export default class Resolver {
 
   storeToAddressAtRegister(register, offset, value) {
     const baseAddress = this.readRegister(register);
-    const address = (baseAddress + (offset || 0)) & 0xFFFF;
+    const address = baseAddress + (offset || 0);
 
     this.memory.set(address, value);
   }
@@ -163,8 +159,8 @@ export default class Resolver {
   }
 
   pop() {
-    const byte1 = this.incrementRegister('sp');
-    const byte2 = this.incrementRegister('sp');
+    const byte1 = this.memory.get(this.incrementRegister('sp'));
+    const byte2 = this.memory.get(this.incrementRegister('sp'));
 
     return byte2 << 8 | byte1;
   }
@@ -337,11 +333,11 @@ export default class Resolver {
   }
 
   halt() {
-    // ('halt');
+    // TODO
   }
 
   stop() {
-    // ('stop');
+    // TODO
   }
 
   toggleInterrupts(enable) {
@@ -354,78 +350,77 @@ export default class Resolver {
     this.flags.set('z', (shifted & 0xFF) === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
-    this.flags.set('c', (shifted & 0x1) === 1);
+    this.flags.set('c', value > 0xFF);
 
-    return value;
+    return shifted;
   }
 
   rotateRight(value) {
-    const shifted = (value & (1 << 7)) | (value >> 1);
+    const shifted = ((value & 1) << 7) | (value >> 1);
 
-    this.flags.set('z', value === 0);
+    this.flags.set('z', shifted === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
-    this.flags.set('c', (value & 0x1) === 1);
+    this.flags.set('c', (value & 1) > 0);
 
-    return value;
+    return shifted;
   }
 
   rotateLeftUsingCarry(value) {
     const carry = this.flags.get('c') ? 1 : 0;
     const shifted = (value << 1) | carry;
 
-    this.flags.set('z', (value & 0xFF) === 0);
-    this.flags.set('n', false);
-    this.flags.set('h', false);
-    // these C flags are all screwed up
-    this.flags.set('c', (shifted & 0x1) === 1);
-
-    return value;
-  }
-
-  rotateRightUsingCarry(value) {
-    const carry = this.flags.get('c') ? 1 : 0;
-    const shifted = (value & (carry << 7)) | (value >> 1);
-
-    this.flags.set('z', value === 0);
-    this.flags.set('n', false);
-    this.flags.set('h', false);
-    this.flags.set('c', value & 0x1);
-
-    return value;
-  }
-
-  shiftLeft(value) {
-    value = value << 1;
-
-    this.flags.set('z', (value & 0xFF) === 0);
+    this.flags.set('z', (shifted & 0xFF) === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
     this.flags.set('c', value > 0xFF);
 
-    return value;
+    return shifted;
+  }
+
+  rotateRightUsingCarry(value) {
+    const carry = this.flags.get('c') ? 1 : 0;
+    const shifted = (carry << 7) | (value >> 1);
+
+    this.flags.set('z', shifted === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', (value & 1) > 0);
+
+    return shifted;
+  }
+
+  shiftLeft(value) {
+    const shifted = value << 1;
+
+    this.flags.set('z', (shifted & 0xFF) === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', value > 0xFF);
+
+    return shifted;
   }
 
   arithmeticShiftRight(value) {
-    value = (value & (1 << 7)) | (value >> 1);
+    const shifted = (value & (1 << 7)) | (value >> 1);
 
-    this.flags.set('z', value === 0);
+    this.flags.set('z', shifted === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
-    this.flags.set('c', value & 0x1);
+    this.flags.set('c', (value & 1) > 0);
 
-    return value;
+    return shifted;
   }
 
   logicalShiftRight(value) {
-    value = value >> 1;
+    const shifted = value >> 1;
 
-    this.flags.set('z', value === 0);
+    this.flags.set('z', shifted === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
-    this.flags.set('c', value & 0x1);
+    this.flags.set('c', (value & 1) > 0);
 
-    return value;
+    return shifted;
   }
 
   testBit(bit, value) {
@@ -437,11 +432,11 @@ export default class Resolver {
   }
 
   setBit(bit, value) {
-    return (value | (1 << bit)) & 0xFF;
+    return value | (1 << bit);
   }
 
   resetBit(bit) {
-    return (value & ~(1 << bit)) & 0xFF;
+    return value & ~(1 << bit);
   }
 
   checkFlag(flag, value) {
@@ -452,5 +447,10 @@ export default class Resolver {
 
   sumWord(value, previousValue) {
     return (value + previousValue) & 0xFFFF;
+  }
+
+  nextInstructionAddress() {
+    // TODO: adjust offset
+    return (this.readRegister('pc') + 2) & 0xFFFF;
   }
 }
