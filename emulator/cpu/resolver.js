@@ -104,17 +104,14 @@ export default class Resolver {
 
   sumSignedByte(value) {
     const byte = this.readSignedByte();
+    const result = value + byte;
 
     this.flags.set('z', false);
     this.flags.set('n', false);
+    this.flags.set('h', (value & 0xF) + (byte & 0xF) > 0xF);
+    this.flags.set('c', (value & 0xFF) + byte > 0xFF);
 
-    // TODO: need help
-
-    if (byte >= 0) {
-      this.flags.set('c', false);
-    } else {
-
-    }
+    return result;
   }
 
   incrementRegister(register, setFlags) {
