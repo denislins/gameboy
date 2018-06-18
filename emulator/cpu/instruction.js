@@ -8,6 +8,7 @@ export default class Instruction {
   }
 
   execute() {
+    console.log(this.repr);
     this.resolver.resolve();
   }
 

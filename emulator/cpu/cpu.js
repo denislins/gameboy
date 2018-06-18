@@ -1,26 +1,13 @@
 import memory from '../memory/memory.js';
 import opcodes from './opcodes.js';
 import registers from './registers/set.js';
-import rom from '../rom.js';
 
 class CPU {
   constructor() {
     this.memory = memory;
     this.opcodes = opcodes;
     this.registers = registers;
-  }
-
-  testRun() {
-    let byte;
-
-    while (byte = rom.shift()) {
-      if (byte === 0xCB) {
-        byte = rom.shift();
-        this.opcodes.getCbInstruction(byte).execute();
-      } else {
-        this.opcodes.getInstruction(byte).execute();
-      }
-    }
+    this.pc = this.registers.get('pc');
   }
 
   run() {
@@ -32,25 +19,31 @@ class CPU {
   }
 
   readInstruction() {
-    let pc = this.registers.get('pc');
-    let opcode = this.memory.get(pc++);
+    this.address = this.pc.getValue();
 
-    let instruction;
+    const instruction = this.getInstruction();
 
-    // TODO: this is UGLY
-    if (opcode === 0xCB) {
-      opcode = this.memory.get(pc++);
-      instruction = this.opcodes.getCbInstruction(opcode);
-    } else {
-      instruction = this.opcodes.getInstruction(opcode);
-    }
+    this.pc.setValue(this.address);
 
     if (!instruction) {
       return false;
     }
 
-    this.registers.set('pc', pc);
     instruction.execute();
+
+    return true;
+  }
+
+  getInstruction() {
+    let opcode = this.memory.get(this.address++);
+
+    // TODO: this is UGLY
+    if (opcode === 0xCB) {
+      opcode = this.memory.get(this.address++);
+      return this.opcodes.getCbInstruction(opcode);
+    }
+
+    return this.opcodes.getInstruction(opcode);
   }
 }
 

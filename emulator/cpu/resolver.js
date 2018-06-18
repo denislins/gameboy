@@ -1,7 +1,6 @@
 import flags from './flags.js';
 import memory from '../memory/memory.js';
 import registers from './registers/set.js';
-import rom from '../rom.js';
 
 export default class Resolver {
   constructor() {
@@ -37,15 +36,15 @@ export default class Resolver {
   }
 
   readByte() {
-    return rom.shift();
+    const pc = this.incrementRegister('pc', false);
+    return this.memory.get(pc);
   }
 
   readSignedByte() {
     let byte = this.readByte();
-    const mask = 1 << 7;
 
-    if ((byte & mask) !== 0) {
-      byte = (~mask & byte) * -1;
+    if ((byte & (1 << 7)) !== 0) {
+      byte = -(~byte & 0xFF) - 1;
     }
 
     return byte;
@@ -206,6 +205,8 @@ export default class Resolver {
 
   subtractFromRegisterValueWithCarry(register, value) {
     const currentValue = this.readRegister(register);
+    const carry = this.flags.get('c');
+
     value = currentValue - value - carry;
 
     this.flags.set('n', true);
@@ -227,7 +228,7 @@ export default class Resolver {
     return value;
   }
 
-  and(register) {
+  logicalAnd(register, value) {
     const result = this.readRegister(register) & value;
 
     this.flags.set('z', result === 0);
@@ -238,7 +239,7 @@ export default class Resolver {
     return result;
   }
 
-  or(register) {
+  logicalOr(register, value) {
     const result = this.readRegister(register) | value;
 
     this.flags.set('z', result === 0);
@@ -328,7 +329,7 @@ export default class Resolver {
     this.flags.set('c', true);
   }
 
-  nop() {
+  noOperation() {
 
   }
 

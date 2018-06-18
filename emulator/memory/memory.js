@@ -1,6 +1,8 @@
+import rom from '../rom.js';
+
 class Memory {
   constructor() {
-    this.memory = [];
+    this.memory = rom;
   }
 
   set(address, value) {
