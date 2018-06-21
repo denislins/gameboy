@@ -12,6 +12,7 @@ export default class Emulator {
 
   load(path) {
     const cartridge = new Cartridge(path);
+    // some async shit happening
     this.mmu.loadCartridge(cartridge);
   }
 

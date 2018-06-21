@@ -1,19 +1,18 @@
-import rom from '../rom.js';
-
 export default class Mmu {
   constructor() {
-    this.memory = rom;
+    this.memory = [];
   }
 
-  loadCartridge(cartridge) {
-
-  }
-
-  write(address, value) {
-    this.memory[address & 0xFFFF] = value & 0xFF;
+  async loadCartridge(cartridge) {
+    this.memory = await cartridge.read();
+    debugger;
   }
 
   read(address) {
     return this.memory[address & 0xFFFF];
+  }
+
+  write(address, value) {
+    this.memory[address & 0xFFFF] = value & 0xFF;
   }
 }
