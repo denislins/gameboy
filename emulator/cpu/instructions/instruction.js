@@ -7,9 +7,9 @@ export default class Instruction {
     this.resolver = new Resolver();
   }
 
-  execute() {
+  execute(registers, flags, mmu) {
     console.log(this.repr);
-    this.resolver.resolve();
+    this.resolver.resolve(registers, flags, mmu);
   }
 
   rb() {

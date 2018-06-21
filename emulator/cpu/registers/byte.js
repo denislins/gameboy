@@ -7,11 +7,11 @@ export default class ByteRegister {
     this.value = 0;
   }
 
-  setValue(value) {
+  write(value) {
     this.value = value & 0xFF;
   }
 
-  getValue() {
+  read() {
     return this.value;
   }
 }

@@ -18,16 +18,13 @@
 <body>
   <canvas id="screen" width="480" height="432"></canvas>
   <script type="module">
-    import Screen from './emulator/screen/screen.js';
+    import Emulator from './emulator/emulator.js';
 
     const canvas = document.getElementById('screen');
-    const screen = new Screen(canvas);
+    const emulator = new Emulator(canvas);
 
-    // screen.on();
-
-    import CPU from './emulator/cpu/cpu.js';
-
-    CPU.run();
+    emulator.load('./tetris.gb');
+    emulator.start();
   </script>
 </body>
 </html>

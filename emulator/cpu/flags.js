@@ -1,4 +1,4 @@
-class Flags {
+export default class Flags {
   constructor() {
     this.flags = ['z', 'n', 'h', 'c'];
     this.reset();
@@ -17,5 +17,3 @@ class Flags {
     return this.flags[flag];
   }
 }
-
-export default new Flags();

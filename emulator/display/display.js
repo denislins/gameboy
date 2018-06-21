@@ -1,6 +1,6 @@
 import Pixel from './pixel.js';
 
-export default class Screen {
+export default class Display {
   constructor(canvas) {
     this.canvas = canvas;
     this.context = this.canvas.getContext('2d');

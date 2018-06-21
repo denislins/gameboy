@@ -10,14 +10,14 @@ export default class CompositeRegister {
     this.value = 0;
   }
 
-  setValue(value) {
-    this.registerA.setValue(value >> 8);
-    this.registerB.setValue(value & 0xFF);
+  write(value) {
+    this.registerA.write(value >> 8);
+    this.registerB.write(value & 0xFF);
   }
 
-  getValue() {
-    const valueA = this.registerA.getValue();
-    const valueB = this.registerB.getValue();
+  read() {
+    const valueA = this.registerA.read();
+    const valueB = this.registerB.read();
 
     return (valueA << 8) | valueB;
   }

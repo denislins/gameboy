@@ -1,50 +1,53 @@
-import memory from '../memory/memory.js';
-import opcodes from './opcodes.js';
-import registers from './registers/set.js';
+import InstructionSet from './instructions/set.js';
+import ExtendedInstructionSet from './instructions/extendedSet.js';
+import RegisterSet from './registers/set.js';
+import Flags from './flags.js';
 
-class CPU {
-  constructor() {
-    this.memory = memory;
-    this.opcodes = opcodes;
-    this.registers = registers;
-    this.pc = this.registers.get('pc');
+export default class Cpu {
+  constructor(mmu) {
+    this.mmu = mmu;
+    this.cycles = 0;
+
+    this.registers = new RegisterSet();
+    this.flags = new Flags();
+
+    this.instructions = new InstructionSet(this.registers, this.flags, this.mmu);
   }
 
   run() {
     while (true) {
-      if (!this.readInstruction()) {
+      if (!this.executeNextInstruction()) {
         break;
       }
     }
   }
 
-  readInstruction() {
-    this.address = this.pc.getValue();
-
-    const instruction = this.getInstruction();
-
-    this.pc.setValue(this.address);
+  executeNextInstruction() {
+    const instruction = this.getNextInstruction();
 
     if (!instruction) {
       return false;
     }
 
-    instruction.execute();
+    instruction.execute(this.registers, this.flags, this.mmu);
+
+    this.cycles += instruction.cycles;
 
     return true;
   }
 
-  getInstruction() {
-    let opcode = this.memory.get(this.address++);
+  getNextInstruction(instructionSet) {
+    const address = this.registers.read('pc');
+    const opcode = this.mmu.read(address);
 
-    // TODO: this is UGLY
-    if (opcode === 0xCB) {
-      opcode = this.memory.get(this.address++);
-      return this.opcodes.getCbInstruction(opcode);
+    this.registers.write('pc', address + 1);
+
+    const instruction = (instructionSet || this.instructions).find(opcode);
+
+    if (instruction instanceof ExtendedInstructionSet) {
+      return this.getNextInstruction(instruction);
     }
 
-    return this.opcodes.getInstruction(opcode);
+    return instruction;
   }
 }
-
-export default new CPU();

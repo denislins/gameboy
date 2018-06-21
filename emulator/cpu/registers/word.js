@@ -7,11 +7,11 @@ export default class WordRegister {
     this.value = 0;
   }
 
-  setValue(value) {
+  write(value) {
     this.value = value & 0xFFFF;
   }
 
-  getValue() {
+  read() {
     return this.value;
   }
 }

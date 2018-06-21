@@ -1,9 +1,9 @@
 export default class Pixel {
-  constructor(screen, row, column) {
-    this.canvas = screen.canvas;
+  constructor(display, row, column) {
+    this.canvas = display.canvas;
 
-    this.width = Math.floor(this.canvas.width / screen.width);
-    this.height = Math.floor(this.canvas.height / screen.height);
+    this.width = Math.floor(this.canvas.width / display.width);
+    this.height = Math.floor(this.canvas.height / display.height);
 
     this.row = row;
     this.column = column;

@@ -1,12 +1,5 @@
-import flags from './flags.js';
-import memory from '../memory/memory.js';
-import registers from './registers/set.js';
-
 export default class Resolver {
   constructor() {
-    this.flags = flags;
-    this.memory = memory;
-    this.registers = registers;
     this.chain = [];
   }
 
@@ -14,10 +7,14 @@ export default class Resolver {
     this.chain.push({ operation, args });
   }
 
-  resolve(value) {
+  resolve(registers, flags, mmu) {
+    // TOOD: this is ugly
+    this.registers = registers;
+    this.flags = flags;
+    this.mmu = mmu;
     this.resolved = false;
 
-    let args;
+    let args, value;
 
     for (let piece of this.chain) {
       if (!this[piece.operation]) {
@@ -37,7 +34,7 @@ export default class Resolver {
 
   readByte() {
     const pc = this.incrementRegister('pc', false);
-    return this.memory.get(pc);
+    return this.mmu.read(pc);
   }
 
   readSignedByte() {
@@ -58,11 +55,11 @@ export default class Resolver {
   }
 
   readRegister(register) {
-    return this.registers.get(register).getValue();
+    return this.registers.read(register);
   }
 
   storeToRegister(register, value) {
-    this.registers.get(register).setValue(value);
+    this.registers.write(register, value);
   }
 
   addToRegister(register, value) {
@@ -75,7 +72,7 @@ export default class Resolver {
   }
 
   readFromMemory(address) {
-    return this.memory.get(address);
+    return this.mmu.read(address);
   }
 
   storeToAddress(offset, value) {
@@ -87,19 +84,19 @@ export default class Resolver {
       address = this.readWord();
     }
 
-    this.memory.set(address, value);
+    this.mmu.write(address, value);
   }
 
   readFromAddressAtRegister(register) {
     const address = this.readRegister(register);
-    return this.memory.get(address);
+    return this.mmu.read(address);
   }
 
   storeToAddressAtRegister(register, offset, value) {
     const baseAddress = this.readRegister(register);
     const address = baseAddress + (offset || 0);
 
-    this.memory.set(address, value);
+    this.mmu.write(address, value);
   }
 
   sumSignedByte(value) {
@@ -148,15 +145,15 @@ export default class Resolver {
 
   push(value) {
     this.decrementRegister('sp');
-    this.memory.set(this.readRegister('sp'), value >> 8);
+    this.mmu.write(this.readRegister('sp'), value >> 8);
 
     this.decrementRegister('sp');
-    this.memory.set(this.readRegister('sp'), value & 0xFF);
+    this.mmu.write(this.readRegister('sp'), value & 0xFF);
   }
 
   pop() {
-    const byte1 = this.memory.get(this.incrementRegister('sp'));
-    const byte2 = this.memory.get(this.incrementRegister('sp'));
+    const byte1 = this.mmu.read(this.incrementRegister('sp'));
+    const byte2 = this.mmu.read(this.incrementRegister('sp'));
 
     return byte2 << 8 | byte1;
   }

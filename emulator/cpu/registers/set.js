@@ -2,7 +2,7 @@ import ByteRegister from './byte.js';
 import CompositeRegister from './composite.js';
 import WordRegister from './word.js';
 
-class RegisterSet {
+export default class RegisterSet {
   constructor() {
     this.registers = {};
 
@@ -31,9 +31,11 @@ class RegisterSet {
     this.registers.sp = new WordRegister();
   }
 
-  get(register) {
-    return this.registers[register];
+  read(register) {
+    return this.registers[register].read();
+  }
+
+  write(register, value) {
+    return this.registers[register].write(value);
   }
 }
-
-export default new RegisterSet();
