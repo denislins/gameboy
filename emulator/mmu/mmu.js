@@ -1,18 +1,30 @@
+import bootrom from './bootrom.js';
+
 export default class Mmu {
   constructor() {
-    this.memory = [];
+    this.bootrom = bootrom;
+    this.ram = [];
   }
 
   async loadCartridge(cartridge) {
-    this.memory = await cartridge.read();
-    debugger;
+    this.ram = await cartridge.read();
   }
 
   read(address) {
-    return this.memory[address & 0xFFFF];
+    const page = this.getPage(address);
+    return page[address & 0xFFFF];
   }
 
   write(address, value) {
-    this.memory[address & 0xFFFF] = value & 0xFF;
+    const page = this.getPage(address);
+    page[address & 0xFFFF] = value & 0xFF;
+  }
+
+  getPage(address) {
+    if (address < 0x100 && !this.ram[0xFF50]) {
+      return this.bootrom;
+    }
+
+    return this.ram;
   }
 }

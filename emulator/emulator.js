@@ -1,7 +1,7 @@
-import Cpu from './cpu/cpu.js';
-import Mmu from './mmu/mmu.js';
-import Display from './display/display.js';
-import Cartridge from './cartridge/cartridge.js';
+import Cpu from './cpu/Cpu.js';
+import Mmu from './mmu/Mmu.js';
+import Display from './display/Display.js';
+import Cartridge from './cartridge/Cartridge.js';
 
 export default class Emulator {
   constructor(canvas) {
@@ -11,12 +11,11 @@ export default class Emulator {
   }
 
   load(path) {
-    const cartridge = new Cartridge(path);
-    // some async shit happening
-    this.mmu.loadCartridge(cartridge);
+    this.cartridge = new Cartridge(path);
   }
 
-  start() {
+  async start() {
+    await this.mmu.loadCartridge(this.cartridge);
     this.cpu.run();
   }
 }

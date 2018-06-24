@@ -435,7 +435,7 @@ export default class Resolver {
   }
 
   checkFlag(flag, value) {
-    if (this.flags.get(flag) !== value) {
+    if (this.flags.get(flag) === value) {
       this.resolved = true;
     }
   }

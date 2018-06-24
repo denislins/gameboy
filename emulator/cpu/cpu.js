@@ -1,12 +1,13 @@
-import InstructionSet from './instructions/set.js';
-import ExtendedInstructionSet from './instructions/extendedSet.js';
-import RegisterSet from './registers/set.js';
-import Flags from './flags.js';
+import InstructionSet from './instructions/InstructionSet.js';
+import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
+import RegisterSet from './registers/RegisterSet.js';
+import Flags from './Flags.js';
 
 export default class Cpu {
   constructor(mmu) {
     this.mmu = mmu;
     this.cycles = 0;
+    this.bla = 0;
 
     this.registers = new RegisterSet();
     this.flags = new Flags();
@@ -28,6 +29,14 @@ export default class Cpu {
     if (!instruction) {
       return false;
     }
+
+    this.bla++;
+
+    if (this.bla > 50) {
+      throw new Error("bosta")
+    }
+
+    console.log(instruction.repr);
 
     instruction.execute(this.registers, this.flags, this.mmu);
 

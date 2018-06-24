@@ -1,4 +1,4 @@
-import Pixel from './pixel.js';
+import Pixel from './Pixel.js';
 
 export default class Display {
   constructor(canvas) {

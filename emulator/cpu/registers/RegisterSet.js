@@ -1,6 +1,6 @@
-import ByteRegister from './byte.js';
-import CompositeRegister from './composite.js';
-import WordRegister from './word.js';
+import ByteRegister from './ByteRegister.js';
+import CompositeRegister from './CompositeRegister.js';
+import WordRegister from './WordRegister.js';
 
 export default class RegisterSet {
   constructor() {

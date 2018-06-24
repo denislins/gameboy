@@ -8,7 +8,6 @@ export default class Instruction {
   }
 
   execute(registers, flags, mmu) {
-    console.log(this.repr);
     this.resolver.resolve(registers, flags, mmu);
   }
 

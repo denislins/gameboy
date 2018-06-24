@@ -1,4 +1,4 @@
-import Instruction from './instruction.js';
+import Instruction from './Instruction.js';
 
 export default class ExtendedInstructionSet {
   constructor() {
