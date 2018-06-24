@@ -1,3 +1,4 @@
+/* eslint newline-per-chained-call: 0 */
 import ExtendedInstructionSet from './ExtendedInstructionSet.js';
 import Instruction from './Instruction.js';
 
@@ -18,7 +19,10 @@ export default class InstructionSet {
   }
 
   add(opcode, cycles, repr) {
-    return this.instructions[opcode] = new Instruction(cycles, repr);
+    const instruction = new Instruction(cycles, repr);
+    this.instructions[opcode] = instruction;
+
+    return instruction;
   }
 
   initInstructions() {

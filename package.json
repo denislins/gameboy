@@ -1,0 +1,19 @@
+{
+  "name": "gameboy",
+  "version": "0.0.0",
+  "description": "A gameboy emulator written in JavaScript",
+  "main": "index.html",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/denislins/gameboy.git"
+  },
+  "author": "Denis Lins",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/denislins/gameboy/issues"
+  },
+  "homepage": "https://gitlab.com/denislins/gameboy#README"
+}

@@ -14,22 +14,12 @@ export default class Resolver {
     this.mmu = mmu;
     this.resolved = false;
 
-    let args, value;
+    return this.chain.reduce((reduced, piece) => {
+      if (this.resolved) return reduced;
 
-    for (let piece of this.chain) {
-      if (!this[piece.operation]) {
-        throw new Error(`inexistent operation: ${piece.operation}`)
-      }
-
-      args = [...piece.args, value];
-      value = this[piece.operation](...args);
-
-      if (this.resolved) {
-        break;
-      }
-    }
-
-    return value;
+      const args = [...piece.args, reduced];
+      return this[piece.operation](...args);
+    }, undefined);
   }
 
   readByte() {
@@ -63,8 +53,8 @@ export default class Resolver {
   }
 
   addToRegister(register, value) {
-    value += this.readRegister(register);
-    this.storeToRegister(register, value);
+    const newValue = value + this.readRegister(register);
+    this.storeToRegister(register, newValue);
   }
 
   storeValueToRegister(register, value) {
@@ -155,71 +145,70 @@ export default class Resolver {
     const byte1 = this.mmu.read(this.incrementRegister('sp'));
     const byte2 = this.mmu.read(this.incrementRegister('sp'));
 
-    return byte2 << 8 | byte1;
+    return (byte2 << 8) | byte1;
   }
 
   sumToRegisterValue(register, value) {
     const currentValue = this.readRegister(register);
-    value += currentValue;
+    const newValue = currentValue + value;
 
     this.flags.set('n', false);
-    this.flags.set('z', (value & 0xFF) === 0);
-    this.flags.set('h', (currentValue & 0xF) + (value & 0xF) > 0xF);
-    this.flags.set('c', value > 0xFF);
+    this.flags.set('z', (newValue & 0xFF) === 0);
+    this.flags.set('h', (currentValue & 0xF) + (newValue & 0xF) > 0xF);
+    this.flags.set('c', newValue > 0xFF);
 
-    return value;
+    return newValue;
   }
 
   subtractFromRegisterValue(register, value) {
     const currentValue = this.readRegister(register);
-    value = currentValue - value;
+    const newValue = currentValue - value;
 
     this.flags.set('n', true);
-    this.flags.set('z', (value & 0xFF) === 0);
-    this.flags.set('h', (currentValue & 0xF) < (value & 0xF));
-    this.flags.set('c', currentValue < value);
+    this.flags.set('z', (newValue & 0xFF) === 0);
+    this.flags.set('h', (currentValue & 0xF) < (newValue & 0xF));
+    this.flags.set('c', currentValue < newValue);
 
-    return value;
+    return newValue;
   }
 
   sumToRegisterValueWithCarry(register, value) {
     const currentValue = this.readRegister(register);
     const carry = this.flags.get('c');
 
-    value += currentValue + carry;
+    const newValue = currentValue + value + carry;
 
     this.flags.set('n', false);
-    this.flags.set('z', (value & 0xFF) === 0);
-    // TODO: understand why \/
-    this.flags.set('h', (currentValue & 0xF) + (value & 0xF) + carry > 0xF);
-    this.flags.set('c', value > 0xFF);
+    this.flags.set('z', (newValue & 0xFF) === 0);
+    this.flags.set('h', (currentValue & 0xF) + (newValue & 0xF) + carry > 0xF);
+    this.flags.set('c', newValue > 0xFF);
 
-    return value;
+    return newValue;
   }
 
   subtractFromRegisterValueWithCarry(register, value) {
     const currentValue = this.readRegister(register);
     const carry = this.flags.get('c');
 
-    value = currentValue - value - carry;
+    const newValue = currentValue - value - carry;
 
     this.flags.set('n', true);
-    this.flags.set('z', (value & 0xFF) === 0);
-    this.flags.set('h', ((currentValue + carry) & 0xF) < (value & 0xF));
-    this.flags.set('c', (currentValue + carry) < value);
+    this.flags.set('z', (newValue & 0xFF) === 0);
+    this.flags.set('h', ((currentValue + carry) & 0xF) < (newValue & 0xF));
+    this.flags.set('c', (currentValue + carry) < newValue);
 
-    return value;
+    return newValue;
   }
 
   sumWordToRegisterValue(register, value) {
     const currentValue = this.readRegister(register);
-    value += currentValue;
+    const newValue = currentValue + value;
 
     this.flags.set('n', false);
-    this.flags.set('h', (currentValue & 0xFFF) + (value & 0xFFF) > 0xFFF);
-    this.flags.set('c', value > 0xFFFF);
+    this.flags.set('h', (currentValue & 0xFFF) + (newValue & 0xFFF) > 0xFFF);
+    this.flags.set('c', newValue > 0xFFFF);
 
-    return value;
+    return newValue;
   }
 
   logicalAnd(register, value) {
@@ -276,6 +265,7 @@ export default class Resolver {
 
   decimalAdjust(value) {
     let correction = 0;
+    let newValue = value;
 
     if (this.flags.get('h')) {
       correction |= 0x6;
@@ -286,7 +276,7 @@ export default class Resolver {
     }
 
     if (this.flags.get('n')) {
-      value -= correction;
+      newValue -= correction;
     } else {
       if ((value & 0xF) > 0x9) {
         correction |= 0x6;
@@ -296,12 +286,12 @@ export default class Resolver {
         correction |= 0x60;
       }
 
-      value += correction;
+      newValue += correction;
     }
 
-    this.flags.set('z', (value & 0xFF) === 0);
+    this.flags.set('z', (newValue & 0xFF) === 0);
     this.flags.set('h', false);
-    this.flags.set('c', value > 0xFF);
+    this.flags.set('c', newValue > 0xFF);
   }
 
   complementValue(value) {
@@ -335,7 +325,7 @@ export default class Resolver {
     // TODO
   }
 
-  toggleInterrupts(enable) {
+  toggleInterrupts() {
     // TODO
   }
 
@@ -430,7 +420,7 @@ export default class Resolver {
     return value | (1 << bit);
   }
 
-  resetBit(bit) {
+  resetBit(bit, value) {
     return value & ~(1 << bit);
   }
 

@@ -12,7 +12,7 @@ export default class Cartridge {
     const blob = await response.blob();
     const reader = new FileReader();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       reader.onload = () => {
         const byteArray = this.getByteArray(reader.result);
         resolve(byteArray);

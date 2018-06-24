@@ -16,6 +16,8 @@ export default class Cpu {
   }
 
   run() {
+    // cpu has to run forever
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!this.executeNextInstruction()) {
         break;
@@ -33,7 +35,7 @@ export default class Cpu {
     this.bla++;
 
     if (this.bla > 50) {
-      throw new Error("bosta")
+      throw new Error('bosta');
     }
 
     console.log(instruction.repr);

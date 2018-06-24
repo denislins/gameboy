@@ -6,7 +6,10 @@ export default class Flags {
 
   reset() {
     this.values = {};
-    this.flags.forEach(f => { this.values[f] = false });
+
+    this.flags.forEach((flag) => {
+      this.values[flag] = false;
+    });
   }
 
   set(flag, value) {

@@ -1,4 +1,4 @@
-import Resolver from './resolver.js';
+import Resolver from './Resolver.js';
 
 export default class Instruction {
   constructor(cycles, repr) {
@@ -43,7 +43,7 @@ export default class Instruction {
 
   sva(register, value) {
     this.resolver.add('storeValueToRegister', register, value);
-    return;
+    return this;
   }
 
   rm() {
@@ -136,7 +136,7 @@ export default class Instruction {
     return this;
   }
 
-  dec(value) {
+  dec() {
     this.resolver.add('decrementValue');
     return this;
   }

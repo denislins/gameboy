@@ -12,18 +12,16 @@ export default class RegisterSet {
   }
 
   initByteRegisters() {
-    for (let register of ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'l']) {
+    ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'l'].forEach((register) => {
       this.registers[register] = new ByteRegister();
-    }
+    });
   }
 
   initCompositeRegisters() {
-    let composition;
-
-    for (let register of ['af', 'bc', 'de', 'hl']) {
-      composition = register.split('').map(r => this.registers[r]);
+    ['af', 'bc', 'de', 'hl'].forEach((register) => {
+      const composition = register.split('').map(r => this.registers[r]);
       this.registers[register] = new CompositeRegister(...composition);
-    }
+    });
   }
 
   initWordRegisters() {

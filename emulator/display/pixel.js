@@ -12,13 +12,13 @@ export default class Pixel {
   draw(image) {
     this.randomizeColor();
 
-    let index;
-
     for (let w = 0; w < this.width; w++) {
       for (let h = 0; h < this.height; h++) {
-        index = w * 4 + this.column * this.width * 4 +
-          this.row * this.canvas.width * this.height * 4 + h * this.canvas.width * 4;
+        const index = w * 4 + this.column * this.width * 4
+          + this.row * this.canvas.width * this.height * 4 + h * this.canvas.width * 4;
 
+        // avoids creating a middle array
+        // eslint-disable-next-line no-param-reassign
         image.data[index + 3] = this.color;
       }
     }
