@@ -1,0 +1,6 @@
+image: node:latest
+
+linter:
+  script:
+   - npm install -g eslint eslint-plugin-import eslint-config-airbnb-base
+   - eslint emulator
