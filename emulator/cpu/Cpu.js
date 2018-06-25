@@ -7,7 +7,6 @@ export default class Cpu {
   constructor(mmu) {
     this.mmu = mmu;
     this.cycles = 0;
-    this.bla = 0;
 
     this.registers = new RegisterSet();
     this.flags = new Flags();
@@ -32,12 +31,6 @@ export default class Cpu {
       return false;
     }
 
-    this.bla++;
-
-    if (this.bla > 50) {
-      throw new Error('bosta');
-    }
-
     console.log(instruction.repr);
 
     instruction.execute(this.registers, this.flags, this.mmu);
@@ -49,6 +42,11 @@ export default class Cpu {
 
   getNextInstruction(instructionSet) {
     const address = this.registers.read('pc');
+
+    if (address >= 0x100) {
+      throw new Error('bootrom please');
+    }
+
     const opcode = this.mmu.read(address);
 
     this.registers.write('pc', address + 1);

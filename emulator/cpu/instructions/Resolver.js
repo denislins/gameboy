@@ -424,10 +424,13 @@ export default class Resolver {
     return value & ~(1 << bit);
   }
 
-  checkFlag(flag, value) {
-    if (this.flags.get(flag) === value) {
-      this.resolved = true;
-    }
+  checkFlag(flag, value, jump) {
+    if (this.flags.get(flag) !== value) return;
+
+    const newAddress = this.readRegister('pc') + jump;
+    this.storeToRegister('pc', newAddress);
+
+    this.resolved = true;
   }
 
   sumWord(value, previousValue) {

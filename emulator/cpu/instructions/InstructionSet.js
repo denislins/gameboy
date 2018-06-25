@@ -137,7 +137,7 @@ export default class InstructionSet {
 
     this.add(0xF9, 8, 'LD SP, HL').rr('hl').sr('sp');
 
-    this.add(0xF8, 12, 'LD HL, SP + byte').rr('sp').sumsb().sr('hl');
+    this.add(0xF8, 12, 'LD HL, SP + sbyte').rr('sp').sumsb().sr('hl');
 
     this.add(0x08, 20, 'LD (word), SP').rr('sp').sda();
 
@@ -263,7 +263,7 @@ export default class InstructionSet {
     this.add(0x29, 8, 'ADD HL, HL').rr('hl').sumwr('hl').sr('hl');
     this.add(0x39, 8, 'ADD HL, SP').rr('sp').sumwr('hl').sr('hl');
 
-    this.add(0xE8, 16, 'ADD SP, byte').rr('sp').sumsb().sr('sp');
+    this.add(0xE8, 16, 'ADD SP, sbyte').rr('sp').sumsb().sr('sp');
 
     this.add(0x03, 8, 'INC BC').rr('bc').inc().sr('bc');
     this.add(0x13, 8, 'INC DE').rr('de').inc().sr('de');
@@ -297,29 +297,29 @@ export default class InstructionSet {
 
     this.add(0xC3, 12, 'JP word').rw().sr('pc');
 
-    this.add(0xC2, 12, 'JP NZ, word').cf('z', false).rw().sr('pc');
-    this.add(0xCA, 12, 'JP Z, word').cf('z', true).rw().sr('pc');
+    this.add(0xC2, 12, 'JP NZ, word').cfl('z', false, 2).rw().sr('pc');
+    this.add(0xCA, 12, 'JP Z, word').cfl('z', true, 2).rw().sr('pc');
 
-    this.add(0xD2, 12, 'JP NC, word').cf('c', false).rw().sr('pc');
-    this.add(0xDA, 12, 'JP C, word').cf('c', true).rw().sr('pc');
+    this.add(0xD2, 12, 'JP NC, word').cfl('c', false, 2).rw().sr('pc');
+    this.add(0xDA, 12, 'JP C, word').cfl('c', true, 2).rw().sr('pc');
 
     this.add(0xE9, 4, 'JP (HL)').rr('hl').rm().sr('pc');
 
-    this.add(0x18, 8, 'JR byte').rsb().ar('pc');
+    this.add(0x18, 8, 'JR sbyte').rsb().ar('pc');
 
-    this.add(0x20, 8, 'JR NZ, word').cf('z', false).rsb().ar('pc');
-    this.add(0x28, 8, 'JR Z, word').cf('z', true).rsb().ar('pc');
+    this.add(0x20, 8, 'JR NZ, sbyte').cfl('z', false, 1).rsb().ar('pc');
+    this.add(0x28, 8, 'JR Z, sbyte').cfl('z', true, 1).rsb().ar('pc');
 
-    this.add(0x30, 8, 'JR NC, word').cf('c', false).rsb().ar('pc');
-    this.add(0x38, 8, 'JR C, word').cf('c', true).rsb().ar('pc');
+    this.add(0x30, 8, 'JR NC, sbyte').cfl('c', false, 1).rsb().ar('pc');
+    this.add(0x38, 8, 'JR C, sbyte').cfl('c', true, 1).rsb().ar('pc');
 
     this.add(0xCD, 12, 'CALL word').nia().push().rw().sr('pc');
 
-    this.add(0xC4, 12, 'CALL NZ, word').cf('z', false).nia().push().rw().sr('pc');
-    this.add(0xCC, 12, 'CALL Z, word').cf('z', true).nia().push().rw().sr('pc');
+    this.add(0xC4, 12, 'CALL NZ, word').cfl('z', false, 2).nia().push().rw().sr('pc');
+    this.add(0xCC, 12, 'CALL Z, word').cfl('z', true, 2).nia().push().rw().sr('pc');
 
-    this.add(0xD4, 12, 'CALL NC, word').cf('c', false).nia().push().rw().sr('pc');
-    this.add(0xDC, 12, 'CALL C, word').cf('c', true).nia().push().rw().sr('pc');
+    this.add(0xD4, 12, 'CALL NC, word').cfl('c', false, 2).nia().push().rw().sr('pc');
+    this.add(0xDC, 12, 'CALL C, word').cfl('c', true, 2).nia().push().rw().sr('pc');
 
     this.add(0xC7, 32, 'RST 00H').rr('pc').push().sva('pc', 0x00);
     this.add(0xCF, 32, 'RST 08H').rr('pc').push().sva('pc', 0x08);
@@ -332,11 +332,11 @@ export default class InstructionSet {
 
     this.add(0xC9, 8, 'RET').pop().sr('pc');
 
-    this.add(0xC0, 8, 'RET NZ').cf('z', false).pop().sr('pc');
-    this.add(0xC8, 8, 'RET Z').cf('z', true).pop().sr('pc');
+    this.add(0xC0, 8, 'RET NZ').cfl('z', false).pop().sr('pc');
+    this.add(0xC8, 8, 'RET Z').cfl('z', true).pop().sr('pc');
 
-    this.add(0xD0, 8, 'RET NC').cf('c', false).pop().sr('pc');
-    this.add(0xD8, 8, 'RET C').cf('c', true).pop().sr('pc');
+    this.add(0xD0, 8, 'RET NC').cfl('c', false).pop().sr('pc');
+    this.add(0xD8, 8, 'RET C').cfl('c', true).pop().sr('pc');
 
     this.add(0xD9, 8, 'RETI').pop().sr('pc').ti(true);
   }

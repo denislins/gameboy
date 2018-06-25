@@ -236,8 +236,8 @@ export default class Instruction {
     return this;
   }
 
-  cf(flag, value) {
-    this.resolver.add('checkFlag', flag, value);
+  cfl(flag, value, jump = 0) {
+    this.resolver.add('checkFlag', flag, value, jump);
     return this;
   }
 
