@@ -14,21 +14,11 @@ export default class Cpu {
     this.instructions = new InstructionSet(this.registers, this.flags, this.mmu);
   }
 
-  run() {
-    // cpu has to run forever
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      if (!this.executeNextInstruction()) {
-        break;
-      }
-    }
-  }
-
-  executeNextInstruction() {
+  tick() {
     const instruction = this.getNextInstruction();
 
     if (!instruction) {
-      return false;
+      throw new Error('No instructions to execute');
     }
 
     console.log(instruction.repr);
@@ -36,8 +26,6 @@ export default class Cpu {
     instruction.execute(this.registers, this.flags, this.mmu);
 
     this.cycles += instruction.cycles;
-
-    return true;
   }
 
   getNextInstruction(instructionSet) {

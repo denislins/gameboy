@@ -1,9 +1,11 @@
 import bootrom from './bootrom.js';
+import MemoryRegisterSet from './MemoryRegisterSet.js';
 
 export default class Mmu {
   constructor() {
     this.bootrom = bootrom;
-    this.ram = [];
+    this.registers = new MemoryRegisterSet(this);
+    this.ram = [...Array(0xFFFF)].fill(0);
   }
 
   async loadCartridge(cartridge) {
@@ -21,7 +23,7 @@ export default class Mmu {
   }
 
   getPage(address) {
-    if (address < 0x100 && !this.ram[0xFF50]) {
+    if (address < 0x100 && !this.registers.read('disablerom')) {
       return this.bootrom;
     }
 

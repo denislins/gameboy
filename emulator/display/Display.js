@@ -15,13 +15,13 @@ export default class Display {
   }
 
   off() {
-    cancelAnimationFrame(this.requestId);
+    cancelAnimationFrame(this.frame);
   }
 
   initialize() {
     let row = -1;
 
-    this.pixels = Array(...Array(this.width * this.height)).map((_, index) => {
+    this.pixels = [...Array(this.width * this.height)].map((_, index) => {
       const column = index % this.width;
 
       if (column === 0) {
@@ -33,7 +33,7 @@ export default class Display {
   }
 
   draw() {
-    this.requestId = requestAnimationFrame(() => {
+    this.frame = requestAnimationFrame(() => {
       const image = this.context.createImageData(this.canvas.width, this.canvas.height);
 
       this.pixels.forEach(pixel => pixel.draw(image));
