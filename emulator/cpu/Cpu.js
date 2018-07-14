@@ -9,9 +9,12 @@ export default class Cpu {
     this.cycles = 0;
 
     this.registers = new RegisterSet();
-    this.flags = new Flags();
+    this.flags = new Flags(this.registers);
+    this.instructions = new InstructionSet();
+  }
 
-    this.instructions = new InstructionSet(this.registers, this.flags, this.mmu);
+  reset() {
+    this.registers.reset();
   }
 
   tick() {
@@ -21,7 +24,7 @@ export default class Cpu {
       throw new Error('No instructions to execute');
     }
 
-    console.log(instruction.repr);
+    // console.log(instruction.repr);
 
     instruction.execute(this.registers, this.flags, this.mmu);
 

@@ -1,46 +1,69 @@
+import Ppu from './Ppu.js';
 import SpriteFilter from './sprites/SpriteFilter.js';
 
 export default class Gpu {
   constructor(mmu) {
     this.mmu = mmu;
+    this.ppu = new Ppu(this.mmu);
   }
 
   tick(cpuCycles) {
     const cycles = cpuCycles % 456;
+    const currentRow = this.mmu.registers.read('ly');
 
-    if (this.mmu.registers.read('ly') > 143) {
+    if (currentRow === 0) {
+      this.startFrame();
+    }
+
+    if (currentRow > 144) {
       this.execVBlank();
-    } else if (cycles <= 80 && this.step !== 'oamsearch') {
+    } else if (cycles <= 80) {
       this.execOamSearch();
-    } else if (cycles > 80 && cycles <= 252 && this.step !== 'pixeltransfer') {
+    } else if (cycles > 80 && cycles <= 252) {
       this.execPixelTransfer();
     } else if (cycles > 252) {
       this.execHBlank();
     }
   }
 
-  execOamSearch() {
-    this.step = 'oamsearch';
+  startFrame() {
+    this.pixels = [];
+  }
 
-    const filter = new SpriteFilter(this.mmu);
-    this.sprites = filter.getVisibleSprites();
+  execOamSearch() {
+    if (this.step === 'oamsearch') return;
+
+    this.step = 'oamsearch';
   }
 
   execPixelTransfer() {
+    if (this.step === 'pixeltransfer') return;
+
     this.step = 'pixeltransfer';
+
+    const currentRow = this.mmu.registers.read('ly');
+    const rowPixels = this.ppu.draw(currentRow);
+
+    this.pixels.push(...rowPixels);
   }
 
   execHBlank() {
+    if (this.step === 'hblank') return;
+
     this.step = 'hblank';
 
-    const ly = this.mmu.registers.read('ly');
-    this.mmu.registers.write('ly', ly + 1);
+    const currentRow = this.mmu.registers.read('ly');
+    this.mmu.registers.write('ly', currentRow + 1);
   }
 
   execVBlank() {
+    if (this.step === 'vblank') return;
+
+    debugger;
+
     this.step = 'vblank';
 
-    const ly = this.mmu.registers.read('ly');
-    this.mmu.registers.write('ly', (ly + 1) % 154);
+    const currentRow = this.mmu.registers.read('ly');
+    this.mmu.registers.write('ly', (currentRow + 1) % 154);
   }
 }

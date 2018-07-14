@@ -5,16 +5,20 @@ import WordRegister from './WordRegister.js';
 export default class RegisterSet {
   constructor() {
     this.registers = {};
-
     this.initByteRegisters();
     this.initCompositeRegisters();
     this.initWordRegisters();
   }
 
   initByteRegisters() {
-    ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'l'].forEach((register) => {
-      this.registers[register] = new ByteRegister();
-    });
+    this.registers.a = new ByteRegister(0x01);
+    this.registers.b = new ByteRegister(0);
+    this.registers.c = new ByteRegister(0x13);
+    this.registers.d = new ByteRegister(0);
+    this.registers.e = new ByteRegister(0xD8);
+    this.registers.f = new ByteRegister(0xB0);
+    this.registers.h = new ByteRegister(0x01);
+    this.registers.l = new ByteRegister(0x4D);
   }
 
   initCompositeRegisters() {
@@ -25,15 +29,23 @@ export default class RegisterSet {
   }
 
   initWordRegisters() {
-    this.registers.pc = new WordRegister();
-    this.registers.sp = new WordRegister();
+    this.registers.pc = new WordRegister(0);
+    this.registers.sp = new WordRegister(0xFFFE);
+  }
+
+  reset() {
+    Object.values(this.registers).forEach(r => r.reset());
+  }
+
+  get(register) {
+    return this.registers[register];
   }
 
   read(register) {
-    return this.registers[register].read();
+    return this.get(register).read();
   }
 
   write(register, value) {
-    return this.registers[register].write(value);
+    return this.get(register).write(value);
   }
 }

@@ -1,22 +1,15 @@
 export default class Flags {
-  constructor() {
-    this.flags = ['z', 'n', 'h', 'c'];
-    this.reset();
-  }
-
-  reset() {
-    this.values = {};
-
-    this.flags.forEach((flag) => {
-      this.values[flag] = false;
-    });
-  }
-
-  set(flag, value) {
-    this.flags[flag] = value;
+  constructor(registers) {
+    this.register = registers.get('f');
+    this.masks = { z: 1 << 7, n: 1 << 6, h: 1 << 5, c: 1 << 4 };
   }
 
   get(flag) {
-    return this.flags[flag];
+    return (this.register.read() & this.masks[flag]) > 0;
+  }
+
+  set(flag, value) {
+    const newValue = this.register.read() | this.masks[flag];
+    this.register.write(newValue);
   }
 }

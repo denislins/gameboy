@@ -7,18 +7,11 @@ export default class Display {
 
     this.width = 160;
     this.height = 144;
+
+    this.initPixels();
   }
 
-  on() {
-    this.initialize();
-    this.draw();
-  }
-
-  off() {
-    cancelAnimationFrame(this.frame);
-  }
-
-  initialize() {
+  initPixels() {
     let row = -1;
 
     this.pixels = [...Array(this.width * this.height)].map((_, index) => {
@@ -33,13 +26,9 @@ export default class Display {
   }
 
   draw() {
-    this.frame = requestAnimationFrame(() => {
-      const image = this.context.createImageData(this.canvas.width, this.canvas.height);
+    const image = this.context.createImageData(this.canvas.width, this.canvas.height);
 
-      this.pixels.forEach(pixel => pixel.draw(image));
-      this.context.putImageData(image, 0, 0);
-
-      this.draw();
-    });
+    this.pixels.forEach(pixel => pixel.draw(image));
+    this.context.putImageData(image, 0, 0);
   }
 }

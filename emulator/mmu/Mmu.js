@@ -1,15 +1,22 @@
 import bootrom from './bootrom.js';
-import MemoryRegisterSet from './MemoryRegisterSet.js';
+import MemoryRegisterSet from './registers/MemoryRegisterSet.js';
 
 export default class Mmu {
   constructor() {
     this.bootrom = bootrom;
     this.registers = new MemoryRegisterSet(this);
-    this.ram = [...Array(0xFFFF)].fill(0);
+    this.ram = [];
   }
 
   async loadCartridge(cartridge) {
-    this.ram = await cartridge.read();
+    const rom = await cartridge.read();
+    const ram = Array(0x8000).fill(0);
+
+    this.ram = [...rom, ...ram];
+  }
+
+  reset() {
+    this.registers.reset();
   }
 
   read(address) {

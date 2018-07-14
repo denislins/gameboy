@@ -8,7 +8,7 @@ export default class Resolver {
   }
 
   resolve(registers, flags, mmu) {
-    // TOOD: this is ugly
+    // TODO: this is ugly
     this.registers = registers;
     this.flags = flags;
     this.mmu = mmu;
