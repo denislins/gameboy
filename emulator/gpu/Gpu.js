@@ -59,8 +59,6 @@ export default class Gpu {
   execVBlank() {
     if (this.step === 'vblank') return;
 
-    debugger;
-
     this.step = 'vblank';
 
     const currentRow = this.mmu.registers.read('ly');

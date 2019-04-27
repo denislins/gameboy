@@ -1,5 +1,6 @@
 import InstructionSet from './instructions/InstructionSet.js';
 import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
+import InstructionResolver from './instructions/InstructionResolver.js';
 import RegisterSet from './registers/RegisterSet.js';
 import Flags from './Flags.js';
 
@@ -11,6 +12,7 @@ export default class Cpu {
     this.registers = new RegisterSet();
     this.flags = new Flags(this.registers);
     this.instructions = new InstructionSet();
+    this.resolver = new InstructionResolver(this.registers, this.flags, mmu);
   }
 
   reset() {
@@ -26,7 +28,7 @@ export default class Cpu {
 
     // console.log(instruction.repr);
 
-    instruction.execute(this.registers, this.flags, this.mmu);
+    this.resolver.resolve(instruction);
 
     this.cycles += instruction.cycles;
   }

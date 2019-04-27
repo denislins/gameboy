@@ -16,7 +16,7 @@ export default class Emulator {
     this.cartridge = new Cartridge(path);
   }
 
-  async start() {
+  async boot() {
     await this.mmu.loadCartridge(this.cartridge);
 
     this.cpu.reset();
@@ -31,6 +31,6 @@ export default class Emulator {
 
   tick() {
     this.cpu.tick();
-    this.gpu.tick(this.cpu.cycles);
+    // this.gpu.tick(this.cpu.cycles);
   }
 }

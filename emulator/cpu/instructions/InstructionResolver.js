@@ -1,25 +1,19 @@
-export default class Resolver {
-  constructor() {
-    this.chain = [];
-  }
-
-  add(operation, ...args) {
-    this.chain.push({ operation, args });
-  }
-
-  resolve(registers, flags, mmu) {
-    // TODO: this is ugly
+export default class InstructionResolver {
+  constructor(registers, flags, mmu) {
     this.registers = registers;
     this.flags = flags;
     this.mmu = mmu;
+  }
+
+  resolve(instruction) {
     this.resolved = false;
 
-    return this.chain.reduce((reduced, piece) => {
+    return instruction.chain.resolve((reduced, piece) => {
       if (this.resolved) return reduced;
 
       const args = [...piece.args, reduced];
       return this[piece.operation](...args);
-    }, undefined);
+    });
   }
 
   readByte() {
