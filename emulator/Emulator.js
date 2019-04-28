@@ -9,7 +9,7 @@ export default class Emulator {
     this.mmu = new Mmu();
     this.cpu = new Cpu(this.mmu);
     this.gpu = new Gpu(this.mmu);
-    this.screen = new Display(canvas);
+    this.display = new Display(canvas);
   }
 
   load(path) {

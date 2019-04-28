@@ -28,8 +28,6 @@ export default class Pixel {
     const colors = [255, 192, 96, 0];
     const index = Math.floor(Math.random() * colors.length);
 
-    if (colors[index] !== this.color) {
-      this.color = colors[index];
-    }
+    this.color = colors[index];
   }
 }

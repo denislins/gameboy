@@ -10,8 +10,15 @@
     body {
       text-align: center;
     }
+
     canvas {
       margin: 50px auto 0;
+    }
+
+    #fps {
+      position: fixed;
+      top: 0;
+      right: 0;
     }
   </style>
 </head>
@@ -26,5 +33,6 @@
     emulator.load('./tetris.gb');
     emulator.boot();
   </script>
+  <div id="fps"></div>
 </body>
 </html>

@@ -25,6 +25,32 @@ export default class Display {
     });
   }
 
+  test() {
+    this.fps = 0;
+    this.currentSecond = new Date().getSeconds();
+
+    this.counter = document.getElementById('fps');
+
+    const repaint = () => {
+      this.draw();
+
+      const currentSecond = new Date().getSeconds();
+
+      if (currentSecond === this.currentSecond) {
+        this.fps++;
+      } else {
+        this.counter.innerText = this.fps;
+
+        this.fps = 1;
+        this.currentSecond = new Date().getSeconds();
+      }
+
+      requestAnimationFrame(repaint);
+    };
+
+    requestAnimationFrame(repaint);
+  }
+
   draw() {
     const image = this.context.createImageData(this.canvas.width, this.canvas.height);
 
