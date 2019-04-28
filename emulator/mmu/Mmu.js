@@ -21,12 +21,16 @@ export default class Mmu {
 
   read(address) {
     const page = this.getPage(address);
-    return page[address & 0xFFFF];
+    const mappedAddress = this.mapAddress(address);
+
+    return page[mappedAddress];
   }
 
   write(address, value) {
     const page = this.getPage(address);
-    page[address & 0xFFFF] = value & 0xFF;
+    const mappedAddress = this.mapAddress(address);
+
+    page[address] = value & 0xFF;
   }
 
   getPage(address) {
@@ -35,5 +39,13 @@ export default class Mmu {
     }
 
     return this.ram;
+  }
+
+  mapAddress(address) {
+    if (address >= 0xE000 && address < 0xFE00) {
+      return (address - 0x2000) & 0xFFFF;
+    } else {
+      return address & 0xFFFF;
+    }
   }
 }

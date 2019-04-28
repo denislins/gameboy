@@ -16,6 +16,7 @@ export default class Cpu {
   }
 
   reset() {
+    this.debug = '';
     this.registers.reset();
   }
 
@@ -26,7 +27,7 @@ export default class Cpu {
       throw new Error('No instructions to execute');
     }
 
-    // console.log(instruction.repr);
+    this.debug += instruction.repr + "\n";
 
     this.resolver.resolve(instruction);
 
@@ -37,6 +38,7 @@ export default class Cpu {
     const address = this.registers.read('pc');
 
     if (address >= 0x100) {
+      console.log(this.debug);
       throw new Error('bootrom please');
     }
 
