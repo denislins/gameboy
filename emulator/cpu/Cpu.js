@@ -38,8 +38,7 @@ export default class Cpu {
     const address = this.registers.read('pc');
 
     if (address >= 0x100) {
-      console.log(this.debug);
-      throw new Error('bootrom please');
+      throw new Error('finished bootrom');
     }
 
     const opcode = this.mmu.read(address);
