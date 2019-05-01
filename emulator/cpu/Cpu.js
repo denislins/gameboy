@@ -16,7 +16,6 @@ export default class Cpu {
   }
 
   reset() {
-    this.debug = '';
     this.registers.reset();
   }
 
@@ -26,8 +25,6 @@ export default class Cpu {
     if (!instruction) {
       throw new Error('No instructions to execute');
     }
-
-    this.debug += instruction.repr + "\n";
 
     this.resolver.resolve(instruction);
 
@@ -42,7 +39,6 @@ export default class Cpu {
     }
 
     const opcode = this.mmu.read(address);
-
     this.registers.write('pc', address + 1);
 
     const instruction = (instructionSet || this.instructions).find(opcode);

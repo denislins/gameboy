@@ -1,5 +1,4 @@
 import Ppu from './Ppu.js';
-import SpriteFilter from './sprites/SpriteFilter.js';
 
 export default class Gpu {
   constructor(mmu) {

@@ -30,7 +30,7 @@ export default class Mmu {
     const page = this.getPage(address);
     const mappedAddress = this.mapAddress(address);
 
-    page[address] = value & 0xFF;
+    page[mappedAddress] = value & 0xFF;
   }
 
   getPage(address) {
@@ -44,8 +44,8 @@ export default class Mmu {
   mapAddress(address) {
     if (address >= 0xE000 && address < 0xFE00) {
       return (address - 0x2000) & 0xFFFF;
-    } else {
-      return address & 0xFFFF;
     }
+
+    return address & 0xFFFF;
   }
 }

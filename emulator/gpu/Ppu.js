@@ -6,14 +6,12 @@ export default class Ppu {
 
   draw(row) {
     const pixels = [];
-
-    const currentRow = this.mmu.registers.read('ly');
-    const pixelOffset = (currentRow % 8) * 2;
+    const pixelOffset = (row % 8) * 2;
 
     const baseTileAddress = this.controller.getTilesBaseAddress();
     const baseIdentityAddress = this.controller.getBackgroundBaseAddress();
 
-    const identityAddress = baseIdentityAddress + 32 * Math.floor(currentRow / 8);
+    const identityAddress = baseIdentityAddress + 32 * Math.floor(row / 8);
 
     for (let i = 0; i < 32; i++) {
       const tileNumber = this.mmu.read(identityAddress + i);
@@ -34,7 +32,7 @@ export default class Ppu {
     const byte2 = this.mmu.read(baseAddress + 1);
 
     for (let i = 0; i < 8; i++) {
-      const mask = 1 << (7 - i);
+      // const mask = 1 << (7 - i);
 
       const bit1 = byte1 >> (7 - i);
       const bit2 = byte2 >> (7 - i);

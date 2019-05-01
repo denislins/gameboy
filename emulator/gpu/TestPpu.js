@@ -41,7 +41,7 @@ export default class TestPpu {
     const byte2 = this.mmu.read(baseAddress + 1);
 
     for (let i = 0; i < 8; i++) {
-      const mask = 1 << (7 - i);
+      // const mask = 1 << (7 - i);
 
       const bit1 = byte1 >> (7 - i);
       const bit2 = byte2 >> (7 - i);

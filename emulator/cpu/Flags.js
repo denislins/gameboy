@@ -1,7 +1,13 @@
 export default class Flags {
   constructor(registers) {
     this.register = registers.get('f');
-    this.masks = { z: 1 << 7, n: 1 << 6, h: 1 << 5, c: 1 << 4 };
+
+    this.masks = {
+      z: 1 << 7,
+      n: 1 << 6,
+      h: 1 << 5,
+      c: 1 << 4,
+    };
   }
 
   get(flag) {
@@ -9,7 +15,14 @@ export default class Flags {
   }
 
   set(flag, value) {
-    const newValue = this.register.read() | this.masks[flag];
+    let newValue;
+
+    if (value) {
+      newValue = this.register.read() | this.masks[flag];
+    } else {
+      newValue = this.register.read() & ~this.masks[flag];
+    }
+
     this.register.write(newValue);
   }
 }

@@ -1,10 +1,7 @@
 module.exports = {
   "extends": "airbnb-base",
-  "globals": {
-    "fetch": false,
-    "FileReader": false,
-    "requestAnimationFrame": false,
-    "cancelAnimationFrame": false,
+  "env": {
+    "browser": true
   },
   "rules": {
     "import/extensions": ["error", "always"],
