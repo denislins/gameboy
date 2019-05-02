@@ -11,14 +11,14 @@ export default class RegisterSet {
   }
 
   initByteRegisters() {
-    this.registers.a = new ByteRegister(0x01);
+    this.registers.a = new ByteRegister(0);
     this.registers.b = new ByteRegister(0);
-    this.registers.c = new ByteRegister(0x13);
+    this.registers.c = new ByteRegister(0);
     this.registers.d = new ByteRegister(0);
-    this.registers.e = new ByteRegister(0xD8);
-    this.registers.f = new ByteRegister(0xB0);
-    this.registers.h = new ByteRegister(0x01);
-    this.registers.l = new ByteRegister(0x4D);
+    this.registers.e = new ByteRegister(0);
+    this.registers.f = new ByteRegister(0);
+    this.registers.h = new ByteRegister(0);
+    this.registers.l = new ByteRegister(0);
   }
 
   initCompositeRegisters() {

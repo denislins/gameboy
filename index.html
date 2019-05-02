@@ -30,6 +30,16 @@
     const canvas = document.getElementById('screen');
     const emulator = new Emulator(canvas);
 
+    window.r = (address) => {
+      return emulator.mmu.read(address).toString(16);
+    };
+
+    window.rr = new Proxy({}, {
+      get: function(target, name) {
+        return emulator.cpu.registers.read(name).toString(16);
+      },
+    });
+
     emulator.load('./tetris.gb');
     emulator.boot();
   </script>

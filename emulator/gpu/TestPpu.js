@@ -34,10 +34,6 @@ export default class TestPpu {
     const pixels = [];
 
     const byte1 = this.mmu.read(baseAddress);
-    if (byte1 > 0) {
-      console.log(byte1.toString(16));
-      throw new Error();
-    }
     const byte2 = this.mmu.read(baseAddress + 1);
 
     for (let i = 0; i < 8; i++) {
