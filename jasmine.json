@@ -1,0 +1,9 @@
+{
+  "spec_dir": "specs",
+  "spec_files": [
+    "**/*.spec.js"
+  ],
+  "helpers": [
+    "../node_modules/esm"
+  ]
+}

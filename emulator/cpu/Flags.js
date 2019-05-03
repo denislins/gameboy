@@ -1,6 +1,6 @@
 export default class Flags {
-  constructor(registers) {
-    this.register = registers.get('f');
+  constructor(register) {
+    this.register = register;
 
     this.masks = {
       z: 1 << 7,

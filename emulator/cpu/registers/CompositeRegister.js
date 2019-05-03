@@ -4,10 +4,6 @@ export default class CompositeRegister {
     this.registerB = registerB;
   }
 
-  reset() {
-
-  }
-
   read() {
     const valueA = this.registerA.read();
     const valueB = this.registerB.read();

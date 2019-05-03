@@ -12,7 +12,7 @@ export default class RegisterSet {
 
   initByteRegisters() {
     ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'l'].forEach((register) => {
-      this.registers[register] = new ByteRegister(0);
+      this.registers[register] = new ByteRegister();
     });
   }
 
@@ -29,7 +29,8 @@ export default class RegisterSet {
   }
 
   reset() {
-    Object.values(this.registers).forEach(r => r.reset());
+    this.registers.pc.reset();
+    this.registers.sp.reset();
   }
 
   get(register) {

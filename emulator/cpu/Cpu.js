@@ -10,8 +10,11 @@ export default class Cpu {
     this.cycles = 0;
 
     this.registers = new RegisterSet();
-    this.flags = new Flags(this.registers);
     this.instructions = new InstructionSet();
+
+    const flagsRegister = this.registers.get('f');
+
+    this.flags = new Flags(flagsRegister);
     this.resolver = new InstructionResolver(this.registers, this.flags, mmu);
   }
 
