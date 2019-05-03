@@ -1,6 +1,13 @@
 image: node:latest
-
+before_script:
+  - npm install
+test:
+  script:
+    - npm test
 linter:
   script:
-   - npm install
-   - npm run linter
+    - npm run linter
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
