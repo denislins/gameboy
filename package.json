@@ -4,7 +4,8 @@
   "description": "A gameboy emulator written in JavaScript",
   "main": "index.html",
   "scripts": {
-    "test": "NODE_PATH=. jasmine --config=jasmine.json"
+    "test": "NODE_PATH=. jasmine --config=jasmine.json",
+    "linter": "eslint emulator"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,9 @@
   },
   "homepage": "https://gitlab.com/denislins/gameboy#README",
   "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.2",
     "esm": "^3.2.22",
     "jasmine": "^3.4.0"
   }
