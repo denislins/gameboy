@@ -11,14 +11,9 @@ export default class RegisterSet {
   }
 
   initByteRegisters() {
-    this.registers.a = new ByteRegister(0);
-    this.registers.b = new ByteRegister(0);
-    this.registers.c = new ByteRegister(0);
-    this.registers.d = new ByteRegister(0);
-    this.registers.e = new ByteRegister(0);
-    this.registers.f = new ByteRegister(0);
-    this.registers.h = new ByteRegister(0);
-    this.registers.l = new ByteRegister(0);
+    ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'l'].forEach((register) => {
+      this.registers[register] = new ByteRegister(0);
+    });
   }
 
   initCompositeRegisters() {

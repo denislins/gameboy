@@ -6,7 +6,7 @@ export default class LcdControllerRegister extends MemoryRegister {
   }
 
   getWindowBaseAddress() {
-    return this.testBit(6) ? 0x9800 : 0x9C00;
+    return this.testBit(6) ? 0x9C00 : 0x9800;
   }
 
   isWindowEnabled() {
@@ -14,15 +14,15 @@ export default class LcdControllerRegister extends MemoryRegister {
   }
 
   getTilesBaseAddress() {
-    return this.testBit(4) ? 0x8800 : 0x8000;
+    return this.testBit(4) ? 0x8000 : 0x8800;
   }
 
   getBackgroundBaseAddress() {
-    return this.testBit(3) ? 0x9800 : 0x9C00;
+    return this.testBit(3) ? 0x9C00 : 0x9800;
   }
 
   getSpriteHeight() {
-    return this.testBit(2) ? 8 : 16;
+    return this.testBit(2) ? 16 : 8;
   }
 
   areSpritesEnabled() {
