@@ -1,10 +1,17 @@
 export default class Cartridge {
-  construct(path) {
+  constructor(path) {
     this.path = path;
   }
 
   async read() {
-    const response = await fetch('/tetris.gb');
+    let response;
+
+    try {
+      response = await fetch(this.path);
+    } catch (e) {
+      throw new Error('Could not read cartridge');
+    }
+
     return this.parseResponse(response);
   }
 
