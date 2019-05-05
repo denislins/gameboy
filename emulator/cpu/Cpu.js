@@ -2,7 +2,6 @@ import InstructionSet from './instructions/InstructionSet.js';
 import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
 import InstructionResolver from './instructions/InstructionResolver.js';
 import RegisterSet from './registers/RegisterSet.js';
-import Flags from './Flags.js';
 
 export default class Cpu {
   constructor(mmu) {
@@ -12,10 +11,7 @@ export default class Cpu {
     this.registers = new RegisterSet();
     this.instructions = new InstructionSet();
 
-    const flagsRegister = this.registers.get('f');
-
-    this.flags = new Flags(flagsRegister);
-    this.resolver = new InstructionResolver(this.registers, this.flags, mmu);
+    this.resolver = new InstructionResolver(this.registers, this.mmu);
   }
 
   reset() {

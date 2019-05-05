@@ -1,4 +1,5 @@
 import ByteRegister from './ByteRegister.js';
+import FlagsRegister from './FlagsRegister.js';
 import CompositeRegister from './CompositeRegister.js';
 import WordRegister from './WordRegister.js';
 
@@ -11,9 +12,11 @@ export default class RegisterSet {
   }
 
   initByteRegisters() {
-    ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'l'].forEach((register) => {
+    ['a', 'b', 'c', 'd', 'e', 'h', 'l'].forEach((register) => {
       this.registers[register] = new ByteRegister();
     });
+
+    this.registers.f = new FlagsRegister();
   }
 
   initCompositeRegisters() {

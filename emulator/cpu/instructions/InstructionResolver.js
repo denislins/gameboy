@@ -1,8 +1,8 @@
 export default class InstructionResolver {
-  constructor(registers, flags, mmu) {
+  constructor(registers, mmu) {
     this.registers = registers;
-    this.flags = flags;
     this.mmu = mmu;
+    this.flags = this.registers.get('f');
   }
 
   resolve(instruction) {
