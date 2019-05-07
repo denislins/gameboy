@@ -1,5 +1,6 @@
 import RegisterSet from 'emulator/cpu/registers/RegisterSet';
 import ByteRegister from 'emulator/cpu/registers/ByteRegister';
+import FlagsRegister from 'emulator/cpu/registers/FlagsRegister';
 import WordRegister from 'emulator/cpu/registers/WordRegister';
 import CompositeRegister from 'emulator/cpu/registers/CompositeRegister';
 
@@ -90,7 +91,7 @@ describe('RegisterSet', () => {
       });
 
       it('is of the right type', () => {
-        expect(this.register instanceof ByteRegister).toEqual(true);
+        expect(this.register instanceof FlagsRegister).toEqual(true);
       });
 
       it('can be set and retrieved', () => {
