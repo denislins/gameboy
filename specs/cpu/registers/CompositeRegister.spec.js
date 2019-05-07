@@ -9,6 +9,10 @@ describe('CompositeRegister', () => {
     this.register = new CompositeRegister(this.registerA, this.registerB);
   });
 
+  it('is initialized to zero', () => {
+    expect(this.register.read()).toEqual(0);
+  });
+
   it('can be set and retrieved', () => {
     this.register.write(0x8040);
     expect(this.register.read()).toEqual(0x8040);

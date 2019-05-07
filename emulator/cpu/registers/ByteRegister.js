@@ -1,4 +1,8 @@
 export default class ByteRegister {
+  constructor() {
+    this.value = 0;
+  }
+
   read() {
     return this.value;
   }
