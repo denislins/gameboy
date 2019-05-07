@@ -22,9 +22,11 @@ export default class InstructionResolver {
   }
 
   readSignedByte() {
+    // can also do (this.readByte() ^ 0x80) - 0x80
+    // why though?
     let byte = this.readByte();
 
-    if ((byte & (1 << 7)) !== 0) {
+    if (byte & (1 << 7)) {
       byte = -(~byte & 0xFF) - 1;
     }
 
@@ -59,7 +61,7 @@ export default class InstructionResolver {
     return this.mmu.read(address);
   }
 
-  storeToAddress(offset, value) {
+  storeByteToAddress(offset, value) {
     let address;
 
     if (offset) {
@@ -69,6 +71,13 @@ export default class InstructionResolver {
     }
 
     this.mmu.write(address, value);
+  }
+
+  storeWordToAddress(value) {
+    const address = this.readWord();
+
+    this.mmu.write(address, value & 0xFF);
+    this.mmu.write(address + 1, value >> 8);
   }
 
   readFromAddressAtRegister(register) {
@@ -89,8 +98,8 @@ export default class InstructionResolver {
 
     this.flags.set('z', false);
     this.flags.set('n', false);
-    this.flags.set('h', (value & 0xF) + (byte & 0xF) > 0xF);
-    this.flags.set('c', (value & 0xFF) + byte > 0xFF);
+    this.flags.set('h', ((value & 0xF) + (byte & 0xF)) > 0xF);
+    this.flags.set('c', ((value & 0xFF) + byte) > 0xFF);
 
     return result;
   }
@@ -148,7 +157,7 @@ export default class InstructionResolver {
 
     this.flags.set('n', false);
     this.flags.set('z', (newValue & 0xFF) === 0);
-    this.flags.set('h', (currentValue & 0xF) + (newValue & 0xF) > 0xF);
+    this.flags.set('h', ((currentValue & 0xF) + (newValue & 0xF)) > 0xF);
     this.flags.set('c', newValue > 0xFF);
 
     return newValue;
@@ -174,7 +183,7 @@ export default class InstructionResolver {
 
     this.flags.set('n', false);
     this.flags.set('z', (newValue & 0xFF) === 0);
-    this.flags.set('h', (currentValue & 0xF) + (newValue & 0xF) + carry > 0xF);
+    this.flags.set('h', ((currentValue & 0xF) + (newValue & 0xF) + carry) > 0xF);
     this.flags.set('c', newValue > 0xFF);
 
     return newValue;
@@ -199,7 +208,7 @@ export default class InstructionResolver {
     const newValue = currentValue + value;
 
     this.flags.set('n', false);
-    this.flags.set('h', (currentValue & 0xFFF) + (newValue & 0xFFF) > 0xFFF);
+    this.flags.set('h', ((currentValue & 0xFFF) + (newValue & 0xFFF)) > 0xFFF);
     this.flags.set('c', newValue > 0xFFFF);
 
     return newValue;

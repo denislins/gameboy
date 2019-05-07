@@ -47,8 +47,13 @@ export default class Instruction {
     return this;
   }
 
-  sda(offset) {
-    this.chain.add('storeToAddress', offset);
+  sbda(offset) {
+    this.chain.add('storeByteToAddress', offset);
+    return this;
+  }
+
+  swda() {
+    this.chain.add('storeWordToAddress');
     return this;
   }
 

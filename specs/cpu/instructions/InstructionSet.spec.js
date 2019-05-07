@@ -10,7 +10,7 @@ describe('InstructionSet', () => {
     this.registers.write('pc', 0x1000);
 
     this.mmu = {
-      read: jasmine.createSpy('read'),
+      read: jasmine.createSpy('read').and.returnValues(0xAB, 0xCD, 0xEF),
       write: jasmine.createSpy('write'),
     };
 
@@ -28,12 +28,12 @@ describe('InstructionSet', () => {
   ].forEach((params) => {
     const { opcode, register, repr } = params;
 
-    describe(`${opcode}: ${repr}`, () => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string identification', () => {
+      it('exposes the correct string representation', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
@@ -43,16 +43,15 @@ describe('InstructionSet', () => {
 
       describe('execution', () => {
         beforeEach(() => {
-          this.mmu.read.and.returnValue(0x12);
           this.resolver.resolve(this.instruction);
         });
 
-        it('reads the correct value from memory', () => {
+        it('reads from memory correctly', () => {
           expect(this.mmu.read).toHaveBeenCalledWith(0x1000);
         });
 
         it(`sets ${register.toUpperCase()} to the correct value`, () => {
-          expect(this.registers.read(register)).toEqual(0x12);
+          expect(this.registers.read(register)).toEqual(0xAB);
         });
 
         it('leaves PC at the correct value', () => {
@@ -115,12 +114,12 @@ describe('InstructionSet', () => {
   ].forEach((params) => {
     const { opcode, from, to, repr } = params;
 
-    describe(`${opcode}: ${repr}`, () => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string identification', () => {
+      it('exposes the correct string representation', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
@@ -156,12 +155,12 @@ describe('InstructionSet', () => {
   ].forEach((params) => {
     const { opcode, register, repr } = params;
 
-    describe(`${opcode}: ${repr}`, () => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string identification', () => {
+      it('exposes the correct string representation', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
@@ -172,16 +171,15 @@ describe('InstructionSet', () => {
       describe('execution', () => {
         beforeEach(() => {
           this.registers.write('hl', 0x1234);
-          this.mmu.read.and.returnValue(0x12);
           this.resolver.resolve(this.instruction);
         });
 
-        it('reads the correct value from memory', () => {
+        it('reads from memory correctly', () => {
           expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
         });
 
         it(`sets ${register.toUpperCase()} to the correct value`, () => {
-          expect(this.registers.read(register)).toEqual(0x12);
+          expect(this.registers.read(register)).toEqual(0xAB);
         });
 
         it('leaves PC at the correct value', () => {
@@ -201,12 +199,12 @@ describe('InstructionSet', () => {
   ].forEach((params) => {
     const { opcode, register, repr } = params;
 
-    describe(`${opcode}: ${repr}`, () => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string identification', () => {
+      it('exposes the correct string representation', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
@@ -244,7 +242,7 @@ describe('InstructionSet', () => {
       this.instruction = this.instructionSet.find(0x36);
     });
 
-    it('exposes the correct string identification', () => {
+    it('exposes the correct string representation', () => {
       expect(this.instruction.repr).toEqual('LD (HL), byte');
     });
 
@@ -254,22 +252,585 @@ describe('InstructionSet', () => {
 
     describe('execution', () => {
       beforeEach(() => {
-        this.mmu.read.and.returnValue(0x12);
         this.registers.write('hl', 0x1234);
-
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads the correct value from memory', () => {
+      it('reads from memory correctly', () => {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1000);
       });
 
       it('writes to memory correctly', () => {
-        expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0x12);
+        expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0xAB);
       });
 
       it('leaves PC at the correct value', () => {
         expect(this.registers.read('pc')).toEqual(0x1001);
+      });
+    });
+  });
+
+  [
+    { opcode: 0x0A, register: 'bc', repr: 'LD A, (BC)' },
+    { opcode: 0x1A, register: 'de', repr: 'LD A, (DE)' },
+    { opcode: 0x7E, register: 'hl', repr: 'LD A, (HL)' },
+  ].forEach((params) => {
+    const { opcode, register, repr } = params;
+
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
+      beforeEach(() => {
+        this.instruction = this.instructionSet.find(opcode);
+      });
+
+      it('exposes the correct string representation', () => {
+        expect(this.instruction.repr).toEqual(repr);
+      });
+
+      it('uses the correct number of cycles', () => {
+        expect(this.instruction.cycles).toEqual(8);
+      });
+
+      describe('execution', () => {
+        beforeEach(() => {
+          this.registers.write(register, 0x1234);
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('reads from memory correctly', () => {
+          expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
+        });
+
+        it('sets A to the correct value', () => {
+          expect(this.registers.read('a')).toEqual(0xAB);
+        });
+
+        it('leaves PC at the correct value', () => {
+          expect(this.registers.read('pc')).toEqual(0x1000);
+        });
+      });
+    });
+  });
+
+  [
+    { opcode: 0x02, register: 'bc', repr: 'LD (BC), A' },
+    { opcode: 0x12, register: 'de', repr: 'LD (DE), A' },
+    { opcode: 0x77, register: 'hl', repr: 'LD (HL), A' },
+  ].forEach((params) => {
+    const { opcode, register, repr } = params;
+
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
+      beforeEach(() => {
+        this.instruction = this.instructionSet.find(opcode);
+      });
+
+      it('exposes the correct string representation', () => {
+        expect(this.instruction.repr).toEqual(repr);
+      });
+
+      it('uses the correct number of cycles', () => {
+        expect(this.instruction.cycles).toEqual(8);
+      });
+
+      describe('execution', () => {
+        beforeEach(() => {
+          this.registers.write('a', 0x12);
+          this.registers.write(register, 0x1234);
+
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('writes to memory correctly', () => {
+          expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0x12);
+        });
+
+        it('leaves PC at the correct value', () => {
+          expect(this.registers.read('pc')).toEqual(0x1000);
+        });
+      });
+    });
+  });
+
+  describe('0xFA: LD A, (word)', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xFA);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD A, (word)');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(16);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0x1000]);
+        expect(calls[1].args).toEqual([0x1001]);
+        expect(calls[2].args).toEqual([0xCDAB]);
+      });
+
+      it('sets A to the correct value', () => {
+        expect(this.registers.read('a')).toEqual(0xEF);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1002);
+      });
+    });
+  });
+
+  describe('0xEA: LD (word), A', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xEA);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD (word), A');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(16);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0x12);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0x1000]);
+        expect(calls[1].args).toEqual([0x1001]);
+      });
+
+      it('writes to memory correctly', () => {
+        expect(this.mmu.write).toHaveBeenCalledWith(0xCDAB, 0x12);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1002);
+      });
+    });
+  });
+
+  describe('0xF2: LD A, (C)', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xF2);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD A, (C)');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('c', 0x12);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        expect(this.mmu.read).toHaveBeenCalledWith(0xFF12);
+      });
+
+      it('sets A to the correct value', () => {
+        expect(this.registers.read('a')).toEqual(0xAB);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0xE2: LD (C), A', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xE2);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD (C), A');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0x12);
+        this.registers.write('c', 0x34);
+
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes to memory correctly', () => {
+        expect(this.mmu.write).toHaveBeenCalledWith(0xFF34, 0x12);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0x3A: LD A, (HL-)', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x3A);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD A, (HL-)');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('hl', 0x1234);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
+      });
+
+      it('sets A to the correct value', () => {
+        expect(this.registers.read('a')).toEqual(0xAB);
+      });
+
+      it('decrements HL correctly', () => {
+        expect(this.registers.read('hl')).toEqual(0x1233);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0x32: LD (HL-), A', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x32);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD (HL-), A');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0x12);
+        this.registers.write('hl', 0x3456);
+
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes to memory correctly', () => {
+        expect(this.mmu.write).toHaveBeenCalledWith(0x3456, 0x12);
+      });
+
+      it('decrements HL correctly', () => {
+        expect(this.registers.read('hl')).toEqual(0x3455);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0x2A: LD A, (HL+)', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x2A);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD A, (HL+)');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('hl', 0x1234);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
+      });
+
+      it('sets A to the correct value', () => {
+        expect(this.registers.read('a')).toEqual(0xAB);
+      });
+
+      it('decrements HL correctly', () => {
+        expect(this.registers.read('hl')).toEqual(0x1235);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0x22: LD (HL+), A', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x22);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD (HL+), A');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0x12);
+        this.registers.write('hl', 0x3456);
+
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes to memory correctly', () => {
+        expect(this.mmu.write).toHaveBeenCalledWith(0x3456, 0x12);
+      });
+
+      it('decrements HL correctly', () => {
+        expect(this.registers.read('hl')).toEqual(0x3457);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0xE0: LDH (byte), A', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xE0);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LDH (byte), A');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(12);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0x12);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes to memory correctly', () => {
+        expect(this.mmu.write).toHaveBeenCalledWith(0xFFAB, 0x12);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1001);
+      });
+    });
+  });
+
+  describe('0xF0: LDH A, (byte)', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xF0);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LDH A, (byte)');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(12);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0x1000]);
+        expect(calls[1].args).toEqual([0xFFAB]);
+      });
+
+      it('sets A to the correct value', () => {
+        expect(this.registers.read('a')).toEqual(0xCD);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1001);
+      });
+    });
+  });
+
+  [
+    { opcode: 0x01, register: 'bc', repr: 'LD BC, word' },
+    { opcode: 0x11, register: 'de', repr: 'LD DE, word' },
+    { opcode: 0x21, register: 'hl', repr: 'LD HL, word' },
+    { opcode: 0x31, register: 'sp', repr: 'LD SP, word' },
+  ].forEach((params) => {
+    const { opcode, register, repr } = params;
+
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
+      beforeEach(() => {
+        this.instruction = this.instructionSet.find(opcode);
+      });
+
+      it('exposes the correct string representation', () => {
+        expect(this.instruction.repr).toEqual(repr);
+      });
+
+      it('uses the correct number of cycles', () => {
+        expect(this.instruction.cycles).toEqual(12);
+      });
+
+      describe('execution', () => {
+        beforeEach(() => {
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('reads from memory correctly', () => {
+          const calls = this.mmu.read.calls.all();
+
+          expect(calls[0].args).toEqual([0x1000]);
+          expect(calls[1].args).toEqual([0x1001]);
+        });
+
+        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+          expect(this.registers.read(register)).toEqual(0xCDAB);
+        });
+
+        it('leaves PC at the correct value', () => {
+          expect(this.registers.read('pc')).toEqual(0x1002);
+        });
+      });
+    });
+  });
+
+  describe('0xF9: LD SP, HL', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xF9);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD SP, HL');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('hl', 0x1234);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets SP to the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0x1234);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0xF8: LD HL, SP + sbyte', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xF8);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD HL, SP + sbyte');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(12);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('sp', 0x1234);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets HL to the correct value', () => {
+        expect(this.registers.read('hl')).toEqual(0x11DF);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1001);
+      });
+    });
+  });
+
+  describe('0x08: LD (word), SP', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x08);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('LD (word), SP');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(20);
+    });
+
+    describe('execution', () => {
+      beforeEach(() => {
+        this.registers.write('sp', 0x1234);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0x1000]);
+        expect(calls[1].args).toEqual([0x1001]);
+      });
+
+      it('writes to memory correctly', () => {
+        const calls = this.mmu.write.calls.all();
+
+        expect(calls[0].args).toEqual([0xCDAB, 0x34]);
+        expect(calls[1].args).toEqual([0xCDAC, 0x12]);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1002);
       });
     });
   });

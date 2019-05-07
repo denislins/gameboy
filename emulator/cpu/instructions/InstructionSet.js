@@ -116,7 +116,7 @@ export default class InstructionSet {
     this.add(0x77, 8, 'LD (HL), A').rr('a').sra('hl');
 
     this.add(0xFA, 16, 'LD A, (word)').rw().rm().sr('a');
-    this.add(0xEA, 16, 'LD (word), A').rr('a').sda();
+    this.add(0xEA, 16, 'LD (word), A').rr('a').sbda();
 
     this.add(0xF2, 8, 'LD A, (C)').rr('c').sumw(0xFF00).rm().sr('a');
     this.add(0xE2, 8, 'LD (C), A').rr('a').sra('c', 0xFF00);
@@ -127,8 +127,8 @@ export default class InstructionSet {
     this.add(0x2A, 8, 'LD A, (HL+)').incr('hl', false).rm().sr('a');
     this.add(0x22, 8, 'LD (HL+), A').rr('a').sra('hl').incr('hl', false);
 
-    this.add(0xE0, 12, 'LDH (byte), A').rr('a').sda(0xFF00);
-    this.add(0xF0, 12, 'LDH A, (byte)').rb().sumw(0xFF00).sr('a');
+    this.add(0xE0, 12, 'LDH (byte), A').rr('a').sbda(0xFF00);
+    this.add(0xF0, 12, 'LDH A, (byte)').rb().sumw(0xFF00).rm().sr('a');
 
     this.add(0x01, 12, 'LD BC, word').rw().sr('bc');
     this.add(0x11, 12, 'LD DE, word').rw().sr('de');
@@ -139,7 +139,7 @@ export default class InstructionSet {
 
     this.add(0xF8, 12, 'LD HL, SP + sbyte').rr('sp').sumsb().sr('hl');
 
-    this.add(0x08, 20, 'LD (word), SP').rr('sp').sda();
+    this.add(0x08, 20, 'LD (word), SP').rr('sp').swda();
 
     this.add(0xF5, 16, 'PUSH AF').rr('af').push();
     this.add(0xC5, 16, 'PUSH BC').rr('bc').push();
