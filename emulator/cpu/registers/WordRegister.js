@@ -1,11 +1,10 @@
 export default class WordRegister {
-  constructor(defaultValue) {
-    this.value = defaultValue;
-    this.defaultValue = defaultValue;
+  constructor() {
+    this.value = 0;
   }
 
   reset() {
-    this.write(this.defaultValue);
+    this.write(0);
   }
 
   read() {

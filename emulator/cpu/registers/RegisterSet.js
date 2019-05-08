@@ -27,8 +27,8 @@ export default class RegisterSet {
   }
 
   initWordRegisters() {
-    this.registers.pc = new WordRegister(0);
-    this.registers.sp = new WordRegister(0xFFFE);
+    this.registers.pc = new WordRegister();
+    this.registers.sp = new WordRegister();
   }
 
   reset() {

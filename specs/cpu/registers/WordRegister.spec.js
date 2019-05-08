@@ -2,11 +2,11 @@ import WordRegister from 'emulator/cpu/registers/WordRegister';
 
 describe('WordRegister', () => {
   beforeEach(() => {
-    this.register = new WordRegister(0x1234);
+    this.register = new WordRegister();
   });
 
-  it('sets the default value correctly', () => {
-    expect(this.register.read()).toEqual(0x1234);
+  it('is initialized to zero', () => {
+    expect(this.register.read()).toEqual(0);
   });
 
   it('can be set and retrieved', () => {
@@ -21,12 +21,12 @@ describe('WordRegister', () => {
 
   describe('reset()', () => {
     beforeEach(() => {
-      this.register.write(0xF0F0);
+      this.register.write(0x1234);
       this.register.reset();
     });
 
-    it('resets the value to the default value', () => {
-      expect(this.register.read()).toEqual(0x1234);
+    it('resets the value to 0', () => {
+      expect(this.register.read()).toEqual(0);
     });
   });
 });

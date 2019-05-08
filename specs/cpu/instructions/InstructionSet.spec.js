@@ -814,6 +814,7 @@ describe('InstructionSet', () => {
 
     describe('when the nibble result overflows', () => {
       beforeEach(() => {
+        this.registers.write('sp', 0xFFFF);
         this.mmu.read.and.returnValue(0xFF);
         this.resolver.resolve(this.instruction);
       });
@@ -908,7 +909,9 @@ describe('InstructionSet', () => {
 
       describe('execution', () => {
         beforeEach(() => {
+          this.registers.write('sp', 0xFFFE);
           this.registers.write(register, 0x1234);
+
           this.resolver.resolve(this.instruction);
         });
 
