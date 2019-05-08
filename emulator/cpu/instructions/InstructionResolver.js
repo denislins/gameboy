@@ -169,8 +169,8 @@ export default class InstructionResolver {
 
     this.flags.set('n', true);
     this.flags.set('z', (newValue & 0xFF) === 0);
-    this.flags.set('h', (currentValue & 0xF) < (newValue & 0xF));
-    this.flags.set('c', currentValue < newValue);
+    this.flags.set('h', ((currentValue & 0xF) - (value & 0xF)) < 0);
+    this.flags.set('c', newValue < 0);
 
     return newValue;
   }
