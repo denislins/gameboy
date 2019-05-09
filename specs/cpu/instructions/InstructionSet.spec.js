@@ -1272,6 +1272,292 @@ describe('InstructionSet', () => {
     });
   });
 
+  [
+    { opcode: 0x8F, register: 'a', repr: 'ADC A, A' },
+    { opcode: 0x88, register: 'b', repr: 'ADC A, B' },
+    { opcode: 0x89, register: 'c', repr: 'ADC A, C' },
+    { opcode: 0x8A, register: 'd', repr: 'ADC A, D' },
+    { opcode: 0x8B, register: 'e', repr: 'ADC A, E' },
+    { opcode: 0x8C, register: 'h', repr: 'ADC A, H' },
+    { opcode: 0x8D, register: 'l', repr: 'ADC A, L' },
+  ].forEach((params) => {
+    const { opcode, register, repr } = params;
+
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
+      beforeEach(() => {
+        this.instruction = this.instructionSet.find(opcode);
+        this.flags = this.registers.get('f');
+      });
+
+      it('exposes the correct string representation', () => {
+        expect(this.instruction.repr).toEqual(repr);
+      });
+
+      it('uses the correct number of cycles', () => {
+        expect(this.instruction.cycles).toEqual(4);
+      });
+
+      describe('default execution', () => {
+        beforeEach(() => {
+          this.registers.write(register, 0x12);
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('sets A to the correct value', () => {
+          let value = 0x12;
+
+          if (register === 'a') {
+            value = 0x24;
+          }
+
+          expect(this.registers.read('a')).toEqual(value);
+        });
+
+        it('does not set any flag', () => {
+          expect(this.flags.read()).toEqual(0);
+        });
+
+        it('leaves PC at the correct value', () => {
+          expect(this.registers.read('pc')).toEqual(0x1000);
+        });
+      });
+
+      describe('when the result is zero', () => {
+        beforeEach(() => {
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('sets the zero flag', () => {
+          expect(this.flags.get('z')).toEqual(true);
+        });
+      });
+
+      describe('when the result overflows', () => {
+        beforeEach(() => {
+          this.registers.write('a', 0xF0);
+          this.registers.write(register, 0xF0);
+
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('sets the carry flag', () => {
+          expect(this.flags.get('c')).toEqual(true);
+        });
+
+        it('does not set the half-carry flag', () => {
+          expect(this.flags.get('h')).toEqual(false);
+        });
+      });
+
+      describe('when the nibble result overflows', () => {
+        beforeEach(() => {
+          this.registers.write('a', 0xF);
+          this.registers.write(register, 0xF);
+
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('sets the half-carry flag', () => {
+          expect(this.flags.get('h')).toEqual(true);
+        });
+
+        it('does not set the carry flag', () => {
+          expect(this.flags.get('c')).toEqual(false);
+        });
+      });
+
+      describe('when the subtract flag is set', () => {
+        beforeEach(() => {
+          this.flags.set('n', true);
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('resets the subtract flag', () => {
+          expect(this.flags.get('n')).toEqual(false);
+        });
+      });
+    });
+  });
+
+  describe('0x86: ADD A, (HL)', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x86);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('ADD A, (HL)');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.registers.write('hl', 0x1234);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
+      });
+
+      it('sets A to the correct value', () => {
+        expect(this.registers.read('a')).toEqual(0xAB);
+      });
+
+      it('does not set any flag', () => {
+        expect(this.flags.read()).toEqual(0);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+
+    describe('when the result is zero', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0x55);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the zero flag', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+
+    describe('when the result overflows', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0xF0);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+
+      it('does not set the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(false);
+      });
+    });
+
+    describe('when the nibble result overflows', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0xF);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(true);
+      });
+
+      it('does not set the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(false);
+      });
+    });
+
+    describe('when the subtract flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('n', true);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('resets the subtract flag', () => {
+        expect(this.flags.get('n')).toEqual(false);
+      });
+    });
+  });
+
+  describe('0xC6: ADD A, byte', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xC6);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('ADD A, byte');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(8);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        expect(this.mmu.read).toHaveBeenCalledWith(0x1000);
+      });
+
+      it('sets A to the correct value', () => {
+        expect(this.registers.read('a')).toEqual(0xAB);
+      });
+
+      it('does not set any flag', () => {
+        expect(this.flags.read()).toEqual(0);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1001);
+      });
+    });
+
+    describe('when the result is zero', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0x55);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the zero flag', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+
+    describe('when the result overflows', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0xF0);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+
+      it('does not set the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(false);
+      });
+    });
+
+    describe('when the nibble result overflows', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0xF);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(true);
+      });
+
+      it('does not set the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(false);
+      });
+    });
+
+    describe('when the subtract flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('n', true);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('resets the subtract flag', () => {
+        expect(this.flags.get('n')).toEqual(false);
+      });
+    });
+  });
+
   describe('0x97: SUB A, A', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x97);
