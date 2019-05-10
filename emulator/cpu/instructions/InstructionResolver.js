@@ -177,7 +177,7 @@ export default class InstructionResolver {
 
   sumToRegisterValueWithCarry(register, value) {
     const currentValue = this.readRegister(register);
-    const carry = this.flags.get('c');
+    const carry = this.flags.get('c') ? 1 : 0;
 
     const newValue = currentValue + value + carry;
 
@@ -191,14 +191,14 @@ export default class InstructionResolver {
 
   subtractFromRegisterValueWithCarry(register, value) {
     const currentValue = this.readRegister(register);
-    const carry = this.flags.get('c');
+    const carry = this.flags.get('c') ? 1 : 0;
 
     const newValue = currentValue - value - carry;
 
     this.flags.set('n', true);
     this.flags.set('z', (newValue & 0xFF) === 0);
-    this.flags.set('h', ((currentValue + carry) & 0xF) < (newValue & 0xF));
-    this.flags.set('c', (currentValue + carry) < newValue);
+    this.flags.set('h', ((currentValue & 0xF) - (value & 0xF) - carry) < 0);
+    this.flags.set('c', newValue < 0);
 
     return newValue;
   }
