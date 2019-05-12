@@ -106,34 +106,40 @@ export default class InstructionResolver {
 
   incrementRegister(register, setFlags) {
     const currentValue = this.readRegister(register);
+    const newValue = this.incrementValue(setFlags, currentValue);
 
-    this.addToRegister(register, 1);
-
-    if (setFlags) {
-      const newValue = this.readRegister(register);
-
-      this.flags.set('z', newValue === 0);
-      this.flags.set('n', false);
-      this.flags.set('h', (currentValue & 0xF) === 0xF);
-    }
+    this.storeToRegister(register, newValue);
 
     return currentValue;
   }
 
-  decrementRegister(register, setFlags) {
-    const currentValue = this.readRegister(register);
-
-    this.addToRegister(register, -1);
-
+  incrementValue(setFlags, value) {
     if (setFlags) {
-      const newValue = this.readRegister(register);
-
-      this.flags.set('z', newValue === 0);
-      this.flags.set('n', true);
-      this.flags.set('h', (currentValue & 0xF) === 0);
+      this.flags.set('z', value === 0xFF);
+      this.flags.set('n', false);
+      this.flags.set('h', (value & 0xF) === 0xF);
     }
 
+    return value + 1;
+  }
+
+  decrementRegister(register, setFlags) {
+    const currentValue = this.readRegister(register);
+    const newValue = this.decrementValue(setFlags, currentValue);
+
+    this.storeToRegister(register, newValue);
+
     return currentValue;
+  }
+
+  decrementValue(setFlags, value) {
+    if (setFlags) {
+      this.flags.set('z', value === 1);
+      this.flags.set('n', true);
+      this.flags.set('h', (value & 0xF) === 0);
+    }
+
+    return value - 1;
   }
 
   push(value) {
@@ -245,14 +251,6 @@ export default class InstructionResolver {
     this.flags.set('c', false);
 
     return result;
-  }
-
-  incrementValue(value) {
-    return value + 1;
-  }
-
-  decrementValue(value) {
-    return value - 1;
   }
 
   swap(value) {

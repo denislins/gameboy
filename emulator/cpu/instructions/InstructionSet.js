@@ -246,7 +246,7 @@ export default class InstructionSet {
     this.add(0x24, 4, 'INC H').incr('h');
     this.add(0x2C, 4, 'INC L').incr('l');
 
-    this.add(0x34, 12, 'INC (HL)').rr('hl').rm().inc().sra('hl');
+    this.add(0x34, 12, 'INC (HL)').rr('hl').rm().inc(true).sra('hl');
 
     this.add(0x3D, 4, 'DEC A').decr('a');
     this.add(0x05, 4, 'DEC B').decr('b');

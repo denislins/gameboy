@@ -132,13 +132,13 @@ export default class Instruction {
     return this;
   }
 
-  inc() {
-    this.chain.add('incrementValue');
+  inc(setFlags) {
+    this.chain.add('incrementValue', setFlags);
     return this;
   }
 
-  dec() {
-    this.chain.add('decrementValue');
+  dec(setFlags) {
+    this.chain.add('decrementValue', setFlags);
     return this;
   }
 
