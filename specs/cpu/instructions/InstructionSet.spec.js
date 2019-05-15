@@ -3180,6 +3180,10 @@ describe('InstructionSet', () => {
         it('sets the half-carry flag', () => {
           expect(this.flags.get('h')).toEqual(true);
         });
+
+        it('does not set the carry flag', () => {
+          expect(this.flags.get('c')).toEqual(false);
+        });
       });
     });
   });
@@ -3247,6 +3251,402 @@ describe('InstructionSet', () => {
 
       it('sets the half-carry flag', () => {
         expect(this.flags.get('h')).toEqual(true);
+      });
+
+      it('does not set the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(false);
+      });
+    });
+  });
+
+  [
+    { opcode: 0x3D, register: 'a', repr: 'DEC A' },
+    { opcode: 0x05, register: 'b', repr: 'DEC B' },
+    { opcode: 0x0D, register: 'c', repr: 'DEC C' },
+    { opcode: 0x15, register: 'd', repr: 'DEC D' },
+    { opcode: 0x1D, register: 'e', repr: 'DEC E' },
+    { opcode: 0x25, register: 'h', repr: 'DEC H' },
+    { opcode: 0x2D, register: 'l', repr: 'DEC L' },
+  ].forEach((params) => {
+    const { opcode, register, repr } = params;
+
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
+      beforeEach(() => {
+        this.instruction = this.instructionSet.find(opcode);
+        this.flags = this.registers.get('f');
+      });
+
+      it('exposes the correct string representation', () => {
+        expect(this.instruction.repr).toEqual(repr);
+      });
+
+      it('uses the correct number of cycles', () => {
+        expect(this.instruction.cycles).toEqual(4);
+      });
+
+      describe('default execution', () => {
+        beforeEach(() => {
+          this.flags.write(0xF0);
+          this.registers.write(register, 0x12);
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('increments the register value', () => {
+          expect(this.registers.read(register)).toEqual(0x11);
+        });
+
+        it('sets the subtract flag again', () => {
+          expect(this.flags.get('n')).toEqual(true);
+        });
+
+        it('does not change the carry flag value', () => {
+          expect(this.flags.get('c')).toEqual(true);
+        });
+
+        it('resets all other flags', () => {
+          expect(this.flags.get('z')).toEqual(false);
+          expect(this.flags.get('h')).toEqual(false);
+        });
+
+        it('leaves PC at the correct value', () => {
+          expect(this.registers.read('pc')).toEqual(0x1000);
+        });
+      });
+
+      describe('when the result is zero', () => {
+        beforeEach(() => {
+          this.registers.write(register, 1);
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('sets the zero flag', () => {
+          expect(this.flags.get('z')).toEqual(true);
+        });
+      });
+
+      describe('when the nibble result is negative', () => {
+        beforeEach(() => {
+          this.registers.write(register, 0x10);
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('sets the half-carry flag', () => {
+          expect(this.flags.get('h')).toEqual(true);
+        });
+
+        it('does not set the carry flag', () => {
+          expect(this.flags.get('c')).toEqual(false);
+        });
+      });
+    });
+  });
+
+  describe('0x35: DEC (HL)', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x35);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('DEC (HL)');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(12);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.flags.write(0xF0);
+        this.registers.write('hl', 0x1234);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
+      });
+
+      it('writes to memory correctly', () => {
+        expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0xAA);
+      });
+
+      it('sets the subtract flag again', () => {
+        expect(this.flags.get('n')).toEqual(true);
+      });
+
+      it('does not change the carry flag value', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+
+      it('resets all other flags', () => {
+        expect(this.flags.get('z')).toEqual(false);
+        expect(this.flags.get('h')).toEqual(false);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+
+    describe('when the result is zero', () => {
+      beforeEach(() => {
+        this.mmu.read.and.returnValue(1);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the zero flag', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+
+    describe('when the nibble result is negative', () => {
+      beforeEach(() => {
+        this.mmu.read.and.returnValue(0x10);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(true);
+      });
+
+      it('does not set the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(false);
+      });
+    });
+  });
+
+  [
+    { opcode: 0x09, register: 'bc', repr: 'ADD HL, BC' },
+    { opcode: 0x19, register: 'de', repr: 'ADD HL, DE' },
+    { opcode: 0x29, register: 'hl', repr: 'ADD HL, HL' },
+    { opcode: 0x39, register: 'sp', repr: 'ADD HL, SP' },
+  ].forEach((params) => {
+    const { opcode, register, repr } = params;
+
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
+      beforeEach(() => {
+        this.instruction = this.instructionSet.find(opcode);
+        this.flags = this.registers.get('f');
+      });
+
+      it('exposes the correct string representation', () => {
+        expect(this.instruction.repr).toEqual(repr);
+      });
+
+      it('uses the correct number of cycles', () => {
+        expect(this.instruction.cycles).toEqual(8);
+      });
+
+      describe('default execution', () => {
+        beforeEach(() => {
+          this.flags.write(0xF0);
+
+          this.registers.write('hl', 0x1234);
+          this.registers.write(register, 0x4321);
+
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('writes the correct value to HL', () => {
+          let value = 0x5555;
+
+          if (register === 'hl') {
+            value = 0x8642;
+          }
+
+          expect(this.registers.read('hl')).toEqual(value);
+        });
+
+        it('does not change the zero flag value', () => {
+          expect(this.flags.get('z')).toEqual(true);
+        });
+
+        it('resets all other flags', () => {
+          expect(this.flags.get('n')).toEqual(false);
+          expect(this.flags.get('c')).toEqual(false);
+          expect(this.flags.get('h')).toEqual(false);
+        });
+
+        it('leaves PC at the correct value', () => {
+          expect(this.registers.read('pc')).toEqual(0x1000);
+        });
+      });
+
+      describe('when the result overflows', () => {
+        beforeEach(() => {
+          this.registers.write('hl', 0x1234);
+          this.registers.write(register, 0xF000);
+
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('sets the carry flag', () => {
+          expect(this.flags.get('c')).toEqual(true);
+        });
+
+        it('does not set the half-carry flag', () => {
+          expect(this.flags.get('h')).toEqual(false);
+        });
+      });
+
+      describe('when the nibble result overflows', () => {
+        beforeEach(() => {
+          this.registers.write('hl', 0xFFF);
+          this.registers.write(register, 0xFFF);
+
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('sets the half-carry flag', () => {
+          expect(this.flags.get('h')).toEqual(true);
+        });
+
+        it('does not set the carry flag', () => {
+          expect(this.flags.get('c')).toEqual(false);
+        });
+      });
+    });
+  });
+
+  describe('0xE8: ADD SP, sbyte', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xE8);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('ADD SP, sbyte');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(16);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.flags.write(0xF0);
+        this.registers.write('sp', 0x1234);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes the correct value to SP', () => {
+        expect(this.registers.read('sp')).toEqual(0x11DF);
+      });
+
+      it('resets all flags', () => {
+        expect(this.flags.read()).toEqual(0);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1001);
+      });
+    });
+
+    describe('when the result overflows', () => {
+      beforeEach(() => {
+        this.registers.write('sp', 0xFFF0);
+        this.mmu.read.and.returnValue(0x7F);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+
+      it('does not set the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(false);
+      });
+    });
+
+    describe('when the nibble result overflows', () => {
+      beforeEach(() => {
+        this.registers.write('sp', 0x000F);
+        this.mmu.read.and.returnValue(0x0F);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(true);
+      });
+
+      it('does not set the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(false);
+      });
+    });
+  });
+
+  [
+    { opcode: 0x03, register: 'bc', repr: 'INC BC' },
+    { opcode: 0x13, register: 'de', repr: 'INC DE' },
+    { opcode: 0x23, register: 'hl', repr: 'INC HL' },
+    { opcode: 0x33, register: 'sp', repr: 'INC SP' },
+  ].forEach((params) => {
+    const { opcode, register, repr } = params;
+
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
+      beforeEach(() => {
+        this.instruction = this.instructionSet.find(opcode);
+      });
+
+      it('exposes the correct string representation', () => {
+        expect(this.instruction.repr).toEqual(repr);
+      });
+
+      it('uses the correct number of cycles', () => {
+        expect(this.instruction.cycles).toEqual(8);
+      });
+
+      describe('execution', () => {
+        beforeEach(() => {
+          this.registers.write(register, 0x1234);
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('increments the register value', () => {
+          expect(this.registers.read(register)).toEqual(0x1235);
+        });
+
+        it('leaves PC at the correct value', () => {
+          expect(this.registers.read('pc')).toEqual(0x1000);
+        });
+      });
+    });
+  });
+
+  [
+    { opcode: 0x0B, register: 'bc', repr: 'DEC BC' },
+    { opcode: 0x1B, register: 'de', repr: 'DEC DE' },
+    { opcode: 0x2B, register: 'hl', repr: 'DEC HL' },
+    { opcode: 0x3B, register: 'sp', repr: 'DEC SP' },
+  ].forEach((params) => {
+    const { opcode, register, repr } = params;
+
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
+      beforeEach(() => {
+        this.instruction = this.instructionSet.find(opcode);
+      });
+
+      it('exposes the correct string representation', () => {
+        expect(this.instruction.repr).toEqual(repr);
+      });
+
+      it('uses the correct number of cycles', () => {
+        expect(this.instruction.cycles).toEqual(8);
+      });
+
+      describe('execution', () => {
+        beforeEach(() => {
+          this.registers.write(register, 0x1234);
+          this.resolver.resolve(this.instruction);
+        });
+
+        it('increments the register value', () => {
+          expect(this.registers.read(register)).toEqual(0x1233);
+        });
+
+        it('leaves PC at the correct value', () => {
+          expect(this.registers.read('pc')).toEqual(0x1000);
+        });
       });
     });
   });

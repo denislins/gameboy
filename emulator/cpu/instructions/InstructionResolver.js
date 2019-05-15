@@ -22,15 +22,7 @@ export default class InstructionResolver {
   }
 
   readSignedByte() {
-    // can also do (this.readByte() ^ 0x80) - 0x80
-    // why though?
-    let byte = this.readByte();
-
-    if (byte & (1 << 7)) {
-      byte = -(~byte & 0xFF) - 1;
-    }
-
-    return byte;
+    return (this.readByte() ^ 0x80) - 0x80;
   }
 
   readWord() {
@@ -94,14 +86,13 @@ export default class InstructionResolver {
 
   sumSignedByte(value) {
     const byte = this.readSignedByte();
-    const result = value + byte;
 
     this.flags.set('z', false);
     this.flags.set('n', false);
     this.flags.set('h', ((value & 0xF) + (byte & 0xF)) > 0xF);
     this.flags.set('c', ((value & 0xFF) + byte) > 0xFF);
 
-    return result;
+    return value + byte;
   }
 
   incrementRegister(register, setFlags) {
