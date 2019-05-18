@@ -284,6 +284,8 @@ export default class InstructionResolver {
     this.flags.set('z', (newValue & 0xFF) === 0);
     this.flags.set('h', false);
     this.flags.set('c', newValue > 0xFF);
+
+    return newValue;
   }
 
   complementValue(value) {
