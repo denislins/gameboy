@@ -7,17 +7,6 @@ export default class ExtendedInstructionSet {
     this.initInstructions();
   }
 
-  find(opcode) {
-    return this.instructions[opcode];
-  }
-
-  add(opcode, cycles, repr) {
-    const instruction = new Instruction(cycles, repr);
-    this.instructions[opcode] = instruction;
-
-    return instruction;
-  }
-
   initInstructions() {
     this.add(0x37, 8, 'SWAP A').rr('a').swap().sr('a');
     this.add(0x30, 8, 'SWAP B').rr('b').swap().sr('b');
@@ -130,5 +119,16 @@ export default class ExtendedInstructionSet {
 
       this.add(0x86 + 0x08 * i, 16, `RES ${i}, (HL)`).rr('hl').rm().resb(i).sra('hl');
     }
+  }
+
+  find(opcode) {
+    return this.instructions[opcode];
+  }
+
+  add(opcode, cycles, repr) {
+    const instruction = new Instruction(cycles, repr);
+    this.instructions[opcode] = instruction;
+
+    return instruction;
   }
 }

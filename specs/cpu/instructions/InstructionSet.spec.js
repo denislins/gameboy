@@ -15,6 +15,7 @@ describe('InstructionSet', () => {
     };
 
     this.resolver = new InstructionResolver(this.registers, this.mmu);
+    this.flags = undefined;
   });
 
   [
@@ -3872,7 +3873,7 @@ describe('InstructionSet', () => {
       expect(this.instruction.cycles).toEqual(4);
     });
 
-    describe('default execution', () => {
+    describe('execution', () => {
       beforeEach(() => {
         this.flags.write(0xF0);
         this.registers.write('a', 0b10101010);
@@ -3897,6 +3898,472 @@ describe('InstructionSet', () => {
 
       it('does not change the zero flag value', () => {
         expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+  });
+
+  describe('0x3F: CCF', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x3F);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('CCF');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('when the carry flag is set', () => {
+      beforeEach(() => {
+        this.flags.write(0xF0);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('resets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(false);
+      });
+
+      it('resets the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(false);
+      });
+
+      it('resets the subtract flag', () => {
+        expect(this.flags.get('n')).toEqual(false);
+      });
+
+      it('does not change the zero flag value', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+
+    describe('when the carry flag is not set', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+
+      it('resets the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(false);
+      });
+
+      it('resets the subtract flag', () => {
+        expect(this.flags.get('n')).toEqual(false);
+      });
+
+      it('does not change the zero flag value', () => {
+        expect(this.flags.get('z')).toEqual(false);
+      });
+    });
+  });
+
+  describe('0x37: SCF', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x37);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('SCF');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('when the carry flag is set', () => {
+      beforeEach(() => {
+        this.flags.write(0xF0);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('does not change the carry flag value', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+
+      it('resets the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(false);
+      });
+
+      it('resets the subtract flag', () => {
+        expect(this.flags.get('n')).toEqual(false);
+      });
+
+      it('does not change the zero flag value', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+
+    describe('when the carry flag is not set', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+
+      it('resets the half-carry flag', () => {
+        expect(this.flags.get('h')).toEqual(false);
+      });
+
+      it('resets the subtract flag', () => {
+        expect(this.flags.get('n')).toEqual(false);
+      });
+
+      it('does not change the zero flag value', () => {
+        expect(this.flags.get('z')).toEqual(false);
+      });
+    });
+  });
+
+  describe('0x00: NOP', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x00);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('NOP');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('execution', () => {
+      it('does nothing', () => {
+        this.resolver.resolve(this.instruction);
+      });
+    });
+  });
+
+  describe('0x76: HALT', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x76);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('HALT');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('execution', () => {
+      // TODO
+    });
+  });
+
+  describe('0x10: STOP', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x10);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('STOP');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('execution', () => {
+      // TODO
+    });
+  });
+
+  describe('0xF3: DI', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xF3);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('DI');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('execution', () => {
+      // TODO
+    });
+  });
+
+  describe('0xFB: EI', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xFB);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('EI');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('execution', () => {
+      // TODO
+    });
+  });
+
+  describe('0x07: RLCA', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x07);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RLCA');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.flags.write(0xF0);
+        this.registers.write('a', 0b00001111);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes the correct value to A', () => {
+        expect(this.registers.read('a')).toEqual(0b0011110);
+      });
+
+      it('resets all flags', () => {
+        expect(this.flags.read()).toEqual(0);
+      });
+    });
+
+    describe('when the bit 7 is set', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0b10101010);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+    });
+
+    describe('when the result is zero', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the zero flag', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+  });
+
+  describe('0x17: RLA', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x17);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RLA');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.flags.write(0xF0);
+        this.registers.write('a', 0b00110011);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes the correct value to A', () => {
+        expect(this.registers.read('a')).toEqual(0b01100111);
+      });
+
+      it('resets all flags', () => {
+        expect(this.flags.read()).toEqual(0);
+      });
+    });
+
+    describe('when the carry flag is not set', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0b00110011);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes the correct value to A', () => {
+        expect(this.registers.read('a')).toEqual(0b01100110);
+      });
+    });
+
+    describe('when the bit 7 is set', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0b10101010);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+    });
+
+    describe('when the result is zero', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the zero flag', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+  });
+
+  describe('0x0F: RRCA', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x0F);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RRCA');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.flags.write(0xF0);
+        this.registers.write('a', 0b11110000);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes the correct value to A', () => {
+        expect(this.registers.read('a')).toEqual(0b01111000);
+      });
+
+      it('resets all flags', () => {
+        expect(this.flags.read()).toEqual(0);
+      });
+    });
+
+    describe('when the bit 0 is set', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0b01010101);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+    });
+
+    describe('when the result is zero', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the zero flag', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+  });
+
+  describe('0x1F: RRA', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0x1F);
+      this.flags = this.registers.get('f');
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RRA');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(4);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.flags.write(0xF0);
+        this.registers.write('a', 0b11001100);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes the correct value to A', () => {
+        expect(this.registers.read('a')).toEqual(0b11100110);
+      });
+
+      it('resets all flags', () => {
+        expect(this.flags.read()).toEqual(0);
+      });
+    });
+
+    describe('when the carry flag is not set', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0b11001100);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('writes the correct value to A', () => {
+        expect(this.registers.read('a')).toEqual(0b01100110);
+      });
+    });
+
+    describe('when the bit 0 is set', () => {
+      beforeEach(() => {
+        this.registers.write('a', 0b01010101);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the carry flag', () => {
+        expect(this.flags.get('c')).toEqual(true);
+      });
+    });
+
+    describe('when the result is zero', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets the zero flag', () => {
+        expect(this.flags.get('z')).toEqual(true);
+      });
+    });
+  });
+
+  describe('0xC3: JP word', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xC3);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('JP word');
+    });
+
+    it('uses the correct number of cycles', () => {
+      expect(this.instruction.cycles).toEqual(16);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
       });
     });
   });

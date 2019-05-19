@@ -14,17 +14,6 @@ export default class InstructionSet {
     this.instructions[0xCB] = new ExtendedInstructionSet();
   }
 
-  find(opcode) {
-    return this.instructions[opcode];
-  }
-
-  add(opcode, cycles, repr) {
-    const instruction = new Instruction(cycles, repr);
-    this.instructions[opcode] = instruction;
-
-    return instruction;
-  }
-
   initInstructions() {
     this.add(0x3E, 8, 'LD A, byte').rb().sr('a');
     this.add(0x06, 8, 'LD B, byte').rb().sr('b');
@@ -295,7 +284,7 @@ export default class InstructionSet {
     this.add(0x0F, 4, 'RRCA').rr('a').rtr().sr('a');
     this.add(0x1F, 4, 'RRA').rr('a').rtrc().sr('a');
 
-    this.add(0xC3, 12, 'JP word').rw().sr('pc');
+    this.add(0xC3, 16, 'JP word').rw().sr('pc');
 
     this.add(0xC2, 12, 'JP NZ, word').cfl('z', false, 2).rw().sr('pc');
     this.add(0xCA, 12, 'JP Z, word').cfl('z', true, 2).rw().sr('pc');
@@ -339,5 +328,16 @@ export default class InstructionSet {
     this.add(0xD8, 8, 'RET C').cfl('c', true).pop().sr('pc');
 
     this.add(0xD9, 8, 'RETI').pop().sr('pc').ti(true);
+  }
+
+  find(opcode) {
+    return this.instructions[opcode];
+  }
+
+  add(opcode, cycles, repr) {
+    const instruction = new Instruction(cycles, repr);
+    this.instructions[opcode] = instruction;
+
+    return instruction;
   }
 }

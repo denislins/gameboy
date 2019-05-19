@@ -329,18 +329,7 @@ export default class InstructionResolver {
     this.flags.set('z', (shifted & 0xFF) === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
-    this.flags.set('c', value > 0xFF);
-
-    return shifted;
-  }
-
-  rotateRight(value) {
-    const shifted = ((value & 1) << 7) | (value >> 1);
-
-    this.flags.set('z', shifted === 0);
-    this.flags.set('n', false);
-    this.flags.set('h', false);
-    this.flags.set('c', (value & 1) > 0);
+    this.flags.set('c', (value & 0b10000000) > 0);
 
     return shifted;
   }
@@ -352,7 +341,18 @@ export default class InstructionResolver {
     this.flags.set('z', (shifted & 0xFF) === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
-    this.flags.set('c', value > 0xFF);
+    this.flags.set('c', (value & 0b10000000) > 0);
+
+    return shifted;
+  }
+
+  rotateRight(value) {
+    const shifted = ((value & 1) << 7) | (value >> 1);
+
+    this.flags.set('z', shifted === 0);
+    this.flags.set('n', false);
+    this.flags.set('h', false);
+    this.flags.set('c', (value & 1) > 0);
 
     return shifted;
   }
@@ -381,7 +381,7 @@ export default class InstructionResolver {
   }
 
   arithmeticShiftRight(value) {
-    const shifted = (value & (1 << 7)) | (value >> 1);
+    const shifted = (value & 0b10000000) | (value >> 1);
 
     this.flags.set('z', shifted === 0);
     this.flags.set('n', false);
