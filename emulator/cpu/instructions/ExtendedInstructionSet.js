@@ -4,7 +4,7 @@ import Instruction from './Instruction.js';
 export default class ExtendedInstructionSet {
   constructor() {
     this.instructions = {};
-    this.initInstructions();
+    // this.initInstructions();
   }
 
   initInstructions() {

@@ -8,16 +8,18 @@ export default class InstructionResolver {
   resolve(instruction) {
     this.resolved = false;
 
-    return instruction.chain.resolve((reduced, piece) => {
+    return instruction.resolve((reduced, piece) => {
       if (this.resolved) return reduced;
 
-      const args = [...piece.args, reduced];
-      return this[piece.operation](...args);
+      const [operation, defaultArgs] = piece;
+      const args = { value: reduced, ...defaultArgs };
+
+      return this[operation](args);
     });
   }
 
   readByte() {
-    const pc = this.incrementRegister('pc', false);
+    const pc = this.incrementRegister({ register: 'pc', setFlags: false });
     return this.mmu.read(pc);
   }
 
@@ -32,28 +34,28 @@ export default class InstructionResolver {
     return (byte2 << 8) | byte1;
   }
 
-  readRegister(register) {
+  readRegister({ register }) {
     return this.registers.read(register);
   }
 
-  storeToRegister(register, value) {
+  writeRegister({ register, value }) {
     this.registers.write(register, value);
   }
 
-  addToRegister(register, value) {
-    const newValue = value + this.readRegister(register);
-    this.storeToRegister(register, newValue);
+  addToRegister({ register, value }) {
+    const newValue = value + this.readRegister({ register });
+    this.writeRegister({ register, value: newValue });
   }
 
-  storeValueToRegister(register, value) {
-    this.storeToRegister(register, value);
+  writeValueToRegister({ register, value }) {
+    this.writeRegister({ register, value });
   }
 
-  readFromMemory(address) {
+  readMemory({ value: address }) {
     return this.mmu.read(address);
   }
 
-  storeByteToAddress(offset, value) {
+  writeByteToAddress({ value, offset }) {
     let address;
 
     if (offset) {
@@ -65,26 +67,21 @@ export default class InstructionResolver {
     this.mmu.write(address, value);
   }
 
-  storeWordToAddress(value) {
+  writeWordToAddress({ value }) {
     const address = this.readWord();
 
     this.mmu.write(address, value & 0xFF);
     this.mmu.write(address + 1, value >> 8);
   }
 
-  readFromAddressAtRegister(register) {
-    const address = this.readRegister(register);
-    return this.mmu.read(address);
-  }
-
-  storeToAddressAtRegister(register, offset, value) {
-    const baseAddress = this.readRegister(register);
+  writeToAddressAtRegister({ register, value, offset }) {
+    const baseAddress = this.readRegister({ register });
     const address = baseAddress + (offset || 0);
 
     this.mmu.write(address, value);
   }
 
-  sumSignedByte(value) {
+  sumSignedByte({ value }) {
     const byte = this.readSignedByte();
 
     this.flags.set('z', false);
@@ -95,16 +92,16 @@ export default class InstructionResolver {
     return value + byte;
   }
 
-  incrementRegister(register, setFlags) {
-    const currentValue = this.readRegister(register);
-    const newValue = this.incrementValue(setFlags, currentValue);
+  incrementRegister({ register, setFlags }) {
+    const currentValue = this.readRegister({ register });
+    const newValue = this.incrementValue({ value: currentValue, setFlags });
 
-    this.storeToRegister(register, newValue);
+    this.writeRegister({ register, value: newValue });
 
     return currentValue;
   }
 
-  incrementValue(setFlags, value) {
+  incrementValue({ value, setFlags }) {
     if (setFlags) {
       this.flags.set('z', value === 0xFF);
       this.flags.set('n', false);
@@ -114,16 +111,16 @@ export default class InstructionResolver {
     return value + 1;
   }
 
-  decrementRegister(register, setFlags) {
-    const currentValue = this.readRegister(register);
-    const newValue = this.decrementValue(setFlags, currentValue);
+  decrementRegister({ register, setFlags }) {
+    const currentValue = this.readRegister({ register });
+    const newValue = this.decrementValue({ value: currentValue, setFlags });
 
-    this.storeToRegister(register, newValue);
+    this.writeRegister({ register, value: newValue });
 
     return currentValue;
   }
 
-  decrementValue(setFlags, value) {
+  decrementValue({ value, setFlags }) {
     if (setFlags) {
       this.flags.set('z', value === 1);
       this.flags.set('n', true);
@@ -133,23 +130,28 @@ export default class InstructionResolver {
     return value - 1;
   }
 
-  push(value) {
-    this.decrementRegister('sp');
-    this.mmu.write(this.readRegister('sp'), value >> 8);
+  push({ value }) {
+    this.decrementRegister({ register: 'sp' });
 
-    this.decrementRegister('sp');
-    this.mmu.write(this.readRegister('sp'), value & 0xFF);
+    const msbAddress = this.decrementRegister({ register: 'sp' });
+    const lsbAddress = this.readRegister({ register: 'sp' });
+
+    this.mmu.write(msbAddress, value >> 8);
+    this.mmu.write(lsbAddress, value & 0xFF);
   }
 
   pop() {
-    const byte1 = this.mmu.read(this.incrementRegister('sp'));
-    const byte2 = this.mmu.read(this.incrementRegister('sp'));
+    const lsbAddress = this.incrementRegister({ register: 'sp' });
+    const msbAddress = this.incrementRegister({ register: 'sp' });
+
+    const byte1 = this.mmu.read(lsbAddress);
+    const byte2 = this.mmu.read(msbAddress);
 
     return (byte2 << 8) | byte1;
   }
 
-  sumToRegisterValue(register, value) {
-    const currentValue = this.readRegister(register);
+  sumToRegisterValue({ register, value }) {
+    const currentValue = this.readRegister({ register });
     const newValue = currentValue + value;
 
     this.flags.set('n', false);
@@ -160,8 +162,8 @@ export default class InstructionResolver {
     return newValue;
   }
 
-  subtractFromRegisterValue(register, value) {
-    const currentValue = this.readRegister(register);
+  subtractFromRegisterValue({ register, value }) {
+    const currentValue = this.readRegister({ register });
     const newValue = currentValue - value;
 
     this.flags.set('n', true);
@@ -172,8 +174,8 @@ export default class InstructionResolver {
     return newValue;
   }
 
-  sumToRegisterValueWithCarry(register, value) {
-    const currentValue = this.readRegister(register);
+  sumToRegisterValueWithCarry({ register, value }) {
+    const currentValue = this.readRegister({ register });
     const carry = this.flags.get('c') ? 1 : 0;
 
     const newValue = currentValue + value + carry;
@@ -186,8 +188,8 @@ export default class InstructionResolver {
     return newValue;
   }
 
-  subtractFromRegisterValueWithCarry(register, value) {
-    const currentValue = this.readRegister(register);
+  subtractFromRegisterValueWithCarry({ register, value }) {
+    const currentValue = this.readRegister({ register });
     const carry = this.flags.get('c') ? 1 : 0;
 
     const newValue = currentValue - value - carry;
@@ -200,8 +202,8 @@ export default class InstructionResolver {
     return newValue;
   }
 
-  sumWordToRegisterValue(register, value) {
-    const currentValue = this.readRegister(register);
+  sumWordToRegisterValue({ register, value }) {
+    const currentValue = this.readRegister({ register });
     const newValue = currentValue + value;
 
     this.flags.set('n', false);
@@ -211,8 +213,8 @@ export default class InstructionResolver {
     return newValue;
   }
 
-  logicalAnd(register, value) {
-    const result = this.readRegister(register) & value;
+  logicalAnd({ register, value }) {
+    const result = this.readRegister({ register }) & value;
 
     this.flags.set('z', result === 0);
     this.flags.set('n', false);
@@ -222,8 +224,8 @@ export default class InstructionResolver {
     return result;
   }
 
-  logicalOr(register, value) {
-    const result = this.readRegister(register) | value;
+  logicalOr({ register, value }) {
+    const result = this.readRegister({ register }) | value;
 
     this.flags.set('z', result === 0);
     this.flags.set('n', false);
@@ -233,8 +235,8 @@ export default class InstructionResolver {
     return result;
   }
 
-  logicalXor(register, value) {
-    const result = this.readRegister(register) ^ value;
+  logicalXor({ register, value }) {
+    const result = this.readRegister({ register }) ^ value;
 
     this.flags.set('z', result === 0);
     this.flags.set('n', false);
@@ -244,7 +246,7 @@ export default class InstructionResolver {
     return result;
   }
 
-  swap(value) {
+  swap({ value }) {
     const result = ((value & 0xF) << 4) | (value >> 4);
 
     this.flags.set('z', result === 0);
@@ -255,7 +257,7 @@ export default class InstructionResolver {
     return result;
   }
 
-  decimalAdjust(value) {
+  decimalAdjust({ value }) {
     let correction = 0;
     let newValue = value;
 
@@ -288,7 +290,7 @@ export default class InstructionResolver {
     return newValue;
   }
 
-  complementValue(value) {
+  complementValue({ value }) {
     this.flags.set('n', true);
     this.flags.set('h', true);
 
@@ -323,7 +325,7 @@ export default class InstructionResolver {
     // TODO
   }
 
-  rotateLeft(value) {
+  rotateLeft({ value }) {
     const shifted = (value << 1) | (value >> 7);
 
     this.flags.set('z', (shifted & 0xFF) === 0);
@@ -334,7 +336,7 @@ export default class InstructionResolver {
     return shifted;
   }
 
-  rotateLeftUsingCarry(value) {
+  rotateLeftUsingCarry({ value }) {
     const carry = this.flags.get('c') ? 1 : 0;
     const shifted = (value << 1) | carry;
 
@@ -346,7 +348,7 @@ export default class InstructionResolver {
     return shifted;
   }
 
-  rotateRight(value) {
+  rotateRight({ value }) {
     const shifted = ((value & 1) << 7) | (value >> 1);
 
     this.flags.set('z', shifted === 0);
@@ -357,7 +359,7 @@ export default class InstructionResolver {
     return shifted;
   }
 
-  rotateRightUsingCarry(value) {
+  rotateRightUsingCarry({ value }) {
     const carry = this.flags.get('c') ? 1 : 0;
     const shifted = (carry << 7) | (value >> 1);
 
@@ -369,7 +371,7 @@ export default class InstructionResolver {
     return shifted;
   }
 
-  shiftLeft(value) {
+  shiftLeft({ value }) {
     const shifted = value << 1;
 
     this.flags.set('z', (shifted & 0xFF) === 0);
@@ -380,7 +382,7 @@ export default class InstructionResolver {
     return shifted;
   }
 
-  arithmeticShiftRight(value) {
+  arithmeticShiftRight({ value }) {
     const shifted = (value & 0b10000000) | (value >> 1);
 
     this.flags.set('z', shifted === 0);
@@ -391,7 +393,7 @@ export default class InstructionResolver {
     return shifted;
   }
 
-  logicalShiftRight(value) {
+  logicalShiftRight({ value }) {
     const shifted = value >> 1;
 
     this.flags.set('z', shifted === 0);
@@ -402,7 +404,7 @@ export default class InstructionResolver {
     return shifted;
   }
 
-  testBit(bit, value) {
+  testBit({ value, bit }) {
     const mask = 1 << bit;
 
     this.flags.set('z', (value & mask) === 0);
@@ -410,29 +412,29 @@ export default class InstructionResolver {
     this.flags.set('h', true);
   }
 
-  setBit(bit, value) {
+  setBit({ value, bit }) {
     return value | (1 << bit);
   }
 
-  resetBit(bit, value) {
+  resetBit({ value, bit }) {
     return value & ~(1 << bit);
   }
 
-  checkFlag(flag, value, jump) {
+  checkFlag({ flag, value, jump = 0 }) {
     if (this.flags.get(flag) !== value) return;
 
-    const newAddress = this.readRegister('pc') + jump;
-    this.storeToRegister('pc', newAddress);
+    const newAddress = this.readRegister({ register: 'pc' }) + jump;
+    this.writeRegister({ register: 'pc', value: newAddress });
 
     this.resolved = true;
   }
 
-  sumWord(value, previousValue) {
-    return (value + previousValue) & 0xFFFF;
+  sumWord({ value, offset }) {
+    return (value + offset) & 0xFFFF;
   }
 
   nextInstructionAddress() {
     // TODO: adjust offset
-    return (this.readRegister('pc') + 2) & 0xFFFF;
+    return (this.readRegister({ register: 'pc' }) + 2) & 0xFFFF;
   }
 }
