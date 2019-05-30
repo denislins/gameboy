@@ -6,20 +6,36 @@ export default class InstructionResolver {
   }
 
   resolve(instruction) {
-    this.resolved = false;
+    if (instruction.requirements && !this.validateInstruction(instruction)) {
+      return instruction.baseCycles;
+    }
 
-    return instruction.resolve((reduced, piece) => {
-      if (this.resolved) return reduced;
-
+    instruction.resolve((reduced, piece) => {
       const [operation, defaultArgs] = piece;
       const args = { value: reduced, ...defaultArgs };
 
       return this[operation](args);
     });
+
+    return instruction.cycles;
+  }
+
+  validateInstruction(instruction) {
+    const requirements = instruction.requirements;
+
+    if (this.flags.get(requirements.flag) === requirements.value) {
+      return true;
+    }
+
+    if (requirements.otherwise) {
+      this.addToRegister({ register: 'pc', value: requirements.otherwise.skip });
+    }
+
+    return false;
   }
 
   readByte() {
-    const pc = this.incrementRegister({ register: 'pc', setFlags: false });
+    const pc = this.incrementRegister({ register: 'pc' });
     return this.mmu.read(pc);
   }
 
@@ -418,15 +434,6 @@ export default class InstructionResolver {
 
   resetBit({ value, bit }) {
     return value & ~(1 << bit);
-  }
-
-  checkFlag({ flag, value, jump = 0 }) {
-    if (this.flags.get(flag) !== value) return;
-
-    const newAddress = this.readRegister({ register: 'pc' }) + jump;
-    this.writeRegister({ register: 'pc', value: newAddress });
-
-    this.resolved = true;
   }
 
   sumWord({ value, offset }) {

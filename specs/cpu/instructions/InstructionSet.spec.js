@@ -9,13 +9,14 @@ describe('InstructionSet', () => {
     this.registers = new RegisterSet();
     this.registers.write('pc', 0x1000);
 
+    this.flags = this.registers.get('f');
+
     this.mmu = {
       read: jasmine.createSpy('read').and.returnValues(0xAB, 0xCD, 0xEF),
       write: jasmine.createSpy('write'),
     };
 
     this.resolver = new InstructionResolver(this.registers, this.mmu);
-    this.flags = undefined;
   });
 
   [
@@ -771,7 +772,6 @@ describe('InstructionSet', () => {
   describe('0xF8: LD HL, SP + sbyte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xF8);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -1002,7 +1002,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -1099,7 +1098,6 @@ describe('InstructionSet', () => {
   describe('0x86: ADD A, (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x86);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -1190,7 +1188,6 @@ describe('InstructionSet', () => {
   describe('0xC6: ADD A, byte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xC6);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -1291,7 +1288,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -1409,7 +1405,6 @@ describe('InstructionSet', () => {
   describe('0x8E: ADC A, (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x8E);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -1515,7 +1510,6 @@ describe('InstructionSet', () => {
   describe('0xCE: ADC A, byte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xCE);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -1619,7 +1613,6 @@ describe('InstructionSet', () => {
   describe('0x97: SUB A, A', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x97);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -1676,7 +1669,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -1765,7 +1757,6 @@ describe('InstructionSet', () => {
   describe('0x96: SUB A, (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x96);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -1854,7 +1845,6 @@ describe('InstructionSet', () => {
   describe('0xD6: SUB A, byte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xD6);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -1940,7 +1930,6 @@ describe('InstructionSet', () => {
   describe('0x9F: SBC A, A', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x9F);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2023,7 +2012,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -2129,7 +2117,6 @@ describe('InstructionSet', () => {
   describe('0x9E: SBC A, (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x9E);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2246,7 +2233,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -2307,7 +2293,6 @@ describe('InstructionSet', () => {
   describe('0xA6: AND A, (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xA6);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2365,7 +2350,6 @@ describe('InstructionSet', () => {
   describe('0xE6: AND A, byte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xE6);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2431,7 +2415,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -2486,7 +2469,6 @@ describe('InstructionSet', () => {
   describe('0xB6: OR A, (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xB6);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2539,7 +2521,6 @@ describe('InstructionSet', () => {
   describe('0xF6: OR A, byte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xF6);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2589,7 +2570,6 @@ describe('InstructionSet', () => {
   describe('0xAF: XOR A, A', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xAF);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2640,7 +2620,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -2689,7 +2668,6 @@ describe('InstructionSet', () => {
   describe('0xAE: XOR A, (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xAE);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2742,7 +2720,6 @@ describe('InstructionSet', () => {
   describe('0xEE: XOR A, byte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xEE);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2792,7 +2769,6 @@ describe('InstructionSet', () => {
   describe('0xBF: CP A, A', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xBF);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -2849,7 +2825,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -2938,7 +2913,6 @@ describe('InstructionSet', () => {
   describe('0xBE: CP A, (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xBE);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3027,7 +3001,6 @@ describe('InstructionSet', () => {
   describe('0xFE: CP A, byte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xFE);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3124,7 +3097,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -3192,7 +3164,6 @@ describe('InstructionSet', () => {
   describe('0x34: INC (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x34);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3274,7 +3245,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -3345,7 +3315,6 @@ describe('InstructionSet', () => {
   describe('0x35: DEC (HL)', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x35);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3427,7 +3396,6 @@ describe('InstructionSet', () => {
     describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
-        this.flags = this.registers.get('f');
       });
 
       it('exposes the correct string representation', () => {
@@ -3512,7 +3480,6 @@ describe('InstructionSet', () => {
   describe('0xE8: ADD SP, sbyte', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0xE8);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3655,7 +3622,6 @@ describe('InstructionSet', () => {
   describe('0x27: DAA', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x27);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3862,7 +3828,6 @@ describe('InstructionSet', () => {
   describe('0x2F: CPL', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x2F);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3899,13 +3864,16 @@ describe('InstructionSet', () => {
       it('does not change the zero flag value', () => {
         expect(this.flags.get('z')).toEqual(true);
       });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
     });
   });
 
   describe('0x3F: CCF', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x3F);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3937,6 +3905,10 @@ describe('InstructionSet', () => {
       it('does not change the zero flag value', () => {
         expect(this.flags.get('z')).toEqual(true);
       });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
     });
 
     describe('when the carry flag is not set', () => {
@@ -3959,13 +3931,16 @@ describe('InstructionSet', () => {
       it('does not change the zero flag value', () => {
         expect(this.flags.get('z')).toEqual(false);
       });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
     });
   });
 
   describe('0x37: SCF', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x37);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -3997,6 +3972,10 @@ describe('InstructionSet', () => {
       it('does not change the zero flag value', () => {
         expect(this.flags.get('z')).toEqual(true);
       });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
     });
 
     describe('when the carry flag is not set', () => {
@@ -4019,6 +3998,10 @@ describe('InstructionSet', () => {
       it('does not change the zero flag value', () => {
         expect(this.flags.get('z')).toEqual(false);
       });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
     });
   });
 
@@ -4038,6 +4021,10 @@ describe('InstructionSet', () => {
     describe('execution', () => {
       it('does nothing', () => {
         this.resolver.resolve(this.instruction);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
   });
@@ -4117,7 +4104,6 @@ describe('InstructionSet', () => {
   describe('0x07: RLCA', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x07);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -4141,6 +4127,10 @@ describe('InstructionSet', () => {
 
       it('resets all flags', () => {
         expect(this.flags.read()).toEqual(0);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
@@ -4169,7 +4159,6 @@ describe('InstructionSet', () => {
   describe('0x17: RLA', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x17);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -4193,6 +4182,10 @@ describe('InstructionSet', () => {
 
       it('resets all flags', () => {
         expect(this.flags.read()).toEqual(0);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
@@ -4232,7 +4225,6 @@ describe('InstructionSet', () => {
   describe('0x0F: RRCA', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x0F);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -4256,6 +4248,10 @@ describe('InstructionSet', () => {
 
       it('resets all flags', () => {
         expect(this.flags.read()).toEqual(0);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
@@ -4284,7 +4280,6 @@ describe('InstructionSet', () => {
   describe('0x1F: RRA', () => {
     beforeEach(() => {
       this.instruction = this.instructionSet.find(0x1F);
-      this.flags = this.registers.get('f');
     });
 
     it('exposes the correct string representation', () => {
@@ -4308,6 +4303,10 @@ describe('InstructionSet', () => {
 
       it('resets all flags', () => {
         expect(this.flags.read()).toEqual(0);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
@@ -4364,6 +4363,162 @@ describe('InstructionSet', () => {
 
       it('sets PC to the correct value', () => {
         expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+  });
+
+  describe('0xC2: JP NZ, word', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xC2);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('JP NZ, word');
+    });
+
+    describe('when the zero flag is not set', () => {
+      beforeEach(() => {
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(16);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+
+    describe('when the zero flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('z', true);
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(12);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1002);
+      });
+    });
+  });
+
+  describe('0xCA: JP Z, word', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xCA);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('JP Z, word');
+    });
+
+    describe('when the zero flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('z', true);
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(16);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+
+    describe('when the zero flag is not set', () => {
+      beforeEach(() => {
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(12);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1002);
+      });
+    });
+  });
+
+  describe('0xD2: JP NC, word', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xD2);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('JP NC, word');
+    });
+
+    describe('when the carry flag is not set', () => {
+      beforeEach(() => {
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(16);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+
+    describe('when the carry flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('c', true);
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(12);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1002);
+      });
+    });
+  });
+
+  describe('0xDA: JP C, word', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xDA);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('JP C, word');
+    });
+
+    describe('when the carry flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('c', true);
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(16);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+
+    describe('when the carry flag is not set', () => {
+      beforeEach(() => {
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(12);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1002);
       });
     });
   });

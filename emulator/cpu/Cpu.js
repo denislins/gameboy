@@ -1,7 +1,7 @@
+import RegisterSet from './registers/RegisterSet.js';
 import InstructionSet from './instructions/InstructionSet.js';
 import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
 import InstructionResolver from './instructions/InstructionResolver.js';
-import RegisterSet from './registers/RegisterSet.js';
 
 export default class Cpu {
   constructor(mmu) {
@@ -25,21 +25,11 @@ export default class Cpu {
       throw new Error('No instructions to execute');
     }
 
-    this.resolver.resolve(instruction);
-
-    this.cycles += instruction.cycles;
+    this.cycles += this.resolver.resolve(instruction);
   }
 
   getNextInstruction(instructionSet) {
-    const address = this.registers.read('pc');
-
-    if (address >= 0x100) {
-      throw new Error('finished bootrom');
-    }
-
-    const opcode = this.mmu.read(address);
-    this.registers.write('pc', address + 1);
-
+    const opcode = this.getNextOpcode();
     const instruction = (instructionSet || this.instructions).find(opcode);
 
     if (instruction instanceof ExtendedInstructionSet) {
@@ -47,5 +37,13 @@ export default class Cpu {
     }
 
     return instruction;
+  }
+
+  getNextOpcode() {
+    const address = this.registers.read('pc');
+
+    this.registers.write('pc', address + 1);
+
+    return this.mmu.read(address);
   }
 }

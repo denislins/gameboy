@@ -2019,9 +2019,14 @@ export default [
   {
     opcode: 0xC2,
     repr: 'JP NZ, word',
-    cycles: 12,
+    baseCycles: 12,
+    cycles: 16,
+    requirements: {
+      flag: 'z',
+      value: false,
+      otherwise: { skip: 2 },
+    },
     chain: [
-      ['checkFlag', { flag: 'z', value: false, jump: 2 }],
       ['readWord'],
       ['writeRegister', { register: 'pc' }],
     ],
@@ -2029,9 +2034,14 @@ export default [
   {
     opcode: 0xCA,
     repr: 'JP Z, word',
-    cycles: 12,
+    baseCycles: 12,
+    cycles: 16,
+    requirements: {
+      flag: 'z',
+      value: true,
+      otherwise: { skip: 2 },
+    },
     chain: [
-      ['checkFlag', { flag: 'z', value: true, jump: 2 }],
       ['readWord'],
       ['writeRegister', { register: 'pc' }],
     ],
@@ -2039,9 +2049,14 @@ export default [
   {
     opcode: 0xD2,
     repr: 'JP NC, word',
-    cycles: 12,
+    baseCycles: 12,
+    cycles: 16,
+    requirements: {
+      flag: 'c',
+      value: false,
+      otherwise: { skip: 2 },
+    },
     chain: [
-      ['checkFlag', { flag: 'c', value: false, jump: 2 }],
       ['readWord'],
       ['writeRegister', { register: 'pc' }],
     ],
@@ -2049,9 +2064,14 @@ export default [
   {
     opcode: 0xDA,
     repr: 'JP C, word',
-    cycles: 12,
+    baseCycles: 12,
+    cycles: 16,
+    requirements: {
+      flag: 'c',
+      value: true,
+      otherwise: { skip: 2 },
+    },
     chain: [
-      ['checkFlag', { flag: 'c', value: true, jump: 2 }],
       ['readWord'],
       ['writeRegister', { register: 'pc' }],
     ],
