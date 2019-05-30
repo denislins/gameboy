@@ -2,3 +2,5 @@
 yarn-error.log
 node_modules
 *.sublime-workspace
+.nyc_output/
+coverage/

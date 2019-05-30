@@ -5,7 +5,8 @@
   "main": "index.html",
   "scripts": {
     "test": "NODE_PATH=. jasmine --config=jasmine.json",
-    "linter": "eslint emulator"
+    "linter": "eslint emulator",
+    "coverage": "nyc npm test"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,13 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.17.2",
     "esm": "^3.2.22",
-    "jasmine": "^3.4.0"
+    "jasmine": "^3.4.0",
+    "nyc": "^14.1.1"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "emulator/**/*.js"
+    ]
   }
 }
