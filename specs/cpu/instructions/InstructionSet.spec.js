@@ -39,8 +39,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(8);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(8);
       });
 
       describe('execution', () => {
@@ -125,8 +126,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('execution', () => {
@@ -166,8 +168,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(8);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(8);
       });
 
       describe('execution', () => {
@@ -210,8 +213,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(8);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(8);
       });
 
       describe('execution', () => {
@@ -248,8 +252,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD (HL), byte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(12);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(12);
     });
 
     describe('execution', () => {
@@ -288,8 +293,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(8);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(8);
       });
 
       describe('execution', () => {
@@ -329,8 +335,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(8);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(8);
       });
 
       describe('execution', () => {
@@ -361,8 +368,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD A, (word)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(16);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(16);
     });
 
     describe('execution', () => {
@@ -397,8 +405,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD (word), A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(16);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(16);
     });
 
     describe('execution', () => {
@@ -433,8 +442,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD A, (C)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('execution', () => {
@@ -466,8 +476,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD (C), A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('execution', () => {
@@ -497,8 +508,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD A, (HL-)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('execution', () => {
@@ -534,8 +546,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD (HL-), A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('execution', () => {
@@ -569,8 +582,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD A, (HL+)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('execution', () => {
@@ -606,8 +620,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD (HL+), A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('execution', () => {
@@ -641,8 +656,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LDH (byte), A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(12);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(12);
     });
 
     describe('execution', () => {
@@ -670,8 +686,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LDH A, (byte)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(12);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(12);
     });
 
     describe('execution', () => {
@@ -713,8 +730,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(12);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(12);
       });
 
       describe('execution', () => {
@@ -749,8 +767,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD SP, HL');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('execution', () => {
@@ -778,8 +797,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD HL, SP + sbyte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(12);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(12);
     });
 
     describe('execution', () => {
@@ -866,8 +886,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('LD (word), SP');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(20);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(20);
     });
 
     describe('execution', () => {
@@ -913,8 +934,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(16);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(16);
       });
 
       describe('execution', () => {
@@ -960,8 +982,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(12);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(12);
       });
 
       describe('execution', () => {
@@ -1008,8 +1031,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('default execution', () => {
@@ -1104,8 +1128,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('ADD A, (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -1194,8 +1219,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('ADD A, byte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -1294,8 +1320,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('when the carry flag is set', () => {
@@ -1411,8 +1438,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('ADC A, (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('when the carry flag is set', () => {
@@ -1516,8 +1544,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('ADC A, byte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('when the carry flag is set', () => {
@@ -1619,8 +1648,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('SUB A, A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('default execution', () => {
@@ -1675,8 +1705,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('default execution', () => {
@@ -1763,8 +1794,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('SUB A, (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -1851,8 +1883,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('SUB A, byte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -1936,8 +1969,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('SBC A, A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('when the carry flag is set', () => {
@@ -2018,8 +2052,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('when the carry flag is set', () => {
@@ -2123,8 +2158,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('SBC A, (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('when the carry flag is set', () => {
@@ -2239,8 +2275,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('default execution', () => {
@@ -2299,8 +2336,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('AND A, (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -2356,8 +2394,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('AND A, byte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -2421,8 +2460,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('default execution', () => {
@@ -2475,8 +2515,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('OR A, (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -2527,8 +2568,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('OR A, byte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -2576,8 +2618,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('XOR A, A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('default execution', () => {
@@ -2626,8 +2669,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('default execution', () => {
@@ -2674,8 +2718,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('XOR A, (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -2726,8 +2771,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('XOR A, byte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -2775,8 +2821,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('CP A, A');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('default execution', () => {
@@ -2831,8 +2878,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('default execution', () => {
@@ -2919,8 +2967,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('CP A, (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -3007,8 +3056,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('CP A, byte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(8);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(8);
     });
 
     describe('default execution', () => {
@@ -3103,8 +3153,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('default execution', () => {
@@ -3170,8 +3221,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('INC (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(12);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(12);
     });
 
     describe('default execution', () => {
@@ -3251,8 +3303,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(4);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(4);
       });
 
       describe('default execution', () => {
@@ -3321,8 +3374,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('DEC (HL)');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(12);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(12);
     });
 
     describe('default execution', () => {
@@ -3402,8 +3456,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(8);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(8);
       });
 
       describe('default execution', () => {
@@ -3486,8 +3541,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('ADD SP, sbyte');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(16);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(16);
     });
 
     describe('default execution', () => {
@@ -3560,8 +3616,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(8);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(8);
       });
 
       describe('execution', () => {
@@ -3598,8 +3655,9 @@ describe('InstructionSet', () => {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('uses the correct number of cycles', () => {
-        expect(this.instruction.cycles).toEqual(8);
+      it('executes in the correct number of cycles', () => {
+        const cycles = this.resolver.resolve(this.instruction);
+        expect(cycles).toEqual(8);
       });
 
       describe('execution', () => {
@@ -3628,8 +3686,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('DAA');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('when the subtract flag is not set', () => {
@@ -3834,8 +3893,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('CPL');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('execution', () => {
@@ -3880,8 +3940,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('CCF');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('when the carry flag is set', () => {
@@ -3947,8 +4008,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('SCF');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('when the carry flag is set', () => {
@@ -4014,8 +4076,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('NOP');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('execution', () => {
@@ -4038,8 +4101,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('HALT');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('execution', () => {
@@ -4056,8 +4120,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('STOP');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('execution', () => {
@@ -4074,8 +4139,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('DI');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('execution', () => {
@@ -4092,8 +4158,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('EI');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('execution', () => {
@@ -4110,8 +4177,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('RLCA');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('default execution', () => {
@@ -4165,8 +4233,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('RLA');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('default execution', () => {
@@ -4231,8 +4300,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('RRCA');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('default execution', () => {
@@ -4286,8 +4356,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('RRA');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(4);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(4);
     });
 
     describe('default execution', () => {
@@ -4352,8 +4423,9 @@ describe('InstructionSet', () => {
       expect(this.instruction.repr).toEqual('JP word');
     });
 
-    it('uses the correct number of cycles', () => {
-      expect(this.instruction.cycles).toEqual(16);
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(16);
     });
 
     describe('default execution', () => {

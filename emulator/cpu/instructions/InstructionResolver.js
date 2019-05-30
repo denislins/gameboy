@@ -21,7 +21,7 @@ export default class InstructionResolver {
   }
 
   validateInstruction(instruction) {
-    const requirements = instruction.requirements;
+    const { requirements } = instruction;
 
     if (this.flags.get(requirements.flag) === requirements.value) {
       return true;
