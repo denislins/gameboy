@@ -63,10 +63,6 @@ export default class InstructionResolver {
     this.writeRegister({ register, value: newValue });
   }
 
-  writeValueToRegister({ register, value }) {
-    this.writeRegister({ register, value });
-  }
-
   readMemory({ value: address }) {
     return this.mmu.read(address);
   }
@@ -90,9 +86,9 @@ export default class InstructionResolver {
     this.mmu.write(address + 1, value >> 8);
   }
 
-  writeToAddressAtRegister({ register, value, offset }) {
+  writeToAddressAtRegister({ register, value, offset = 0 }) {
     const baseAddress = this.readRegister({ register });
-    const address = baseAddress + (offset || 0);
+    const address = baseAddress + offset;
 
     this.mmu.write(address, value);
   }
@@ -441,7 +437,7 @@ export default class InstructionResolver {
   }
 
   nextInstructionAddress() {
-    // TODO: adjust offset
-    return (this.readRegister({ register: 'pc' }) + 2) & 0xFFFF;
+    const currentAddress = this.readRegister({ register: 'pc' });
+    return (currentAddress + 2) & 0xFFFF;
   }
 }

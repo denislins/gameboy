@@ -2078,11 +2078,10 @@ export default [
   },
   {
     opcode: 0xE9,
-    repr: 'JP (HL)',
+    repr: 'JP HL',
     cycles: 4,
     chain: [
       ['readRegister', { register: 'hl' }],
-      ['readMemory'],
       ['writeRegister', { register: 'pc' }],
     ],
   },
@@ -2098,9 +2097,14 @@ export default [
   {
     opcode: 0x20,
     repr: 'JR NZ, sbyte',
-    cycles: 8,
+    baseCycles: 8,
+    cycles: 12,
+    requirements: {
+      flag: 'z',
+      value: false,
+      otherwise: { skip: 1 },
+    },
     chain: [
-      ['checkFlag', { flag: 'z', value: false, jump: 1 }],
       ['readSignedByte'],
       ['addToRegister', { register: 'pc' }],
     ],
@@ -2108,9 +2112,14 @@ export default [
   {
     opcode: 0x28,
     repr: 'JR Z, sbyte',
-    cycles: 8,
+    baseCycles: 8,
+    cycles: 12,
+    requirements: {
+      flag: 'z',
+      value: true,
+      otherwise: { skip: 1 },
+    },
     chain: [
-      ['checkFlag', { flag: 'z', value: true, jump: 1 }],
       ['readSignedByte'],
       ['addToRegister', { register: 'pc' }],
     ],
@@ -2118,9 +2127,14 @@ export default [
   {
     opcode: 0x30,
     repr: 'JR NC, sbyte',
-    cycles: 8,
+    baseCycles: 8,
+    cycles: 12,
+    requirements: {
+      flag: 'c',
+      value: false,
+      otherwise: { skip: 1 },
+    },
     chain: [
-      ['checkFlag', { flag: 'c', value: false, jump: 1 }],
       ['readSignedByte'],
       ['addToRegister', { register: 'pc' }],
     ],
@@ -2128,9 +2142,14 @@ export default [
   {
     opcode: 0x38,
     repr: 'JR C, sbyte',
-    cycles: 8,
+    baseCycles: 8,
+    cycles: 12,
+    requirements: {
+      flag: 'c',
+      value: true,
+      otherwise: { skip: 1 },
+    },
     chain: [
-      ['checkFlag', { flag: 'c', value: true, jump: 1 }],
       ['readSignedByte'],
       ['addToRegister', { register: 'pc' }],
     ],
@@ -2138,7 +2157,7 @@ export default [
   {
     opcode: 0xCD,
     repr: 'CALL word',
-    cycles: 12,
+    cycles: 24,
     chain: [
       ['nextInstructionAddress'],
       ['push'],
@@ -2149,9 +2168,14 @@ export default [
   {
     opcode: 0xC4,
     repr: 'CALL NZ, word',
-    cycles: 12,
+    baseCycles: 12,
+    cycles: 24,
+    requirements: {
+      flag: 'z',
+      value: false,
+      otherwise: { skip: 2 },
+    },
     chain: [
-      ['checkFlag', { flag: 'z', value: false, jump: 2 }],
       ['nextInstructionAddress'],
       ['push'],
       ['readWord'],
@@ -2161,9 +2185,14 @@ export default [
   {
     opcode: 0xCC,
     repr: 'CALL Z, word',
-    cycles: 12,
+    baseCycles: 12,
+    cycles: 24,
+    requirements: {
+      flag: 'z',
+      value: true,
+      otherwise: { skip: 2 },
+    },
     chain: [
-      ['checkFlag', { flag: 'z', value: true, jump: 2 }],
       ['nextInstructionAddress'],
       ['push'],
       ['readWord'],
@@ -2173,9 +2202,14 @@ export default [
   {
     opcode: 0xD4,
     repr: 'CALL NC, word',
-    cycles: 12,
+    baseCycles: 12,
+    cycles: 24,
+    requirements: {
+      flag: 'c',
+      value: false,
+      otherwise: { skip: 2 },
+    },
     chain: [
-      ['checkFlag', { flag: 'c', value: false, jump: 2 }],
       ['nextInstructionAddress'],
       ['push'],
       ['readWord'],
@@ -2185,9 +2219,14 @@ export default [
   {
     opcode: 0xDC,
     repr: 'CALL C, word',
-    cycles: 12,
+    baseCycles: 12,
+    cycles: 24,
+    requirements: {
+      flag: 'c',
+      value: true,
+      otherwise: { skip: 2 },
+    },
     chain: [
-      ['checkFlag', { flag: 'c', value: true, jump: 2 }],
       ['nextInstructionAddress'],
       ['push'],
       ['readWord'],
@@ -2197,81 +2236,81 @@ export default [
   {
     opcode: 0xC7,
     repr: 'RST 00H',
-    cycles: 32,
+    cycles: 16,
     chain: [
       ['readRegister', { register: 'pc' }],
       ['push'],
-      ['writeValueToRegister', { register: 'pc', value: 0x00 }],
+      ['writeRegister', { register: 'pc', value: 0x00 }],
     ],
   },
   {
     opcode: 0xCF,
     repr: 'RST 08H',
-    cycles: 32,
+    cycles: 16,
     chain: [
       ['readRegister', { register: 'pc' }],
       ['push'],
-      ['writeValueToRegister', { register: 'pc', value: 0x08 }],
+      ['writeRegister', { register: 'pc', value: 0x08 }],
     ],
   },
   {
     opcode: 0xD7,
     repr: 'RST 10H',
-    cycles: 32,
+    cycles: 16,
     chain: [
       ['readRegister', { register: 'pc' }],
       ['push'],
-      ['writeValueToRegister', { register: 'pc', value: 0x10 }],
+      ['writeRegister', { register: 'pc', value: 0x10 }],
     ],
   },
   {
     opcode: 0xDF,
     repr: 'RST 18H',
-    cycles: 32,
+    cycles: 16,
     chain: [
       ['readRegister', { register: 'pc' }],
       ['push'],
-      ['writeValueToRegister', { register: 'pc', value: 0x18 }],
+      ['writeRegister', { register: 'pc', value: 0x18 }],
     ],
   },
   {
     opcode: 0xE7,
     repr: 'RST 20H',
-    cycles: 32,
+    cycles: 16,
     chain: [
       ['readRegister', { register: 'pc' }],
       ['push'],
-      ['writeValueToRegister', { register: 'pc', value: 0x20 }],
+      ['writeRegister', { register: 'pc', value: 0x20 }],
     ],
   },
   {
     opcode: 0xEF,
     repr: 'RST 28H',
-    cycles: 32,
+    cycles: 16,
     chain: [
       ['readRegister', { register: 'pc' }],
       ['push'],
-      ['writeValueToRegister', { register: 'pc', value: 0x28 }],
+      ['writeRegister', { register: 'pc', value: 0x28 }],
     ],
   },
   {
     opcode: 0xF7,
     repr: 'RST 30H',
-    cycles: 32,
+    cycles: 16,
     chain: [
       ['readRegister', { register: 'pc' }],
       ['push'],
-      ['writeValueToRegister', { register: 'pc', value: 0x30 }],
+      ['writeRegister', { register: 'pc', value: 0x30 }],
     ],
   },
   {
     opcode: 0xFF,
     repr: 'RST 38H',
-    cycles: 32,
+    cycles: 16,
     chain: [
       ['readRegister', { register: 'pc' }],
       ['push'],
-      ['writeValueToRegister', { register: 'pc', value: 0x38 }],
+      ['writeRegister', { register: 'pc', value: 0x38 }],
     ],
   },
   {
