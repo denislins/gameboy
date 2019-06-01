@@ -1,5 +1,5 @@
 import RegisterSet from './registers/RegisterSet.js';
-import InstructionSet from './instructions/InstructionSet.js';
+import BaseInstructionSet from './instructions/BaseInstructionSet.js';
 import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
 import InstructionResolver from './instructions/InstructionResolver.js';
 
@@ -9,7 +9,7 @@ export default class Cpu {
     this.cycles = 0;
 
     this.registers = new RegisterSet();
-    this.instructions = new InstructionSet();
+    this.instructions = new BaseInstructionSet();
 
     this.resolver = new InstructionResolver(this.registers, this.mmu);
   }

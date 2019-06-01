@@ -1,10 +1,10 @@
-import InstructionSet from 'emulator/cpu/instructions/InstructionSet';
+import BaseInstructionSet from 'emulator/cpu/instructions/BaseInstructionSet';
 import InstructionResolver from 'emulator/cpu/instructions/InstructionResolver';
 import RegisterSet from 'emulator/cpu/registers/RegisterSet';
 
-describe('InstructionSet', () => {
+describe('BaseInstructionSet', () => {
   beforeEach(() => {
-    this.instructionSet = new InstructionSet();
+    this.instructionSet = new BaseInstructionSet();
 
     this.registers = new RegisterSet();
     this.registers.write('pc', 0x1000);

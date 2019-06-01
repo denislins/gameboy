@@ -1,9 +1,9 @@
 /* eslint newline-per-chained-call: 0 */
-import instructions from './resources/instructions.js';
+import instructions from './resources/base-instructions.js';
 import ExtendedInstructionSet from './ExtendedInstructionSet.js';
 import Instruction from './Instruction.js';
 
-export default class InstructionSet {
+export default class BaseInstructionSet {
   constructor() {
     this.instructions = {};
 
