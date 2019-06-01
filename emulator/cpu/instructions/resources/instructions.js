@@ -2316,7 +2316,7 @@ export default [
   {
     opcode: 0xC9,
     repr: 'RET',
-    cycles: 8,
+    cycles: 16,
     chain: [
       ['pop'],
       ['writeRegister', { register: 'pc' }],
@@ -2325,9 +2325,13 @@ export default [
   {
     opcode: 0xC0,
     repr: 'RET NZ',
-    cycles: 8,
+    baseCycles: 8,
+    cycles: 20,
+    requirements: {
+      flag: 'z',
+      value: false,
+    },
     chain: [
-      ['checkFlag', { flag: 'z', value: false }],
       ['pop'],
       ['writeRegister', { register: 'pc' }],
     ],
@@ -2335,9 +2339,13 @@ export default [
   {
     opcode: 0xC8,
     repr: 'RET Z',
-    cycles: 8,
+    baseCycles: 8,
+    cycles: 20,
+    requirements: {
+      flag: 'z',
+      value: true,
+    },
     chain: [
-      ['checkFlag', { flag: 'z', value: true }],
       ['pop'],
       ['writeRegister', { register: 'pc' }],
     ],
@@ -2345,9 +2353,13 @@ export default [
   {
     opcode: 0xD0,
     repr: 'RET NC',
-    cycles: 8,
+    baseCycles: 8,
+    cycles: 20,
+    requirements: {
+      flag: 'c',
+      value: false,
+    },
     chain: [
-      ['checkFlag', { flag: 'c', value: false }],
       ['pop'],
       ['writeRegister', { register: 'pc' }],
     ],
@@ -2355,9 +2367,13 @@ export default [
   {
     opcode: 0xD8,
     repr: 'RET C',
-    cycles: 8,
+    baseCycles: 8,
+    cycles: 20,
+    requirements: {
+      flag: 'c',
+      value: true,
+    },
     chain: [
-      ['checkFlag', { flag: 'c', value: true }],
       ['pop'],
       ['writeRegister', { register: 'pc' }],
     ],
@@ -2365,7 +2381,7 @@ export default [
   {
     opcode: 0xD9,
     repr: 'RETI',
-    cycles: 8,
+    cycles: 16,
     chain: [
       ['pop'],
       ['writeRegister', { register: 'pc' }],

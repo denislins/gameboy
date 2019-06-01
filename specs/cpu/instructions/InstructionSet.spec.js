@@ -5136,43 +5136,6 @@ describe('InstructionSet', () => {
     });
   });
 
-  describe('0xCD: CALL word', () => {
-    beforeEach(() => {
-      this.instruction = this.instructionSet.find(0xCD);
-    });
-
-    it('exposes the correct string representation', () => {
-      expect(this.instruction.repr).toEqual('CALL word');
-    });
-
-    it('executes in the correct number of cycles', () => {
-      const cycles = this.resolver.resolve(this.instruction);
-      expect(cycles).toEqual(24);
-    });
-
-    describe('default execution', () => {
-      beforeEach(() => {
-        this.registers.write('sp', 0xFFFE);
-        this.resolver.resolve(this.instruction);
-      });
-
-      it('pushes the next instruction address to the stack', () => {
-        const calls = this.mmu.write.calls.all();
-
-        expect(calls[0].args).toEqual([0xFFFD, 0x10]);
-        expect(calls[1].args).toEqual([0xFFFC, 0x02]);
-      });
-
-      it('sets SP to the correct value', () => {
-        expect(this.registers.read('sp')).toEqual(0xFFFC);
-      });
-
-      it('sets PC to the correct value', () => {
-        expect(this.registers.read('pc')).toEqual(0xCDAB);
-      });
-    });
-  });
-
   [
     { opcode: 0xC7, address: 0x00, repr: 'RST 00H'},
     { opcode: 0xCF, address: 0x08, repr: 'RST 08H'},
@@ -5185,7 +5148,7 @@ describe('InstructionSet', () => {
   ].forEach((params) => {
     const { opcode, address, repr } = params;
 
-    fdescribe(`0x${opcode.toString(16)}: ${repr}`, () => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
       beforeEach(() => {
         this.instruction = this.instructionSet.find(opcode);
       });
@@ -5219,6 +5182,300 @@ describe('InstructionSet', () => {
         it('sets PC to the correct value', () => {
           expect(this.registers.read('pc')).toEqual(address);
         });
+      });
+    });
+  });
+
+  describe('0xC9: RET', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xC9);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RET');
+    });
+
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(16);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.registers.write('sp', 0xFFFC);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0xFFFC]);
+        expect(calls[1].args).toEqual([0xFFFD]);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFE);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+  });
+
+  describe('0xC0: RET NZ', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xC0);
+      this.registers.write('sp', 0xFFFC);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RET NZ');
+    });
+
+    describe('when the zero flag is not set', () => {
+      beforeEach(() => {
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(20);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0xFFFC]);
+        expect(calls[1].args).toEqual([0xFFFD]);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFE);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+
+    describe('when the zero flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('z', true);
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(8);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFC);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0xC8: RET Z', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xC8);
+      this.registers.write('sp', 0xFFFC);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RET Z');
+    });
+
+    describe('when the zero flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('z', true);
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(20);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0xFFFC]);
+        expect(calls[1].args).toEqual([0xFFFD]);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFE);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+
+    describe('when the zero flag is not set', () => {
+      beforeEach(() => {
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(8);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFC);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0xD0: RET NC', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xD0);
+      this.registers.write('sp', 0xFFFC);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RET NC');
+    });
+
+    describe('when the carry flag is not set', () => {
+      beforeEach(() => {
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(20);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0xFFFC]);
+        expect(calls[1].args).toEqual([0xFFFD]);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFE);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+
+    describe('when the carry flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('c', true);
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(8);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFC);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0xD8: RET C', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xD8);
+      this.registers.write('sp', 0xFFFC);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RET C');
+    });
+
+    describe('when the carry flag is set', () => {
+      beforeEach(() => {
+        this.flags.set('c', true);
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(20);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0xFFFC]);
+        expect(calls[1].args).toEqual([0xFFFD]);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFE);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
+      });
+    });
+
+    describe('when the carry flag is not set', () => {
+      beforeEach(() => {
+        this.cycles = this.resolver.resolve(this.instruction);
+      });
+
+      it('executes in the correct number of cycles', () => {
+        expect(this.cycles).toEqual(8);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFC);
+      });
+
+      it('leaves PC at the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
+  describe('0xD9: RETI', () => {
+    beforeEach(() => {
+      this.instruction = this.instructionSet.find(0xD9);
+    });
+
+    it('exposes the correct string representation', () => {
+      expect(this.instruction.repr).toEqual('RETI');
+    });
+
+    it('executes in the correct number of cycles', () => {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(16);
+    });
+
+    describe('default execution', () => {
+      beforeEach(() => {
+        this.registers.write('sp', 0xFFFC);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', () => {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0xFFFC]);
+        expect(calls[1].args).toEqual([0xFFFD]);
+      });
+
+      it('leaves SP at the correct value', () => {
+        expect(this.registers.read('sp')).toEqual(0xFFFE);
+      });
+
+      it('sets PC to the correct value', () => {
+        expect(this.registers.read('pc')).toEqual(0xCDAB);
       });
     });
   });
