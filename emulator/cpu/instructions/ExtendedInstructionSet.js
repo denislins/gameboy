@@ -1,5 +1,5 @@
 /* eslint newline-per-chained-call: 0 */
-import instructionSpecs from './specs/extended-instructions.js';
+import specs from './specs/extended-instructions.js';
 import Instruction from './Instruction.js';
 
 export default class ExtendedInstructionSet {
@@ -9,7 +9,7 @@ export default class ExtendedInstructionSet {
   }
 
   initInstructions() {
-    instructionSpecs.forEach((spec) => {
+    specs.forEach((spec) => {
       this.instructions[spec.opcode] = new Instruction(spec);
     });
   }
