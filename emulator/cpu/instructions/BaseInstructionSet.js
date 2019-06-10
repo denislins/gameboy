@@ -1,4 +1,3 @@
-/* eslint newline-per-chained-call: 0 */
 import specs from './specs/base-instructions.js';
 import ExtendedInstructionSet from './ExtendedInstructionSet.js';
 import Instruction from './Instruction.js';
