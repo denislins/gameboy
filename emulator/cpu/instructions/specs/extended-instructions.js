@@ -798,7 +798,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['setBit', { bit: 0 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -879,7 +879,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['resetBit', { bit: 0 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1033,7 +1033,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['setBit', { bit: 1 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1114,7 +1114,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['resetBit', { bit: 1 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1268,7 +1268,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['setBit', { bit: 2 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1349,7 +1349,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['resetBit', { bit: 2 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1503,7 +1503,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['setBit', { bit: 3 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1584,7 +1584,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['resetBit', { bit: 3 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1738,7 +1738,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['setBit', { bit: 4 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1819,7 +1819,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['resetBit', { bit: 4 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -1973,7 +1973,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['setBit', { bit: 5 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -2054,7 +2054,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['resetBit', { bit: 5 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -2208,7 +2208,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['setBit', { bit: 6 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -2289,7 +2289,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['resetBit', { bit: 6 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -2443,7 +2443,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['setBit', { bit: 7 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
   {
@@ -2524,7 +2524,7 @@ export default [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
       ['resetBit', { bit: 7 }],
-      ['writeRegister', { register: 'hl' }],
+      ['writeToAddressAtRegister', { register: 'hl' }],
     ],
   },
 ];

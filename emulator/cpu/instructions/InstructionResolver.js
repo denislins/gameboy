@@ -389,13 +389,13 @@ export default class InstructionResolver {
     this.flags.set('z', (shifted & 0xFF) === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
-    this.flags.set('c', value > 0xFF);
+    this.flags.set('c', shifted > 0xFF);
 
     return shifted;
   }
 
   arithmeticShiftRight({ value }) {
-    const shifted = (value & 0b10000000) | (value >> 1);
+    const shifted = (value & 0x80) | (value >> 1);
 
     this.flags.set('z', shifted === 0);
     this.flags.set('n', false);
