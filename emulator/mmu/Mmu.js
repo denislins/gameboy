@@ -30,7 +30,13 @@ export default class Mmu {
     const page = this.getPage(address);
     const mappedAddress = this.mapAddress(address);
 
-    page[mappedAddress] = value & 0xFF;
+    if (mappedAddress < 0x8000) {
+      console.debug('skipping write to ROM');
+    } else if (mappedAddress >= 0xFEA0 && mappedAddress < 0xFF00) {
+      console.debug('skipping write to unused space');
+    } else {
+      page[mappedAddress] = value & 0xFF;
+    }
   }
 
   getPage(address) {
@@ -43,7 +49,7 @@ export default class Mmu {
 
   mapAddress(address) {
     if (address >= 0xE000 && address < 0xFE00) {
-      return (address - 0x2000) & 0xFFFF;
+      return address - 0x2000;
     }
 
     return address & 0xFFFF;

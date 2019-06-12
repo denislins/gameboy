@@ -41,8 +41,11 @@ export default class Cpu {
 
   getNextOpcode() {
     const address = this.registers.read('pc');
-
     this.registers.write('pc', address + 1);
+
+    if (address >= 0x100) {
+      throw new Error('finished bootrom');
+    }
 
     return this.mmu.read(address);
   }
