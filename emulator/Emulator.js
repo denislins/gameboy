@@ -1,6 +1,6 @@
 import Cpu from './cpu/Cpu.js';
 import Gpu from './gpu/Gpu.js';
-import TestPpu from './gpu/TestPpu.js';
+import Ppu from './gpu/Ppu.js';
 import Mmu from './mmu/Mmu.js';
 import Display from './display/Display.js';
 import Cartridge from './cartridge/Cartridge.js';
@@ -45,8 +45,8 @@ export default class Emulator {
     const cartridge = new Cartridge(path);
     await this.mmu.loadCartridge(cartridge);
 
-    const testPpu = new TestPpu(this.mmu);
-    const colors = testPpu.draw();
+    const ppu = new Ppu(this.mmu);
+    const colors = ppu.draw();
 
     this.display.draw(colors);
   }
