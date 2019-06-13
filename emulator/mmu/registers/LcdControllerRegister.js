@@ -1,7 +1,7 @@
 import MemoryRegister from './MemoryRegister.js';
 
 export default class LcdControllerRegister extends MemoryRegister {
-  isEnabled() {
+  isDisplayEnabled() {
     return this.testBit(7);
   }
 

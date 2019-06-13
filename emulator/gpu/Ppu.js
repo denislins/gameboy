@@ -17,12 +17,14 @@ export default class Ppu {
   renderRow(row) {
     const pixels = [];
 
-    const baseIdentityAddress = this.baseIdentityAddress + Math.floor(row / 8) * 32;
+    const tileIdentityOffset = Math.floor(row / 8) * 32;
+
+    const baseIdentityAddress = this.controller.getBackgroundBaseAddress() + tileIdentityOffset;
     const tileAddressOffset = (row % 8) * 2;
 
     for (let tile = 0; tile < 20; tile++) {
       const tileNumber = this.mmu.read(baseIdentityAddress + tile);
-      const tileBaseAddress = this.baseTileAddress + 16 * tileNumber;
+      const tileBaseAddress = this.controller.getTilesBaseAddress() + 16 * tileNumber;
 
       const tileRowAddress = tileBaseAddress + tileAddressOffset;
       const tileRowPixels = this.renderTileRow(tileRowAddress);
@@ -49,13 +51,5 @@ export default class Ppu {
     }
 
     return pixels;
-  }
-
-  get baseTileAddress() {
-    return this.controller.getTilesBaseAddress();
-  }
-
-  get baseIdentityAddress() {
-    return this.controller.getBackgroundBaseAddress();
   }
 }

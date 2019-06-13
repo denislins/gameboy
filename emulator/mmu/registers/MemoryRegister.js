@@ -1,12 +1,7 @@
 export default class MemoryRegister {
-  constructor(mmu, address, defaultValue) {
+  constructor(mmu, address) {
     this.mmu = mmu;
     this.address = address;
-    this.defaultValue = defaultValue;
-  }
-
-  reset() {
-    this.write(this.defaultValue);
   }
 
   read() {

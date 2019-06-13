@@ -15,7 +15,7 @@ export default class MemoryRegisterSet {
   }
 
   initVideoRegisters() {
-    this.registers.lcdc = new LcdControllerRegister(this.mmu, 0xFF40, 0x91);
+    this.registers.lcdc = new LcdControllerRegister(this.mmu, 0xFF40);
 
     this.add('stat', 0xFF41);
     this.add('scy', 0xFF42);
@@ -23,15 +23,11 @@ export default class MemoryRegisterSet {
     this.add('ly', 0xFF44);
     this.add('lyc', 0xFF45);
     this.add('dma', 0xFF46);
-    this.add('bgp', 0xFF47, 0xFC);
-    this.add('obp0', 0xFF48, 0xFF);
-    this.add('obp1', 0xFF49, 0xFF);
+    this.add('bgp', 0xFF47);
+    this.add('obp0', 0xFF48);
+    this.add('obp1', 0xFF49);
     this.add('wy', 0xFF4A);
     this.add('wx', 0xFF4B);
-  }
-
-  reset() {
-    Object.values(this.registers).forEach(r => r.reset());
   }
 
   add(register, address, value) {

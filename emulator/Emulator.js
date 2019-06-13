@@ -18,10 +18,9 @@ export default class Emulator {
   }
 
   async boot() {
-    await this.mmu.loadCartridge(this.cartridge);
-
     this.cpu.reset();
-    this.mmu.reset();
+
+    await this.mmu.loadCartridge(this.cartridge);
 
     // cpu needs to run non-stop
     // eslint-disable-next-line no-constant-condition

@@ -19,10 +19,6 @@ export default class Mmu {
     this.ram = await cartridge.read();
   }
 
-  reset() {
-    this.registers.reset();
-  }
-
   read(address) {
     const page = this.getPage(address);
     const mappedAddress = this.mapAddress(address);
