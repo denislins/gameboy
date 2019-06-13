@@ -27,7 +27,8 @@ export default class Emulator {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
-        this.tick();
+        this.cpu.tick();
+        // this.gpu.tick(this.cpu.cycles);
       } catch (e) {
         if (e.message === 'finished bootrom') {
           break;
@@ -38,20 +39,15 @@ export default class Emulator {
     }
 
     console.log('finished bootrom');
-
-    const testPpu = new TestPpu(this.mmu);
-    const pixels = testPpu.draw();
-
-    // need to check the memory dump from bgb
-    // tiles are returning zero
-    // memory is probably not right
-    console.log(pixels);
-
-    this.display.draw(pixels);
   }
 
-  tick() {
-    this.cpu.tick();
-    // this.gpu.tick(this.cpu.cycles);
+  async bootWithMemoryDump(path) {
+    const cartridge = new Cartridge(path);
+    await this.mmu.loadCartridge(cartridge);
+
+    const testPpu = new TestPpu(this.mmu);
+    const colors = testPpu.draw();
+
+    this.display.draw(colors);
   }
 }

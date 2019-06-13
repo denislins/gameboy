@@ -15,6 +15,10 @@ export default class Mmu {
     this.ram = [...rom, ...ram];
   }
 
+  async loadMemoryDump(cartridge) {
+    this.ram = await cartridge.read();
+  }
+
   reset() {
     this.registers.reset();
   }

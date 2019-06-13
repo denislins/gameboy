@@ -7,12 +7,17 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       text-align: center;
     }
 
     canvas {
-      margin: 50px auto 0;
+      margin: 10px auto 0;
     }
 
     #fps {
@@ -23,7 +28,7 @@
   </style>
 </head>
 <body>
-  <canvas id="screen" width="480" height="432"></canvas>
+  <canvas id="screen" width="800" height="720"></canvas>
   <script type="module">
     import Emulator from './emulator/Emulator.js';
 
@@ -40,8 +45,10 @@
       },
     });
 
-    emulator.load('./tetris.gb');
-    emulator.boot();
+    // emulator.load('./tetris.gb');
+    // emulator.boot();
+
+    emulator.bootWithMemoryDump('./tetris.dump');
 
     window.e = emulator;
   </script>

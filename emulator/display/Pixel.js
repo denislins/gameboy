@@ -7,11 +7,15 @@ export default class Pixel {
 
     this.row = row;
     this.column = column;
+
+    this.colors = [0, 96, 192, 255];
+  }
+
+  setColor(color) {
+    this.color = this.colors[color || 0];
   }
 
   draw(image) {
-    this.randomizeColor();
-
     for (let w = 0; w < this.width; w++) {
       for (let h = 0; h < this.height; h++) {
         const index = w * 4 + this.column * this.width * 4

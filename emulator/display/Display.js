@@ -25,14 +25,25 @@ export default class Display {
     });
   }
 
-  test() {
+  draw(colors) {
+    const image = this.context.createImageData(this.canvas.width, this.canvas.height);
+
+    this.pixels.forEach((pixel, index) => {
+      pixel.setColor(colors[index]);
+      pixel.draw(image);
+    });
+
+    this.context.putImageData(image, 0, 0);
+  }
+
+  benchmark() {
     this.fps = 0;
     this.currentSecond = new Date().getSeconds();
 
     this.counter = document.getElementById('fps');
 
     const repaint = () => {
-      this.draw();
+      this.test();
 
       const currentSecond = new Date().getSeconds();
 
@@ -51,10 +62,14 @@ export default class Display {
     requestAnimationFrame(repaint);
   }
 
-  draw() {
+  test() {
     const image = this.context.createImageData(this.canvas.width, this.canvas.height);
 
-    this.pixels.forEach(pixel => pixel.draw(image));
+    this.pixels.forEach((pixel) => {
+      pixel.randomizeColor();
+      pixel.draw(image);
+    });
+
     this.context.putImageData(image, 0, 0);
   }
 }

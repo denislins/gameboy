@@ -7,8 +7,8 @@ export default class TestPpu {
   draw() {
     const pixels = [];
 
-    for (let row = 0; row < 128; row++) {
-      pixels.push(this.renderRow(row));
+    for (let row = 0; row < 144; row++) {
+      pixels.push(...this.renderRow(row));
     }
 
     return pixels;
@@ -17,10 +17,10 @@ export default class TestPpu {
   renderRow(row) {
     const pixels = [];
 
-    const baseAddress = 0x8000 + 16 * Math.floor(row / 8);
+    const baseAddress = this.baseTileAddress + 320 * Math.floor(row / 8);
     const addressOffset = (row % 8) * 2;
 
-    for (let tile = 0; tile < 16; tile++) {
+    for (let tile = 0; tile < 20; tile++) {
       const tileBaseAddress = baseAddress + tile * 16 + addressOffset;
       const tilePixels = this.renderTileRow(tileBaseAddress);
 
@@ -37,14 +37,22 @@ export default class TestPpu {
     const byte2 = this.mmu.read(baseAddress + 1);
 
     for (let i = 0; i < 8; i++) {
-      // const mask = 1 << (7 - i);
+      const mask = 1 << (7 - i);
 
-      const bit1 = byte1 >> (7 - i);
-      const bit2 = byte2 >> (7 - i);
+      const bit1 = (byte1 & mask) >> (7 - i);
+      const bit2 = (byte2 & mask) >> (7 - i);
 
       pixels.push((bit2 << 1) | bit1);
     }
 
     return pixels;
+  }
+
+  get baseTileAddress() {
+    return this.controller.getTilesBaseAddress();
+  }
+
+  get baseIdentityAddress() {
+    return this.controller.getBackgroundBaseAddress();
   }
 }
