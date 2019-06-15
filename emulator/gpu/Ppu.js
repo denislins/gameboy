@@ -22,19 +22,23 @@ export default class Ppu {
   }
 
   renderPixel(row, column) {
-    const tileIdentityOffset = Math.floor(row / 8) * 32 + Math.floor(column / 8);
-    const tileIdentityAddress = this.controller.getBackgroundBaseAddress() + tileIdentityOffset;
-
-    const tileNumber = this.mmu.read(tileIdentityAddress);
+    const tileNumber = this.calculateTileNumber(row, column);
     const tileBaseAddress = this.calculateTileBaseAddress(tileNumber);
 
     const tileAddressOffset = (row % 8) * 2;
     const tileRowAddress = tileBaseAddress + tileAddressOffset;
 
-    const internalColor = this.calculateInternalColor(tileRowAddress, row % 8);
+    const internalColor = this.calculateInternalColor(tileRowAddress, column % 8);
     const displayColor = this.mapDisplayColor(internalColor);
 
     return displayColor;
+  }
+
+  calculateTileNumber(row, column) {
+    const tileIdentityOffset = Math.floor(row / 8) * 32 + Math.floor(column / 8);
+    const tileIdentityAddress = this.controller.getBackgroundBaseAddress() + tileIdentityOffset;
+
+    return this.mmu.read(tileIdentityAddress);
   }
 
   calculateTileBaseAddress(tileNumber) {
@@ -47,24 +51,24 @@ export default class Ppu {
     return tileBaseAddress + tileNumber * 16;
   }
 
-  calculateInternalColor(baseAddress, bit) {
+  calculateInternalColor(baseAddress, pixel) {
     const byte1 = this.mmu.read(baseAddress);
     const byte2 = this.mmu.read(baseAddress + 1);
 
-    const mask = 1 << (7 - bit);
+    const mask = 1 << (7 - pixel);
 
-    const bit1 = (byte1 & mask) >> (7 - bit);
-    const bit2 = (byte2 & mask) >> (7 - bit);
+    const bit1 = (byte1 & mask) >> (7 - pixel);
+    const bit2 = (byte2 & mask) >> (7 - pixel);
 
     return (bit2 << 1) | bit1;
   }
 
   mapDisplayColor(color) {
-    return color;
-
     const pallete = this.mmu.registers.read('bgp');
-    const mask = 11 << (color * 2);
 
-    return (pallete & mask) >> (color * 2);
+    const shift = color * 2;
+    const mask = 0b11 << shift;
+
+    return (pallete & mask) >> shift;
   }
 }
