@@ -34,6 +34,9 @@ export default class Mmu {
       console.debug('skipping write to ROM');
     } else if (mappedAddress >= 0xFEA0 && mappedAddress < 0xFF00) {
       console.debug('skipping write to unused space');
+    } else if (mappedAddress === 0xFF44) {
+      // reset the current scanline if the game writes to it
+      page[mappedAddress] = 0;
     } else {
       page[mappedAddress] = value & 0xFF;
     }

@@ -4,21 +4,19 @@ export default class Ppu {
     this.controller = this.mmu.registers.get('lcdc');
   }
 
-  draw() {
+  draw(row) {
     const pixels = [];
 
-    for (let row = 0; row < 144; row++) {
-      for (let column = 0; column < 160; column++) {
-        let pixel;
+    for (let column = 0; column < 160; column++) {
+      let pixel;
 
-        if (this.isWindowEnabled(row, column)) {
-          pixel = this.renderWindowPixel(row, column);
-        } else {
-          pixel = this.renderBackgroundPixel(row, column);
-        }
-
-        pixels.push(pixel);
+      if (this.isWindowEnabled(row, column)) {
+        pixel = this.renderWindowPixel(row, column);
+      } else {
+        pixel = this.renderBackgroundPixel(row, column);
       }
+
+      pixels.push(pixel);
     }
 
     return pixels;

@@ -19,25 +19,43 @@ export default class Emulator {
 
   async boot() {
     this.cpu.reset();
+    this.gpu.reset();
 
     await this.mmu.loadCartridge(this.cartridge);
 
-    // cpu needs to run non-stop
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      try {
-        this.cpu.tick();
-        // this.gpu.tick(this.cpu.cycles);
-      } catch (e) {
-        if (e.message === 'finished bootrom') {
-          break;
-        } else {
-          throw e;
-        }
-      }
+    this.fps = 0;
+    this.currentSecond = new Date().getSeconds();
+
+    this.counter = document.getElementById('fps');
+
+    window.requestAnimationFrame(() => this.tick());
+  }
+
+  tick() {
+    const limit = this.cpu.cycles + 70224;
+
+    while (this.cpu.cycles <= limit) {
+      const cycles = this.cpu.tick();
+      this.gpu.tick(cycles);
     }
 
-    console.log('finished bootrom');
+    this.display.draw(this.gpu.getScreen());
+    this.updateFps();
+
+    window.requestAnimationFrame(() => this.tick());
+  }
+
+  updateFps() {
+    const currentSecond = new Date().getSeconds();
+
+    if (currentSecond === this.currentSecond) {
+      this.fps++;
+    } else {
+      this.counter.innerText = this.fps;
+
+      this.fps = 1;
+      this.currentSecond = new Date().getSeconds();
+    }
   }
 
   async bootWithMemoryDump(path) {

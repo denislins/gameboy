@@ -4,63 +4,85 @@ export default class Gpu {
   constructor(mmu) {
     this.mmu = mmu;
     this.ppu = new Ppu(this.mmu);
+    this.stat = this.mmu.registers.get('stat');
+  }
+
+  reset() {
+    this.pixels = [];
+    this.cycles = 0;
   }
 
   tick(cpuCycles) {
-    const cycles = cpuCycles % 456;
-    const currentRow = this.mmu.registers.read('ly');
+    this.cycles += cpuCycles;
 
-    if (currentRow === 0) {
-      this.startFrame();
+    if (this.cycles > 456) {
+      this.cycles = this.cycles % 456;
+      this.incrementCurrentRow();
     }
 
-    if (currentRow > 144) {
-      this.execVBlank();
-    } else if (cycles <= 80) {
+    const newMode = this.getNewMode();
+    this.changeMode(newMode);
+  }
+
+  incrementCurrentRow() {
+    const nextRow = (this.currentRow + 1) % 154;
+    this.mmu.registers.write('ly', nextRow);
+  }
+
+  getNewMode() {
+    if (this.currentRow > 143 && this.currentRow < 154) {
+      return 'vblank';
+    }
+
+    if (this.cycles <= 80) {
+      return 'oamSearch';
+    } else if (this.cycles <= 252) {
+      return 'dmaTransfer';
+    }
+
+    return 'hblank';
+  }
+
+  changeMode(newMode) {
+    if (this.currentMode === newMode) {
+      return null;
+    }
+
+    this.stat.changeMode(newMode);
+
+    if (this.currentMode === 'oamSearch') {
       this.execOamSearch();
-    } else if (cycles > 80 && cycles <= 252) {
-      this.execPixelTransfer();
-    } else if (cycles > 252) {
-      this.execHBlank();
+    } else if (this.currentMode === 'dmaTransfer') {
+      this.execDmaTransfer();
+    } else if (this.currentMode === 'vblank') {
+      this.screen = this.pixels;
     }
   }
 
-  startFrame() {
-    this.pixels = [];
+  getScreen() {
+    const screen = this.screen;
+
+    this.screen = [];
+
+    return screen;
   }
 
   execOamSearch() {
-    if (this.step === 'oamsearch') return;
-
-    this.step = 'oamsearch';
+    if (this.currentRow === 0) {
+      this.pixels = [];
+    }
   }
 
-  execPixelTransfer() {
-    if (this.step === 'pixeltransfer') return;
-
-    this.step = 'pixeltransfer';
-
-    const currentRow = this.mmu.registers.read('ly');
-    const rowPixels = this.ppu.draw(currentRow);
-
+  execDmaTransfer() {
+    const rowPixels = this.ppu.draw(this.currentRow);
     this.pixels.push(...rowPixels);
   }
 
-  execHBlank() {
-    if (this.step === 'hblank') return;
-
-    this.step = 'hblank';
-
-    const currentRow = this.mmu.registers.read('ly');
-    this.mmu.registers.write('ly', currentRow + 1);
+  get currentMode() {
+    return this.stat.getCurrentMode();
   }
 
-  execVBlank() {
-    if (this.step === 'vblank') return;
-
-    this.step = 'vblank';
-
-    const currentRow = this.mmu.registers.read('ly');
-    this.mmu.registers.write('ly', (currentRow + 1) % 154);
+  get currentRow() {
+    return this.mmu.registers.read('ly');
   }
 }

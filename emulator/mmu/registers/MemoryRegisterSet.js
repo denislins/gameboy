@@ -1,5 +1,7 @@
 import MemoryRegister from './MemoryRegister.js';
 import LcdControllerRegister from './LcdControllerRegister.js';
+import LcdStatusRegister from './LcdStatusRegister.js';
+import ScanlineRegister from './ScanlineRegister.js';
 
 export default class MemoryRegisterSet {
   constructor(mmu) {
@@ -15,12 +17,12 @@ export default class MemoryRegisterSet {
   }
 
   initVideoRegisters() {
-    this.registers.lcdc = new LcdControllerRegister(this.mmu, 0xFF40);
+    this.registers.lcdc = new LcdControllerRegister(this.mmu);
+    this.registers.stat = new LcdStatusRegister(this.mmu);
+    this.registers.ly = new ScanlineRegister(this.mmu);
 
-    this.add('stat', 0xFF41);
     this.add('scy', 0xFF42);
     this.add('scx', 0xFF43);
-    this.add('ly', 0xFF44);
     this.add('lyc', 0xFF45);
     this.add('dma', 0xFF46);
     this.add('bgp', 0xFF47);
@@ -30,8 +32,8 @@ export default class MemoryRegisterSet {
     this.add('wx', 0xFF4B);
   }
 
-  add(register, address, value) {
-    this.registers[register] = new MemoryRegister(this.mmu, address, value);
+  add(register, address) {
+    this.registers[register] = new MemoryRegister(this.mmu, address);
   }
 
   get(register) {

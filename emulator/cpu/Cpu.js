@@ -25,7 +25,10 @@ export default class Cpu {
       throw new Error('No instructions to execute');
     }
 
-    this.cycles += this.resolver.resolve(instruction);
+    const cycles = this.resolver.resolve(instruction);
+    this.cycles += cycles;
+
+    return cycles;
   }
 
   getNextInstruction(instructionSet) {
