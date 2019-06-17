@@ -8,6 +8,8 @@ export default class Display {
     this.width = 160;
     this.height = 144;
 
+    this.image = this.context.createImageData(this.canvas.width, this.canvas.height);
+
     this.initPixels();
   }
 
@@ -26,50 +28,10 @@ export default class Display {
   }
 
   draw(colors) {
-    const image = this.context.createImageData(this.canvas.width, this.canvas.height);
-
     this.pixels.forEach((pixel, index) => {
-      pixel.setColor(colors[index]);
-      pixel.draw(image);
+      pixel.draw(this.image, colors[index]);
     });
 
-    this.context.putImageData(image, 0, 0);
-  }
-
-  benchmark() {
-    this.fps = 0;
-    this.currentSecond = new Date().getSeconds();
-
-    this.counter = document.getElementById('fps');
-
-    const repaint = () => {
-      this.test();
-
-      const currentSecond = new Date().getSeconds();
-
-      if (currentSecond === this.currentSecond) {
-        this.fps++;
-      } else {
-        this.counter.innerText = this.fps;
-
-        this.fps = 1;
-        this.currentSecond = new Date().getSeconds();
-      }
-
-      requestAnimationFrame(repaint);
-    };
-
-    requestAnimationFrame(repaint);
-  }
-
-  test() {
-    const image = this.context.createImageData(this.canvas.width, this.canvas.height);
-
-    this.pixels.forEach((pixel) => {
-      pixel.randomizeColor();
-      pixel.draw(image);
-    });
-
-    this.context.putImageData(image, 0, 0);
+    this.context.putImageData(this.image, 0, 0);
   }
 }

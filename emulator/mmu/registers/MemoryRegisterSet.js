@@ -2,6 +2,7 @@ import MemoryRegister from './MemoryRegister.js';
 import LcdControllerRegister from './LcdControllerRegister.js';
 import LcdStatusRegister from './LcdStatusRegister.js';
 import ScanlineRegister from './ScanlineRegister.js';
+import TimerControllerRegister from './TimerControllerRegister.js';
 
 export default class MemoryRegisterSet {
   constructor(mmu) {
@@ -10,6 +11,7 @@ export default class MemoryRegisterSet {
 
     this.initSystemRegisters();
     this.initVideoRegisters();
+    this.initTimerRegisters();
   }
 
   initSystemRegisters() {
@@ -30,6 +32,13 @@ export default class MemoryRegisterSet {
     this.add('obp1', 0xFF49);
     this.add('wy', 0xFF4A);
     this.add('wx', 0xFF4B);
+  }
+
+  initTimerRegisters() {
+    this.registers.tmc = new TimerControllerRegister(this.mmu);
+
+    this.add('tima', 0xFF05);
+    this.add('tma', 0xFF06);
   }
 
   add(register, address) {

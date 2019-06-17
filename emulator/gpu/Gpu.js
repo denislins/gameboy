@@ -10,6 +10,7 @@ export default class Gpu {
   reset() {
     this.pixels = [];
     this.cycles = 0;
+    this.changeMode('oamSearch');
   }
 
   tick(cpuCycles) {
@@ -30,7 +31,7 @@ export default class Gpu {
   }
 
   getNewMode() {
-    if (this.currentRow > 143 && this.currentRow < 154) {
+    if (this.currentRow > 143) {
       return 'vblank';
     }
 
@@ -50,30 +51,16 @@ export default class Gpu {
 
     this.stat.changeMode(newMode);
 
-    if (this.currentMode === 'oamSearch') {
-      this.execOamSearch();
-    } else if (this.currentMode === 'dmaTransfer') {
+    if (this.currentMode === 'dmaTransfer') {
       this.execDmaTransfer();
-    } else if (this.currentMode === 'vblank') {
-      this.screen = this.pixels;
-    }
-  }
-
-  getScreen() {
-    const screen = this.screen;
-
-    this.screen = [];
-
-    return screen;
-  }
-
-  execOamSearch() {
-    if (this.currentRow === 0) {
-      this.pixels = [];
     }
   }
 
   execDmaTransfer() {
+    if (this.currentRow === 0) {
+      this.pixels = [];
+    }
+
     const rowPixels = this.ppu.draw(this.currentRow);
     this.pixels.push(...rowPixels);
   }

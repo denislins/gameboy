@@ -39,7 +39,9 @@ export default class Emulator {
       this.gpu.tick(cycles);
     }
 
-    this.display.draw(this.gpu.getScreen());
+    this.display.draw(this.gpu.pixels);
+
+    this.gpu.reset();
     this.updateFps();
 
     window.requestAnimationFrame(() => this.tick());

@@ -11,11 +11,18 @@ export default class Pixel {
     this.colors = [0, 96, 192, 255];
   }
 
-  setColor(color) {
-    this.color = this.colors[color || 0];
+  draw(image, color) {
+    const newColor = this.colors[color || 0];
+
+    if (this.color === newColor) {
+      return;
+    }
+
+    this.color = newColor;
+    this.drawPixels(image);
   }
 
-  draw(image) {
+  drawPixels(image) {
     for (let w = 0; w < this.width; w++) {
       for (let h = 0; h < this.height; h++) {
         const index = w * 4 + this.column * this.width * 4
@@ -26,12 +33,5 @@ export default class Pixel {
         image.data[index + 3] = this.color;
       }
     }
-  }
-
-  randomizeColor() {
-    const colors = [255, 192, 96, 0];
-    const index = Math.floor(Math.random() * colors.length);
-
-    this.color = colors[index];
   }
 }
