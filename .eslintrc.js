@@ -9,5 +9,7 @@ module.exports = {
     "no-plusplus": "off",
     "class-methods-use-this": "off",
     "no-console": "off",
+    "no-debugger": "off",
+    "no-else-return": "off",
   },
 };

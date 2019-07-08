@@ -33,9 +33,7 @@ export default class Gpu {
   getNewMode() {
     if (this.currentRow > 143) {
       return 'vblank';
-    }
-
-    if (this.cycles <= 80) {
+    } else if (this.cycles <= 80) {
       return 'oamSearch';
     } else if (this.cycles <= 252) {
       return 'dmaTransfer';
@@ -45,14 +43,12 @@ export default class Gpu {
   }
 
   changeMode(newMode) {
-    if (this.currentMode === newMode) {
-      return null;
-    }
+    if (this.currentMode !== newMode) {
+      this.stat.changeMode(newMode);
 
-    this.stat.changeMode(newMode);
-
-    if (this.currentMode === 'dmaTransfer') {
-      this.execDmaTransfer();
+      if (this.currentMode === 'dmaTransfer') {
+        this.execDmaTransfer();
+      }
     }
   }
 

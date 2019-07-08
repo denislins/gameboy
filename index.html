@@ -57,10 +57,17 @@
       },
     });
 
-    emulator.load('./tetris.gb');
+    window._ = (number) => {
+      console.log(number.toString(16).toUpperCase());
+    };
+
+    window.breakpoints = [];
+    window.isDebuggerActive = false;
+
+    emulator.load('./roms/cpu_tests.gb');
     emulator.boot();
 
-    // emulator.bootWithMemoryDump('./dumps/tetris.dump');
+    // emulator.bootWithMemoryDump('./dumps/cpu_tests.dump');
 
     window.e = emulator;
   </script>

@@ -14,6 +14,10 @@ export default class InstructionResolver {
       const [operation, defaultArgs] = piece;
       const args = { value: reduced, ...defaultArgs };
 
+      if (window.isDebuggerActive) {
+        console.log(operation, args);
+      }
+
       return this[operation](args);
     });
 

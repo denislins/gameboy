@@ -65,8 +65,12 @@ export default class Emulator {
     await this.mmu.loadCartridge(cartridge);
 
     const ppu = new Ppu(this.mmu);
-    const colors = ppu.draw();
+    const pixels = [];
 
-    this.display.draw(colors);
+    for (let row = 0; row < 144; row++) {
+      pixels.push(...ppu.draw(row));
+    }
+
+    this.display.draw(pixels);
   }
 }

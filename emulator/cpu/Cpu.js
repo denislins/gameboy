@@ -21,8 +21,9 @@ export default class Cpu {
   tick() {
     const instruction = this.getNextInstruction();
 
-    if (!instruction) {
-      throw new Error('No instructions to execute');
+    if (window.isDebuggerActive) {
+      console.log(instruction.repr);
+      debugger;
     }
 
     const cycles = this.resolver.resolve(instruction);
@@ -46,8 +47,12 @@ export default class Cpu {
     const address = this.registers.read('pc');
     this.registers.write('pc', address + 1);
 
-    if (address >= 0x100) {
-      throw new Error('finished bootrom');
+    if (window.breakpoints.indexOf(address) !== -1) {
+      window.isDebuggerActive = true;
+    }
+
+    if (window.isDebuggerActive) {
+      console.log(`PC at 0x${address.toString(16).toUpperCase()}`);
     }
 
     return this.mmu.read(address);

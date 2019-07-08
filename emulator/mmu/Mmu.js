@@ -35,7 +35,7 @@ export default class Mmu {
     } else if (mappedAddress >= 0xFEA0 && mappedAddress < 0xFF00) {
       console.debug('skipping write to unused space');
     } else if (mappedAddress === 0xFF44) {
-      // reset the current scanline if the game writes to it
+      console.debug('resetting scanline because of write to 0xFF44');
       page[mappedAddress] = 0;
     } else {
       page[mappedAddress] = value & 0xFF;

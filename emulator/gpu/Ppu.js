@@ -26,7 +26,7 @@ export default class Ppu {
     if (!this.controller.isWindowEnabled()) {
       return false;
     } else if (this.mmu.registers.read('wy') > row) {
-      return false
+      return false;
     } else if ((this.mmu.registers.read('wx') - 7) > column) {
       return false;
     }
@@ -52,8 +52,8 @@ export default class Ppu {
   }
 
   renderBackgroundPixel(row, column) {
-    const actualRow = this.mmu.registers.read('scy') + row;
-    const actualColumn = this.mmu.registers.read('scx') + column;
+    const actualRow = (this.mmu.registers.read('scy') + row) % 256;
+    const actualColumn = (this.mmu.registers.read('scx') + column) % 256;
 
     const backgroundBaseAddress = this.controller.getBackgroundBaseAddress();
 
