@@ -1,43 +1,43 @@
-import FlagsRegister from 'emulator/cpu/registers/FlagsRegister';
+import FlagsRegister from '/emulator/cpu/registers/FlagsRegister.js';
 
-describe('FlagsRegister', () => {
-  beforeEach(() => {
+describe('FlagsRegister', function() {
+  beforeEach(function() {
     this.register = new FlagsRegister();
   });
 
-  it('is initialized to zero', () => {
+  it('is initialized to zero', function() {
     expect(this.register.read()).toEqual(0);
   });
 
-  it('can be set and retrieved', () => {
+  it('can be set and retrieved', function() {
     this.register.write(0xF0);
     expect(this.register.read()).toEqual(0xF0);
   });
 
-  it('only writes 8 bit values', () => {
+  it('only writes 8 bit values', function() {
     this.register.write(0x100);
     expect(this.register.read()).toEqual(0);
   });
 
-  describe('zero flag', () => {
-    describe('get()', () => {
-      it('returns false when the flag is not set', () => {
+  describe('zero flag', function() {
+    describe('get()', function() {
+      it('returns false when the flag is not set', function() {
         expect(this.register.get('z')).toEqual(false);
       });
 
-      it('returns true when the flag is set', () => {
+      it('returns true when the flag is set', function() {
         this.register.set('z', true);
         expect(this.register.get('z')).toEqual(true);
       });
     });
 
-    describe('set()', () => {
-      it('sets only the correct bit', () => {
+    describe('set()', function() {
+      it('sets only the correct bit', function() {
         this.register.set('z', true);
         expect(this.register.read()).toEqual(0b10000000);
       });
 
-      it('resets only the correct bit', () => {
+      it('resets only the correct bit', function() {
         this.register.write(0xFF);
         this.register.set('z', false);
 
@@ -46,25 +46,25 @@ describe('FlagsRegister', () => {
     });
   });
 
-  describe('subtract flag', () => {
-    describe('get()', () => {
-      it('returns false when the flag is not set', () => {
+  describe('subtract flag', function() {
+    describe('get()', function() {
+      it('returns false when the flag is not set', function() {
         expect(this.register.get('n')).toEqual(false);
       });
 
-      it('returns true when the flag is set', () => {
+      it('returns true when the flag is set', function() {
         this.register.set('n', true);
         expect(this.register.get('n')).toEqual(true);
       });
     });
 
-    describe('set()', () => {
-      it('sets only the correct bit', () => {
+    describe('set()', function() {
+      it('sets only the correct bit', function() {
         this.register.set('n', true);
         expect(this.register.read()).toEqual(0b01000000);
       });
 
-      it('resets only the correct bit', () => {
+      it('resets only the correct bit', function() {
         this.register.write(0xFF);
         this.register.set('n', false);
 
@@ -73,25 +73,25 @@ describe('FlagsRegister', () => {
     });
   });
 
-  describe('half-carry flag', () => {
-    describe('get()', () => {
-      it('returns false when the flag is not set', () => {
+  describe('half-carry flag', function() {
+    describe('get()', function() {
+      it('returns false when the flag is not set', function() {
         expect(this.register.get('h')).toEqual(false);
       });
 
-      it('returns true when the flag is set', () => {
+      it('returns true when the flag is set', function() {
         this.register.set('h', true);
         expect(this.register.get('h')).toEqual(true);
       });
     });
 
-    describe('set()', () => {
-      it('sets only the correct bit', () => {
+    describe('set()', function() {
+      it('sets only the correct bit', function() {
         this.register.set('h', true);
         expect(this.register.read()).toEqual(0b00100000);
       });
 
-      it('resets only the correct bit', () => {
+      it('resets only the correct bit', function() {
         this.register.write(0xFF);
         this.register.set('h', false);
 
@@ -100,25 +100,25 @@ describe('FlagsRegister', () => {
     });
   });
 
-  describe('carry flag', () => {
-    describe('get()', () => {
-      it('returns false when the flag is not set', () => {
+  describe('carry flag', function() {
+    describe('get()', function() {
+      it('returns false when the flag is not set', function() {
         expect(this.register.get('c')).toEqual(false);
       });
 
-      it('returns true when the flag is set', () => {
+      it('returns true when the flag is set', function() {
         this.register.set('c', true);
         expect(this.register.get('c')).toEqual(true);
       });
     });
 
-    describe('set()', () => {
-      it('sets only the correct bit', () => {
+    describe('set()', function() {
+      it('sets only the correct bit', function() {
         this.register.set('c', true);
         expect(this.register.read()).toEqual(0b00010000);
       });
 
-      it('resets only the correct bit', () => {
+      it('resets only the correct bit', function() {
         this.register.write(0xFF);
         this.register.set('c', false);
 

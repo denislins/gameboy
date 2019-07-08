@@ -1,9 +1,9 @@
-import ExtendedInstructionSet from 'emulator/cpu/instructions/ExtendedInstructionSet';
-import InstructionResolver from 'emulator/cpu/instructions/InstructionResolver';
-import RegisterSet from 'emulator/cpu/registers/RegisterSet';
+import ExtendedInstructionSet from '/emulator/cpu/instructions/ExtendedInstructionSet.js';
+import InstructionResolver from '/emulator/cpu/instructions/InstructionResolver.js';
+import RegisterSet from '/emulator/cpu/registers/RegisterSet.js';
 
-describe('ExtendedInstructionSet', () => {
-  beforeEach(() => {
+describe('ExtendedInstructionSet', function() {
+  beforeEach(function() {
     this.instructionSet = new ExtendedInstructionSet();
 
     this.registers = new RegisterSet();
@@ -27,100 +27,100 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x33, register: 'e', repr: 'SWAP E' },
     { opcode: 0x34, register: 'h', repr: 'SWAP H' },
     { opcode: 0x35, register: 'l', repr: 'SWAP L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('default execution', () => {
-        beforeEach(() => {
+      describe('default execution', function() {
+        beforeEach(function() {
           this.registers.write(register, 0xF0);
           this.flags.write(0xF0);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0x0F);
         });
 
-        it('resets all flags', () => {
+        it('resets all flags', function() {
           expect(this.flags.read()).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe('when the result is zero', () => {
-        beforeEach(() => {
+      describe('when the result is zero', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
       });
     });
   });
 
-  describe('0x36: SWAP (HL)', () => {
-    beforeEach(() => {
+  describe('0x36: SWAP (HL)', function() {
+    beforeEach(function() {
       this.instruction = this.instructionSet.find(0x36);
     });
 
-    it('exposes the correct string representation', () => {
+    it('exposes the correct string representation', function() {
       expect(this.instruction.repr).toEqual('SWAP (HL)');
     });
 
-    it('executes in the correct number of cycles', () => {
+    it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
       expect(cycles).toEqual(16);
     });
 
-    describe('default execution', () => {
-      beforeEach(() => {
+    describe('default execution', function() {
+      beforeEach(function() {
         this.registers.write('hl', 0x1234);
         this.flags.write(0xF0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0xBA);
       });
 
-      it('resets all flags', () => {
+      it('resets all flags', function() {
         expect(this.flags.read()).toEqual(0);
       });
 
-      it('leaves PC at the correct value', () => {
+      it('leaves PC at the correct value', function() {
         expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
-    describe('when the result is zero', () => {
-      beforeEach(() => {
+    describe('when the result is zero', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', () => {
+      it('sets the zero flag', function() {
         expect(this.flags.get('z')).toEqual(true);
       });
     });
@@ -134,124 +134,124 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x03, register: 'e', repr: 'RLC E' },
     { opcode: 0x04, register: 'h', repr: 'RLC H' },
     { opcode: 0x05, register: 'l', repr: 'RLC L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('default execution', () => {
-        beforeEach(() => {
+      describe('default execution', function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write(register, 0b00001111);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b0011110);
         });
 
-        it('resets all flags', () => {
+        it('resets all flags', function() {
           expect(this.flags.read()).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe('when the bit 7 is set', () => {
-        beforeEach(() => {
+      describe('when the bit 7 is set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b10101010);
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the carry flag', () => {
+        it('sets the carry flag', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
       });
 
-      describe('when the result is zero', () => {
-        beforeEach(() => {
+      describe('when the result is zero', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
       });
     });
   });
 
-  describe('0x06: RLC (HL)', () => {
-    beforeEach(() => {
+  describe('0x06: RLC (HL)', function() {
+    beforeEach(function() {
       this.instruction = this.instructionSet.find(0x06);
     });
 
-    it('exposes the correct string representation', () => {
+    it('exposes the correct string representation', function() {
       expect(this.instruction.repr).toEqual('RLC (HL)');
     });
 
-    it('executes in the correct number of cycles', () => {
+    it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
       expect(cycles).toEqual(16);
     });
 
-    describe('default execution', () => {
-      beforeEach(() => {
+    describe('default execution', function() {
+      beforeEach(function() {
         this.flags.write(0xF0);
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b00001111);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b0011110);
       });
 
-      it('resets all flags', () => {
+      it('resets all flags', function() {
         expect(this.flags.read()).toEqual(0);
       });
 
-      it('leaves PC at the correct value', () => {
+      it('leaves PC at the correct value', function() {
         expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
-    describe('when the bit 7 is set', () => {
-      beforeEach(() => {
+    describe('when the bit 7 is set', function() {
+      beforeEach(function() {
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b10101010);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the carry flag', () => {
+      it('sets the carry flag', function() {
         expect(this.flags.get('c')).toEqual(true);
       });
     });
 
-    describe('when the result is zero', () => {
-      beforeEach(() => {
+    describe('when the result is zero', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', () => {
+      it('sets the zero flag', function() {
         expect(this.flags.get('z')).toEqual(true);
       });
     });
@@ -265,150 +265,150 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x13, register: 'e', repr: 'RL E' },
     { opcode: 0x14, register: 'h', repr: 'RL H' },
     { opcode: 0x15, register: 'l', repr: 'RL L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('default execution', () => {
-        beforeEach(() => {
+      describe('default execution', function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write(register, 0b00110011);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b01100111);
         });
 
-        it('resets all flags', () => {
+        it('resets all flags', function() {
           expect(this.flags.read()).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe('when the carry flag is not set', () => {
-        beforeEach(() => {
+      describe('when the carry flag is not set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b00110011);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b01100110);
         });
       });
 
-      describe('when the bit 7 is set', () => {
-        beforeEach(() => {
+      describe('when the bit 7 is set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b10101010);
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the carry flag', () => {
+        it('sets the carry flag', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
       });
 
-      describe('when the result is zero', () => {
-        beforeEach(() => {
+      describe('when the result is zero', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
       });
     });
   });
 
-  describe('0x16: RL (HL)', () => {
-    beforeEach(() => {
+  describe('0x16: RL (HL)', function() {
+    beforeEach(function() {
       this.instruction = this.instructionSet.find(0x16);
     });
 
-    it('exposes the correct string representation', () => {
+    it('exposes the correct string representation', function() {
       expect(this.instruction.repr).toEqual('RL (HL)');
     });
 
-    it('executes in the correct number of cycles', () => {
+    it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
       expect(cycles).toEqual(16);
     });
 
-    describe('default execution', () => {
-      beforeEach(() => {
+    describe('default execution', function() {
+      beforeEach(function() {
         this.flags.write(0xF0);
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b00110011);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b01100111);
       });
 
-      it('resets all flags', () => {
+      it('resets all flags', function() {
         expect(this.flags.read()).toEqual(0);
       });
 
-      it('leaves PC at the correct value', () => {
+      it('leaves PC at the correct value', function() {
         expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
-    describe('when the carry flag is not set', () => {
-      beforeEach(() => {
+    describe('when the carry flag is not set', function() {
+      beforeEach(function() {
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b00110011);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b01100110);
       });
     });
 
-    describe('when the bit 7 is set', () => {
-      beforeEach(() => {
+    describe('when the bit 7 is set', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0b10101010);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the carry flag', () => {
+      it('sets the carry flag', function() {
         expect(this.flags.get('c')).toEqual(true);
       });
     });
 
-    describe('when the result is zero', () => {
-      beforeEach(() => {
+    describe('when the result is zero', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', () => {
+      it('sets the zero flag', function() {
         expect(this.flags.get('z')).toEqual(true);
       });
     });
@@ -422,123 +422,123 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x0B, register: 'e', repr: 'RRC E' },
     { opcode: 0x0C, register: 'h', repr: 'RRC H' },
     { opcode: 0x0D, register: 'l', repr: 'RRC L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('default execution', () => {
-        beforeEach(() => {
+      describe('default execution', function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write(register, 0b11110000);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b01111000);
         });
 
-        it('resets all flags', () => {
+        it('resets all flags', function() {
           expect(this.flags.read()).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe('when the bit 0 is set', () => {
-        beforeEach(() => {
+      describe('when the bit 0 is set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b01010101);
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the carry flag', () => {
+        it('sets the carry flag', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
       });
 
-      describe('when the result is zero', () => {
-        beforeEach(() => {
+      describe('when the result is zero', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
       });
     });
   });
 
-  describe('0x0E: RRC (HL)', () => {
-    beforeEach(() => {
+  describe('0x0E: RRC (HL)', function() {
+    beforeEach(function() {
       this.instruction = this.instructionSet.find(0x0E);
     });
 
-    it('exposes the correct string representation', () => {
+    it('exposes the correct string representation', function() {
       expect(this.instruction.repr).toEqual('RRC (HL)');
     });
 
-    it('executes in the correct number of cycles', () => {
+    it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
       expect(cycles).toEqual(16);
     });
 
-    describe('default execution', () => {
-      beforeEach(() => {
+    describe('default execution', function() {
+      beforeEach(function() {
         this.flags.write(0xF0);
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b11110000);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b01111000);
       });
 
-      it('resets all flags', () => {
+      it('resets all flags', function() {
         expect(this.flags.read()).toEqual(0);
       });
 
-      it('leaves PC at the correct value', () => {
+      it('leaves PC at the correct value', function() {
         expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
-    describe('when the bit 0 is set', () => {
-      beforeEach(() => {
+    describe('when the bit 0 is set', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0b01010101);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the carry flag', () => {
+      it('sets the carry flag', function() {
         expect(this.flags.get('c')).toEqual(true);
       });
     });
 
-    describe('when the result is zero', () => {
-      beforeEach(() => {
+    describe('when the result is zero', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', () => {
+      it('sets the zero flag', function() {
         expect(this.flags.get('z')).toEqual(true);
       });
     });
@@ -552,150 +552,150 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x1B, register: 'e', repr: 'RR E' },
     { opcode: 0x1C, register: 'h', repr: 'RR H' },
     { opcode: 0x1D, register: 'l', repr: 'RR L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('default execution', () => {
-        beforeEach(() => {
+      describe('default execution', function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write(register, 0b11001100);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b11100110);
         });
 
-        it('resets all flags', () => {
+        it('resets all flags', function() {
           expect(this.flags.read()).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe('when the carry flag is not set', () => {
-        beforeEach(() => {
+      describe('when the carry flag is not set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b11001100);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b01100110);
         });
       });
 
-      describe('when the bit 0 is set', () => {
-        beforeEach(() => {
+      describe('when the bit 0 is set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b01010101);
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the carry flag', () => {
+        it('sets the carry flag', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
       });
 
-      describe('when the result is zero', () => {
-        beforeEach(() => {
+      describe('when the result is zero', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
       });
     });
   });
 
-  describe('0x1E: RR (HL)', () => {
-    beforeEach(() => {
+  describe('0x1E: RR (HL)', function() {
+    beforeEach(function() {
       this.instruction = this.instructionSet.find(0x1E);
     });
 
-    it('exposes the correct string representation', () => {
+    it('exposes the correct string representation', function() {
       expect(this.instruction.repr).toEqual('RR (HL)');
     });
 
-    it('executes in the correct number of cycles', () => {
+    it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
       expect(cycles).toEqual(16);
     });
 
-    describe('default execution', () => {
-      beforeEach(() => {
+    describe('default execution', function() {
+      beforeEach(function() {
         this.flags.write(0xF0);
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b11001100);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b11100110);
       });
 
-      it('resets all flags', () => {
+      it('resets all flags', function() {
         expect(this.flags.read()).toEqual(0);
       });
 
-      it('leaves PC at the correct value', () => {
+      it('leaves PC at the correct value', function() {
         expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
-    describe('when the carry flag is not set', () => {
-      beforeEach(() => {
+    describe('when the carry flag is not set', function() {
+      beforeEach(function() {
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b11001100);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b01100110);
       });
     });
 
-    describe('when the bit 0 is set', () => {
-      beforeEach(() => {
+    describe('when the bit 0 is set', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0b01010101);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the carry flag', () => {
+      it('sets the carry flag', function() {
         expect(this.flags.get('c')).toEqual(true);
       });
     });
 
-    describe('when the result is zero', () => {
-      beforeEach(() => {
+    describe('when the result is zero', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', () => {
+      it('sets the zero flag', function() {
         expect(this.flags.get('z')).toEqual(true);
       });
     });
@@ -709,123 +709,123 @@ describe('ExtendedInstructionSet', () => {
     {opcode: 0x23, register: 'e', repr: 'SLA E' },
     {opcode: 0x24, register: 'h', repr: 'SLA H' },
     {opcode: 0x25, register: 'l', repr: 'SLA L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('default execution', () => {
-        beforeEach(() => {
+      describe('default execution', function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write(register, 0b01010101);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b10101010);
         });
 
-        it('resets all flags', () => {
+        it('resets all flags', function() {
           expect(this.flags.read()).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe('when the bit 7 is set', () => {
-        beforeEach(() => {
+      describe('when the bit 7 is set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b10101010);
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the carry flag', () => {
+        it('sets the carry flag', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
       });
 
-      describe('when the result is zero', () => {
-        beforeEach(() => {
+      describe('when the result is zero', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
       });
     });
   });
 
-  describe('0x26: SLA (HL)', () => {
-    beforeEach(() => {
+  describe('0x26: SLA (HL)', function() {
+    beforeEach(function() {
       this.instruction = this.instructionSet.find(0x26);
     });
 
-    it('exposes the correct string representation', () => {
+    it('exposes the correct string representation', function() {
       expect(this.instruction.repr).toEqual('SLA (HL)');
     });
 
-    it('executes in the correct number of cycles', () => {
+    it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
       expect(cycles).toEqual(16);
     });
 
-    describe('default execution', () => {
-      beforeEach(() => {
+    describe('default execution', function() {
+      beforeEach(function() {
         this.flags.write(0xF0);
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b01010101);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b10101010);
       });
 
-      it('resets all flags', () => {
+      it('resets all flags', function() {
         expect(this.flags.read()).toEqual(0);
       });
 
-      it('leaves PC at the correct value', () => {
+      it('leaves PC at the correct value', function() {
         expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
-    describe('when the bit 7 is set', () => {
-      beforeEach(() => {
+    describe('when the bit 7 is set', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0b10101010);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the carry flag', () => {
+      it('sets the carry flag', function() {
         expect(this.flags.get('c')).toEqual(true);
       });
     });
 
-    describe('when the result is zero', () => {
-      beforeEach(() => {
+    describe('when the result is zero', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', () => {
+      it('sets the zero flag', function() {
         expect(this.flags.get('z')).toEqual(true);
       });
     });
@@ -839,123 +839,123 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x2B, register: 'e', repr: 'SRA E' },
     { opcode: 0x2C, register: 'h', repr: 'SRA H' },
     { opcode: 0x2D, register: 'l', repr: 'SRA L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('default execution', () => {
-        beforeEach(() => {
+      describe('default execution', function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write(register, 0b10101010);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b11010101);
         });
 
-        it('resets all flags', () => {
+        it('resets all flags', function() {
           expect(this.flags.read()).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe('when the bit 0 is set', () => {
-        beforeEach(() => {
+      describe('when the bit 0 is set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b01010101);
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the carry flag', () => {
+        it('sets the carry flag', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
       });
 
-      describe('when the result is zero', () => {
-        beforeEach(() => {
+      describe('when the result is zero', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
       });
     });
   });
 
-  describe('0x2E: SRA (HL)', () => {
-    beforeEach(() => {
+  describe('0x2E: SRA (HL)', function() {
+    beforeEach(function() {
       this.instruction = this.instructionSet.find(0x2E);
     });
 
-    it('exposes the correct string representation', () => {
+    it('exposes the correct string representation', function() {
       expect(this.instruction.repr).toEqual('SRA (HL)');
     });
 
-    it('executes in the correct number of cycles', () => {
+    it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
       expect(cycles).toEqual(16);
     });
 
-    describe('default execution', () => {
-      beforeEach(() => {
+    describe('default execution', function() {
+      beforeEach(function() {
         this.flags.write(0xF0);
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b10101010);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b11010101);
       });
 
-      it('resets all flags', () => {
+      it('resets all flags', function() {
         expect(this.flags.read()).toEqual(0);
       });
 
-      it('leaves PC at the correct value', () => {
+      it('leaves PC at the correct value', function() {
         expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
-    describe('when the bit 0 is set', () => {
-      beforeEach(() => {
+    describe('when the bit 0 is set', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0b01010101);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the carry flag', () => {
+      it('sets the carry flag', function() {
         expect(this.flags.get('c')).toEqual(true);
       });
     });
 
-    describe('when the result is zero', () => {
-      beforeEach(() => {
+    describe('when the result is zero', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', () => {
+      it('sets the zero flag', function() {
         expect(this.flags.get('z')).toEqual(true);
       });
     });
@@ -969,123 +969,123 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x3B, register: 'e', repr: 'SRL E' },
     { opcode: 0x3C, register: 'h', repr: 'SRL H' },
     { opcode: 0x3D, register: 'l', repr: 'SRL L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('default execution', () => {
-        beforeEach(() => {
+      describe('default execution', function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write(register, 0b10101010);
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0b01010101);
         });
 
-        it('resets all flags', () => {
+        it('resets all flags', function() {
           expect(this.flags.read()).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe('when the bit 0 is set', () => {
-        beforeEach(() => {
+      describe('when the bit 0 is set', function() {
+        beforeEach(function() {
           this.registers.write(register, 0b01010101);
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the carry flag', () => {
+        it('sets the carry flag', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
       });
 
-      describe('when the result is zero', () => {
-        beforeEach(() => {
+      describe('when the result is zero', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
       });
     });
   });
 
-  describe('0x3E: SRL (HL)', () => {
-    beforeEach(() => {
+  describe('0x3E: SRL (HL)', function() {
+    beforeEach(function() {
       this.instruction = this.instructionSet.find(0x3E);
     });
 
-    it('exposes the correct string representation', () => {
+    it('exposes the correct string representation', function() {
       expect(this.instruction.repr).toEqual('SRL (HL)');
     });
 
-    it('executes in the correct number of cycles', () => {
+    it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
       expect(cycles).toEqual(16);
     });
 
-    describe('default execution', () => {
-      beforeEach(() => {
+    describe('default execution', function() {
+      beforeEach(function() {
         this.flags.write(0xF0);
         this.registers.write('hl', 0x1234);
         this.mmu.read.and.returnValue(0b10101010);
         this.resolver.resolve(this.instruction);
       });
 
-      it('reads from memory correctly', () => {
+      it('reads from memory correctly', function() {
         expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
       });
 
-      it('writes to memory correctly', () => {
+      it('writes to memory correctly', function() {
         expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0b01010101);
       });
 
-      it('resets all flags', () => {
+      it('resets all flags', function() {
         expect(this.flags.read()).toEqual(0);
       });
 
-      it('leaves PC at the correct value', () => {
+      it('leaves PC at the correct value', function() {
         expect(this.registers.read('pc')).toEqual(0x1000);
       });
     });
 
-    describe('when the bit 0 is set', () => {
-      beforeEach(() => {
+    describe('when the bit 0 is set', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0b01010101);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the carry flag', () => {
+      it('sets the carry flag', function() {
         expect(this.flags.get('c')).toEqual(true);
       });
     });
 
-    describe('when the result is zero', () => {
-      beforeEach(() => {
+    describe('when the result is zero', function() {
+      beforeEach(function() {
         this.mmu.read.and.returnValue(0);
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', () => {
+      it('sets the zero flag', function() {
         expect(this.flags.get('z')).toEqual(true);
       });
     });
@@ -1148,73 +1148,73 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x7B, register: 'e', bit: 7, repr: 'BIT 7, E' },
     { opcode: 0x7C, register: 'h', bit: 7, repr: 'BIT 7, H' },
     { opcode: 0x7D, register: 'l', bit: 7, repr: 'BIT 7, L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, bit, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe(`when the bit ${bit} is set`, () => {
-        beforeEach(() => {
+      describe(`when the bit ${bit} is set`, function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write(register, 1 << bit);
           this.resolver.resolve(this.instruction);
         });
 
-        it('clears the zero flag', () => {
+        it('clears the zero flag', function() {
           expect(this.flags.get('z')).toEqual(false);
         });
 
-        it('sets the half-carry flag', () => {
+        it('sets the half-carry flag', function() {
           expect(this.flags.get('h')).toEqual(true);
         });
 
-        it('clears the subtract flag', () => {
+        it('clears the subtract flag', function() {
           expect(this.flags.get('n')).toEqual(false);
         });
 
-        it('does not change the carry flag value', () => {
+        it('does not change the carry flag value', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe(`when the bit ${bit} is not set`, () => {
-        beforeEach(() => {
+      describe(`when the bit ${bit} is not set`, function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
 
-        it('sets the half-carry flag', () => {
+        it('sets the half-carry flag', function() {
           expect(this.flags.get('h')).toEqual(true);
         });
 
-        it('clears the subtract flag', () => {
+        it('clears the subtract flag', function() {
           expect(this.flags.get('n')).toEqual(false);
         });
 
-        it('does not change the carry flag value', () => {
+        it('does not change the carry flag value', function() {
           expect(this.flags.get('c')).toEqual(false);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
@@ -1230,84 +1230,84 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0x6E, bit: 5, repr: 'BIT 5, (HL)' },
     { opcode: 0x76, bit: 6, repr: 'BIT 6, (HL)' },
     { opcode: 0x7E, bit: 7, repr: 'BIT 7, (HL)' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, bit, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(16);
       });
 
-      describe(`when the bit ${bit} is set`, () => {
-        beforeEach(() => {
+      describe(`when the bit ${bit} is set`, function() {
+        beforeEach(function() {
           this.flags.write(0xF0);
           this.registers.write('hl', 0x1234);
           this.mmu.read.and.returnValue(1 << bit);
           this.resolver.resolve(this.instruction);
         });
 
-        it('reads from memory correctly', () => {
+        it('reads from memory correctly', function() {
           expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
         });
 
-        it('clears the zero flag', () => {
+        it('clears the zero flag', function() {
           expect(this.flags.get('z')).toEqual(false);
         });
 
-        it('sets the half-carry flag', () => {
+        it('sets the half-carry flag', function() {
           expect(this.flags.get('h')).toEqual(true);
         });
 
-        it('clears the subtract flag', () => {
+        it('clears the subtract flag', function() {
           expect(this.flags.get('n')).toEqual(false);
         });
 
-        it('does not change the carry flag value', () => {
+        it('does not change the carry flag value', function() {
           expect(this.flags.get('c')).toEqual(true);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
 
-      describe(`when the bit ${bit} is not set`, () => {
-        beforeEach(() => {
+      describe(`when the bit ${bit} is not set`, function() {
+        beforeEach(function() {
           this.registers.write('hl', 0x1234);
           this.mmu.read.and.returnValue(0);
           this.resolver.resolve(this.instruction);
         });
 
-        it('reads from memory correctly', () => {
+        it('reads from memory correctly', function() {
           expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
         });
 
-        it('sets the zero flag', () => {
+        it('sets the zero flag', function() {
           expect(this.flags.get('z')).toEqual(true);
         });
 
-        it('sets the half-carry flag', () => {
+        it('sets the half-carry flag', function() {
           expect(this.flags.get('h')).toEqual(true);
         });
 
-        it('clears the subtract flag', () => {
+        it('clears the subtract flag', function() {
           expect(this.flags.get('n')).toEqual(false);
         });
 
-        it('does not change the carry flag value', () => {
+        it('does not change the carry flag value', function() {
           expect(this.flags.get('c')).toEqual(false);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
@@ -1371,33 +1371,33 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0xFB, register: 'e', bit: 7, repr: 'SET 7, E' },
     { opcode: 0xFC, register: 'h', bit: 7, repr: 'SET 7, H' },
     { opcode: 0xFD, register: 'l', bit: 7, repr: 'SET 7, L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, bit, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('execution', () => {
-        beforeEach(() => {
+      describe('execution', function() {
+        beforeEach(function() {
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(1 << bit);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
@@ -1413,39 +1413,39 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0xEE, bit: 5, repr: 'SET 5, (HL)' },
     { opcode: 0xF6, bit: 6, repr: 'SET 6, (HL)' },
     { opcode: 0xFE, bit: 7, repr: 'SET 7, (HL)' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, bit, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(16);
       });
 
-      describe('execution', () => {
-        beforeEach(() => {
+      describe('execution', function() {
+        beforeEach(function() {
           this.registers.write('hl', 0x1234);
           this.mmu.read.and.returnValue(0);
           this.resolver.resolve(this.instruction);
         });
 
-        it('reads from memory correctly', () => {
+        it('reads from memory correctly', function() {
           expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
         });
 
-        it('writes to memory correctly', () => {
+        it('writes to memory correctly', function() {
           expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 1 << bit);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
@@ -1509,34 +1509,34 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0xBB, register: 'e', bit: 7, repr: 'RES 7, E' },
     { opcode: 0xBC, register: 'h', bit: 7, repr: 'RES 7, H' },
     { opcode: 0xBD, register: 'l', bit: 7, repr: 'RES 7, L' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, register, bit, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(8);
       });
 
-      describe('execution', () => {
-        beforeEach(() => {
+      describe('execution', function() {
+        beforeEach(function() {
           this.registers.write(register, 1 << bit)
           this.resolver.resolve(this.instruction);
         });
 
-        it(`sets ${register.toUpperCase()} to the correct value`, () => {
+        it(`sets ${register.toUpperCase()} to the correct value`, function() {
           expect(this.registers.read(register)).toEqual(0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
@@ -1552,39 +1552,39 @@ describe('ExtendedInstructionSet', () => {
     { opcode: 0xAE, bit: 5, repr: 'RES 5, (HL)' },
     { opcode: 0xB6, bit: 6, repr: 'RES 6, (HL)' },
     { opcode: 0xBE, bit: 7, repr: 'RES 7, (HL)' },
-  ].forEach((params) => {
+  ].forEach(function(params) {
     const { opcode, bit, repr } = params;
 
-    describe(`0x${opcode.toString(16)}: ${repr}`, () => {
-      beforeEach(() => {
+    describe(`0x${opcode.toString(16)}: ${repr}`, function() {
+      beforeEach(function() {
         this.instruction = this.instructionSet.find(opcode);
       });
 
-      it('exposes the correct string representation', () => {
+      it('exposes the correct string representation', function() {
         expect(this.instruction.repr).toEqual(repr);
       });
 
-      it('executes in the correct number of cycles', () => {
+      it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
         expect(cycles).toEqual(16);
       });
 
-      describe('execution', () => {
-        beforeEach(() => {
+      describe('execution', function() {
+        beforeEach(function() {
           this.registers.write('hl', 0x1234);
           this.mmu.read.and.returnValue(1 << bit);
           this.resolver.resolve(this.instruction);
         });
 
-        it('reads from memory correctly', () => {
+        it('reads from memory correctly', function() {
           expect(this.mmu.read).toHaveBeenCalledWith(0x1234);
         });
 
-        it('writes to memory correctly', () => {
+        it('writes to memory correctly', function() {
           expect(this.mmu.write).toHaveBeenCalledWith(0x1234, 0);
         });
 
-        it('leaves PC at the correct value', () => {
+        it('leaves PC at the correct value', function() {
           expect(this.registers.read('pc')).toEqual(0x1000);
         });
       });
