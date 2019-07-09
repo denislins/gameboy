@@ -1,7 +1,7 @@
 import MemoryRegister from './MemoryRegister.js';
+import CartridgeTypeRegister from './CartridgeTypeRegister.js';
 import LcdControllerRegister from './LcdControllerRegister.js';
 import LcdStatusRegister from './LcdStatusRegister.js';
-import ScanlineRegister from './ScanlineRegister.js';
 import TimerControllerRegister from './TimerControllerRegister.js';
 
 export default class MemoryRegisterSet {
@@ -12,33 +12,40 @@ export default class MemoryRegisterSet {
     this.initSystemRegisters();
     this.initVideoRegisters();
     this.initTimerRegisters();
+    this.initInterruputRegisters();
   }
 
   initSystemRegisters() {
-    this.add('disablerom', 0xFF50);
+    this.registers.cartridgeType = new CartridgeTypeRegister(this.mmu);
+
+    this.add('disableBootrom', 0xFF50);
   }
 
   initVideoRegisters() {
-    this.registers.lcdc = new LcdControllerRegister(this.mmu);
-    this.registers.stat = new LcdStatusRegister(this.mmu);
-    this.registers.ly = new ScanlineRegister(this.mmu);
+    this.registers.lcdController = new LcdControllerRegister(this.mmu);
+    this.registers.lcdStatus = new LcdStatusRegister(this.mmu);
 
-    this.add('scy', 0xFF42);
-    this.add('scx', 0xFF43);
-    this.add('lyc', 0xFF45);
-    this.add('dma', 0xFF46);
-    this.add('bgp', 0xFF47);
-    this.add('obp0', 0xFF48);
-    this.add('obp1', 0xFF49);
-    this.add('wy', 0xFF4A);
-    this.add('wx', 0xFF4B);
+    this.add('scrollY', 0xFF42);
+    this.add('scrollX', 0xFF43);
+    this.add('scanline', 0xFF44);
+    this.add('scanlineCompare', 0xFF45);
+    this.add('dmaTransfer', 0xFF46);
+    this.add('backgroundPallete', 0xFF47);
+    this.add('objectPallete0', 0xFF48);
+    this.add('objectPallete1', 0xFF49);
+    this.add('windowY', 0xFF4A);
+    this.add('windowX', 0xFF4B);
   }
 
   initTimerRegisters() {
     this.registers.tmc = new TimerControllerRegister(this.mmu);
 
-    this.add('tima', 0xFF05);
-    this.add('tma', 0xFF06);
+    this.add('timerCounter', 0xFF05);
+    this.add('timerModulo', 0xFF06);
+  }
+
+  initInterruputRegisters() {
+
   }
 
   add(register, address) {

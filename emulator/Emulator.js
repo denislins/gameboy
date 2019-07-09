@@ -18,10 +18,10 @@ export default class Emulator {
   }
 
   async boot() {
+    await this.mmu.loadCartridge(this.cartridge);
+
     this.cpu.reset();
     this.gpu.reset();
-
-    await this.mmu.loadCartridge(this.cartridge);
 
     this.fps = 0;
     this.currentSecond = new Date().getSeconds();

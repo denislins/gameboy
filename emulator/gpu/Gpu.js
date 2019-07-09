@@ -4,12 +4,13 @@ export default class Gpu {
   constructor(mmu) {
     this.mmu = mmu;
     this.ppu = new Ppu(this.mmu);
-    this.stat = this.mmu.registers.get('stat');
+    this.lcdStatus = this.mmu.registers.get('lcdStatus');
   }
 
   reset() {
     this.pixels = [];
     this.cycles = 0;
+
     this.changeMode('oamSearch');
   }
 
@@ -27,7 +28,7 @@ export default class Gpu {
 
   incrementCurrentRow() {
     const nextRow = (this.currentRow + 1) % 154;
-    this.mmu.registers.write('ly', nextRow);
+    this.mmu.registers.write('scanline', nextRow);
   }
 
   getNewMode() {
@@ -44,7 +45,7 @@ export default class Gpu {
 
   changeMode(newMode) {
     if (this.currentMode !== newMode) {
-      this.stat.changeMode(newMode);
+      this.lcdStatus.changeMode(newMode);
 
       if (this.currentMode === 'dmaTransfer') {
         this.execDmaTransfer();
@@ -62,10 +63,10 @@ export default class Gpu {
   }
 
   get currentMode() {
-    return this.stat.getCurrentMode();
+    return this.lcdStatus.getCurrentMode();
   }
 
   get currentRow() {
-    return this.mmu.registers.read('ly');
+    return this.mmu.registers.read('scanline');
   }
 }

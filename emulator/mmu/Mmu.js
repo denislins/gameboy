@@ -34,16 +34,13 @@ export default class Mmu {
       console.debug('skipping write to ROM');
     } else if (mappedAddress >= 0xFEA0 && mappedAddress < 0xFF00) {
       console.debug('skipping write to unused space');
-    } else if (mappedAddress === 0xFF44) {
-      console.debug('resetting scanline because of write to 0xFF44');
-      page[mappedAddress] = 0;
     } else {
       page[mappedAddress] = value & 0xFF;
     }
   }
 
   getPage(address) {
-    if (address < 0x100 && !this.registers.read('disablerom')) {
+    if (address < 0x100 && !this.registers.read('disableBootrom')) {
       return this.bootrom;
     }
 

@@ -1,7 +1,7 @@
 export default class Ppu {
   constructor(mmu) {
     this.mmu = mmu;
-    this.controller = this.mmu.registers.get('lcdc');
+    this.controller = this.mmu.registers.get('lcdController');
   }
 
   draw(row) {
@@ -25,9 +25,9 @@ export default class Ppu {
   isWindowEnabled(row, column) {
     if (!this.controller.isWindowEnabled()) {
       return false;
-    } else if (this.mmu.registers.read('wy') > row) {
+    } else if (this.mmu.registers.read('windowY') > row) {
       return false;
-    } else if ((this.mmu.registers.read('wx') - 7) > column) {
+    } else if ((this.mmu.registers.read('windowX') - 7) > column) {
       return false;
     }
 
@@ -35,15 +35,15 @@ export default class Ppu {
   }
 
   renderWindowPixel(row, column) {
-    const actualRow = row - this.mmu.registers.read('wy');
-    const windowY = this.mmu.registers.read('wx');
+    const actualRow = row - this.mmu.registers.read('windowY');
+    const windowY = this.mmu.registers.read('windowX');
 
     let actualColumn;
 
     if (column >= windowY) {
       actualColumn = column - windowY + 7;
     } else {
-      actualColumn = this.mmu.registers.read('scx') + column;
+      actualColumn = this.mmu.registers.read('scrollX') + column;
     }
 
     const windowBaseAddress = this.controller.getWindowBaseAddress();
@@ -52,8 +52,8 @@ export default class Ppu {
   }
 
   renderBackgroundPixel(row, column) {
-    const actualRow = (this.mmu.registers.read('scy') + row) % 256;
-    const actualColumn = (this.mmu.registers.read('scx') + column) % 256;
+    const actualRow = (this.mmu.registers.read('scrollY') + row) % 256;
+    const actualColumn = (this.mmu.registers.read('scrollX') + column) % 256;
 
     const backgroundBaseAddress = this.controller.getBackgroundBaseAddress();
 
@@ -103,7 +103,7 @@ export default class Ppu {
   }
 
   mapDisplayColor(color) {
-    const pallete = this.mmu.registers.read('bgp');
+    const pallete = this.mmu.registers.read('backgroundPallete');
 
     const shift = color * 2;
     const mask = 0b11 << shift;
