@@ -6,6 +6,14 @@ export default class CartridgeTypeRegister extends MemoryRegister {
   }
 
   getBankingMode() {
+    if (!this.bankingMode) {
+      this.bankingMode = this.calculateBankingMode();
+    }
+
+    return this.bankingMode;
+  }
+
+  calculateBankingMode() {
     const value = this.read();
 
     if (value === 1 || value === 2 || value === 3) {
