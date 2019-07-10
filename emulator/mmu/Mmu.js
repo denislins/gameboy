@@ -33,6 +33,9 @@ export default class Mmu {
 
   write(address, value) {
     if (address < 0x8000) {
+      console.log(this.bankingMode)
+    }
+    if (address < 0x8000 && this.bankingMode !== 'none') {
       return this.handleBankSwitching(address, value);
     }
 
@@ -86,8 +89,18 @@ export default class Mmu {
   }
 
   handleBankSwitching(address, value) {
-    if (address < 0x2000 && this.bankingMode !== 'none') {
+    if (address < 0x2000) {
       this.enableRamBanking(address, value);
+    } else if (address < 0x4000) {
+      this.changeCurrentRomBankLowerBits(value);
+    } else if (address >= 0x6000) {
+      this.handleRamBankSwitching(value);
+    } else {
+      this.switchMemoryBankingMode(value);
+    }
+
+    if (this.currentRomBank === 0) {
+      this.currentRomBank = 1;
     }
   }
 
@@ -101,6 +114,38 @@ export default class Mmu {
       this.ramBankingEnabled = true;
     } else {
       this.ramBankingEnabled = false;
+    }
+  }
+
+  changeCurrentRomBankLowerBits(value) {
+    if (this.bankingMode === 'MBC1') {
+      this.currentRomBank &= 0xE0;
+      this.currentRomBank |= value & 0x1F;
+    } else {
+      this.currentRomBank = value & 0xF;
+    }
+  }
+
+  // changes either ram bank or upper bits of rom bank
+  handleRamBankSwitching(value) {
+    if (this.bankingMode !== 'MBC1') {
+      return false;
+    }
+
+    if (this.wtf) {
+      this.currentRomBank &= 0x1F;
+      this.currentRomBank |= value & 0xE0;
+    } else {
+      this.currentRamBank = value & 0x3;
+    }
+  }
+
+  switchMemoryBankingMode(value) {
+    if (value & 1) {
+      this.memoryBankingMode = 'ram';
+    } else {
+      this.memoryBankingMode = 'rom';
+      this.currentRamBank = 0;
     }
   }
 
