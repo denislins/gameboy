@@ -13,15 +13,13 @@ export default class Mmu {
     this.ram = Array(0x8000).fill(0);
     this.addressSpace = Array(0x10000).fill(0);
 
+    this.memoryBankingMode = 'rom'
+
     this.currentRomBank = 1;
     this.currentRamBank = 0;
 
     this.romBankingEnabled = false;
     this.ramBankingEnabled = false;
-  }
-
-  async loadMemoryDump(cartridge) {
-    this.addressSpace = await cartridge.read();
   }
 
   read(address) {
@@ -33,15 +31,12 @@ export default class Mmu {
 
   write(address, value) {
     if (address < 0x8000) {
-      console.log(this.bankingMode)
-    }
-    if (address < 0x8000 && this.bankingMode !== 'none') {
       return this.handleBankSwitching(address, value);
     }
 
     if (address >= 0xA000 && address <= 0xBFFF && !this.ramBankingEnabled) {
       console.debug('skipping write to disabled RAM');
-      return false;
+      return;
     }
 
     const page = this.getPage(address);
@@ -49,9 +44,10 @@ export default class Mmu {
 
     if (mappedAddress >= 0xFEA0 && mappedAddress < 0xFF00) {
       console.debug('skipping write to unused space');
-    } else {
-      page[mappedAddress] = value & 0xFF;
+      return;
     }
+
+    page[mappedAddress] = value & 0xFF;
   }
 
   getPage(address) {
@@ -89,25 +85,25 @@ export default class Mmu {
   }
 
   handleBankSwitching(address, value) {
+    if (this.bankingMode === 'none') {
+      return;
+    }
+
     if (address < 0x2000) {
       this.enableRamBanking(address, value);
     } else if (address < 0x4000) {
       this.changeCurrentRomBankLowerBits(value);
-    } else if (address >= 0x6000) {
+    } else if (address < 0x6000) {
       this.handleRamBankSwitching(value);
     } else {
       this.switchMemoryBankingMode(value);
-    }
-
-    if (this.currentRomBank === 0) {
-      this.currentRomBank = 1;
     }
   }
 
   enableRamBanking(address, value) {
     // bit 4 must be 0 to enable/disable banking in MBC2 mode
     if (this.bankingMode === 'MBC2' && (address & 0x10) !== 0) {
-      return false;
+      return;
     }
 
     if ((value & 0xF) === 0xA) {
@@ -124,15 +120,19 @@ export default class Mmu {
     } else {
       this.currentRomBank = value & 0xF;
     }
+
+    if (this.currentRomBank === 0) {
+      this.currentRomBank = 1;
+    }
   }
 
   // changes either ram bank or upper bits of rom bank
   handleRamBankSwitching(value) {
     if (this.bankingMode !== 'MBC1') {
-      return false;
+      return;
     }
 
-    if (this.wtf) {
+    if (this.memoryBankingMode === 'rom') {
       this.currentRomBank &= 0x1F;
       this.currentRomBank |= value & 0xE0;
     } else {
