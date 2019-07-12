@@ -965,8 +965,52 @@ describe('BaseInstructionSet', function() {
     });
   });
 
+  describe('0xF1: POP AF', function() {
+    beforeEach(function() {
+      this.instruction = this.instructionSet.find(0xF1);
+    });
+
+    it('exposes the correct string representation', function() {
+      expect(this.instruction.repr).toEqual('POP AF');
+    });
+
+    it('executes in the correct number of cycles', function() {
+      const cycles = this.resolver.resolve(this.instruction);
+      expect(cycles).toEqual(12);
+    });
+
+    describe('execution', function() {
+      beforeEach(function() {
+        this.registers.write('sp', 0xFFFC);
+        this.resolver.resolve(this.instruction);
+      });
+
+      it('reads from memory correctly', function() {
+        const calls = this.mmu.read.calls.all();
+
+        expect(calls[0].args).toEqual([0xFFFC]);
+        expect(calls[1].args).toEqual([0xFFFD]);
+      });
+
+      it('sets A to the correct value', function() {
+        expect(this.registers.read('a')).toEqual(0xCD);
+      });
+
+      it('does not set the lower nibble for the flag register', function() {
+        expect(this.registers.read('f')).toEqual(0xA0);
+      });
+
+      it('sets SP to the correct value', function() {
+        expect(this.registers.read('sp')).toEqual(0xFFFE);
+      });
+
+      it('leaves PC at the correct value', function() {
+        expect(this.registers.read('pc')).toEqual(0x1000);
+      });
+    });
+  });
+
   [
-    { opcode: 0xF1, register: 'af', repr: 'POP AF' },
     { opcode: 0xC1, register: 'bc', repr: 'POP BC' },
     { opcode: 0xD1, register: 'de', repr: 'POP DE' },
     { opcode: 0xE1, register: 'hl', repr: 'POP HL' },

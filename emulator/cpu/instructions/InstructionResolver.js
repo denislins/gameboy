@@ -156,14 +156,16 @@ export default class InstructionResolver {
     this.mmu.write(lsbAddress, value & 0xFF);
   }
 
-  pop() {
+  pop({ maskLowerNibble }) {
     const lsbAddress = this.incrementRegister({ register: 'sp' });
     const msbAddress = this.incrementRegister({ register: 'sp' });
 
     const byte1 = this.mmu.read(lsbAddress);
     const byte2 = this.mmu.read(msbAddress);
 
-    return (byte2 << 8) | byte1;
+    const mask = maskLowerNibble ? 0xF0 : 0xFF;
+
+    return (byte2 << 8) | (byte1 & mask);
   }
 
   sumToRegisterValue({ register, value }) {

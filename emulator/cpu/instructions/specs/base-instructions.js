@@ -887,7 +887,7 @@ export default [
     repr: 'POP AF',
     cycles: 12,
     chain: [
-      ['pop'],
+      ['pop', { maskLowerNibble: true }],
       ['writeRegister', { register: 'af' }],
     ],
   },
