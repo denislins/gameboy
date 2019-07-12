@@ -809,6 +809,10 @@ describe('BaseInstructionSet', function() {
         this.resolver.resolve(this.instruction);
       });
 
+      it('reads from memory correctly', function() {
+        expect(this.mmu.read).toHaveBeenCalledWith(0x1000);
+      });
+
       it('sets HL to the correct value', function() {
         expect(this.registers.read('hl')).toEqual(0x11DF);
       });
@@ -840,8 +844,8 @@ describe('BaseInstructionSet', function() {
 
     describe('when the nibble result overflows', function() {
       beforeEach(function() {
-        this.registers.write('sp', 0xFFFF);
-        this.mmu.read.and.returnValue(0xFF);
+        this.registers.write('sp', 0xF00F);
+        this.mmu.read.and.returnValue(0xF);
         this.resolver.resolve(this.instruction);
       });
 

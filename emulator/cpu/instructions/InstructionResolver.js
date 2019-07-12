@@ -98,14 +98,15 @@ export default class InstructionResolver {
   }
 
   sumSignedByte({ value }) {
-    const byte = this.readSignedByte();
+    const byte = this.readByte();
 
     this.flags.set('z', false);
     this.flags.set('n', false);
     this.flags.set('h', ((value & 0xF) + (byte & 0xF)) > 0xF);
     this.flags.set('c', ((value & 0xFF) + byte) > 0xFF);
 
-    return value + byte;
+    const signedByte = (byte ^ 0x80) - 0x80;
+    return value + signedByte;
   }
 
   incrementRegister({ register, setFlags }) {
@@ -225,7 +226,7 @@ export default class InstructionResolver {
     const newValue = currentValue + value;
 
     this.flags.set('n', false);
-    this.flags.set('h', ((currentValue & 0xFFF) + (newValue & 0xFFF)) > 0xFFF);
+    this.flags.set('h', ((currentValue & 0xFFF) + (value & 0xFFF)) > 0xFFF);
     this.flags.set('c', newValue > 0xFFFF);
 
     return newValue;
