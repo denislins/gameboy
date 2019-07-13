@@ -3769,9 +3769,12 @@ describe('BaseInstructionSet', function() {
           expect(this.flags.get('n')).toEqual(true);
         });
 
+        it('does not change the carry flag', function() {
+          expect(this.flags.get('c')).toEqual(true);
+        });
+
         it('resets all other flags', function() {
           expect(this.flags.get('z')).toEqual(false);
-          expect(this.flags.get('c')).toEqual(false);
           expect(this.flags.get('h')).toEqual(false);
         });
       });
@@ -3807,11 +3810,11 @@ describe('BaseInstructionSet', function() {
         });
 
         it('sets A to the correct value', function() {
-          expect(this.registers.read('a')).toEqual(0xA0);
+          expect(this.registers.read('a')).toEqual(0);
         });
       });
 
-      describe('when the upper nibble is greater than 0x9', function() {
+      describe('when the value is greater than 0x99', function() {
         beforeEach(function() {
           this.registers.write('a', 0xA9);
           this.resolver.resolve(this.instruction);
@@ -3893,9 +3896,12 @@ describe('BaseInstructionSet', function() {
           expect(this.flags.get('n')).toEqual(true);
         });
 
+        it('does not change the carry flag', function() {
+          expect(this.flags.get('c')).toEqual(true);
+        });
+
         it('resets all other flags', function() {
           expect(this.flags.get('z')).toEqual(false);
-          expect(this.flags.get('c')).toEqual(false);
           expect(this.flags.get('h')).toEqual(false);
         });
       });
@@ -4270,8 +4276,8 @@ describe('BaseInstructionSet', function() {
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', function() {
-        expect(this.flags.get('z')).toEqual(true);
+      it('does not set the zero flag', function() {
+        expect(this.flags.get('z')).toEqual(false);
       });
     });
   });
@@ -4337,8 +4343,8 @@ describe('BaseInstructionSet', function() {
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', function() {
-        expect(this.flags.get('z')).toEqual(true);
+      it('does not set the zero flag', function() {
+        expect(this.flags.get('z')).toEqual(false);
       });
     });
   });
@@ -4393,8 +4399,8 @@ describe('BaseInstructionSet', function() {
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', function() {
-        expect(this.flags.get('z')).toEqual(true);
+      it('does not set the zero flag', function() {
+        expect(this.flags.get('z')).toEqual(false);
       });
     });
   });
@@ -4460,8 +4466,8 @@ describe('BaseInstructionSet', function() {
         this.resolver.resolve(this.instruction);
       });
 
-      it('sets the zero flag', function() {
-        expect(this.flags.get('z')).toEqual(true);
+      it('does not set the zero flag', function() {
+        expect(this.flags.get('z')).toEqual(false);
       });
     });
   });

@@ -1273,6 +1273,16 @@ export default [
     ],
   },
   {
+    opcode: 0xDE,
+    repr: 'SBC A, byte',
+    cycles: 8,
+    chain: [
+      ['readByte'],
+      ['subtractFromRegisterValueWithCarry', { register: 'a' }],
+      ['writeRegister', { register: 'a' }],
+    ],
+  },
+  {
     opcode: 0xA7,
     repr: 'AND A, A',
     cycles: 4,
@@ -1973,7 +1983,7 @@ export default [
     cycles: 4,
     chain: [
       ['readRegister', { register: 'a' }],
-      ['rotateLeft'],
+      ['rotateLeft', { resetZeroFlag: true }],
       ['writeRegister', { register: 'a' }],
     ],
   },
@@ -1983,7 +1993,7 @@ export default [
     cycles: 4,
     chain: [
       ['readRegister', { register: 'a' }],
-      ['rotateLeftUsingCarry'],
+      ['rotateLeftUsingCarry', { resetZeroFlag: true }],
       ['writeRegister', { register: 'a' }],
     ],
   },
@@ -1993,7 +2003,7 @@ export default [
     cycles: 4,
     chain: [
       ['readRegister', { register: 'a' }],
-      ['rotateRight'],
+      ['rotateRight', { resetZeroFlag: true }],
       ['writeRegister', { register: 'a' }],
     ],
   },
@@ -2003,7 +2013,7 @@ export default [
     cycles: 4,
     chain: [
       ['readRegister', { register: 'a' }],
-      ['rotateRightUsingCarry'],
+      ['rotateRightUsingCarry', { resetZeroFlag: true }],
       ['writeRegister', { register: 'a' }],
     ],
   },

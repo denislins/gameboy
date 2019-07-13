@@ -175,7 +175,7 @@ export default class InstructionResolver {
 
     this.flags.set('n', false);
     this.flags.set('z', (newValue & 0xFF) === 0);
-    this.flags.set('h', ((currentValue & 0xF) + (newValue & 0xF)) > 0xF);
+    this.flags.set('h', ((currentValue & 0xF) + (value & 0xF)) > 0xF);
     this.flags.set('c', newValue > 0xFF);
 
     return newValue;
@@ -201,7 +201,7 @@ export default class InstructionResolver {
 
     this.flags.set('n', false);
     this.flags.set('z', (newValue & 0xFF) === 0);
-    this.flags.set('h', ((currentValue & 0xF) + (newValue & 0xF) + carry) > 0xF);
+    this.flags.set('h', ((currentValue & 0xF) + (value & 0xF) + carry) > 0xF);
     this.flags.set('c', newValue > 0xFF);
 
     return newValue;
@@ -295,7 +295,7 @@ export default class InstructionResolver {
         correction |= 0x6;
       }
 
-      if ((value >> 4) > 0x9) {
+      if (value > 0x99) {
         correction |= 0x60;
       }
 
@@ -304,7 +304,7 @@ export default class InstructionResolver {
 
     this.flags.set('z', (newValue & 0xFF) === 0);
     this.flags.set('h', false);
-    this.flags.set('c', newValue > 0xFF);
+    this.flags.set('c', (correction & 0x60) !== 0);
 
     return newValue;
   }
@@ -344,48 +344,68 @@ export default class InstructionResolver {
     // TODO
   }
 
-  rotateLeft({ value }) {
+  rotateLeft({ value, resetZeroFlag }) {
     const shifted = (value << 1) | (value >> 7);
 
-    this.flags.set('z', (shifted & 0xFF) === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
     this.flags.set('c', (value & 0b10000000) > 0);
 
+    if (resetZeroFlag) {
+      this.flags.set('z', false);
+    } else {
+      this.flags.set('z', (shifted & 0xFF) === 0);
+    }
+
     return shifted;
   }
 
-  rotateLeftUsingCarry({ value }) {
+  rotateLeftUsingCarry({ value, resetZeroFlag }) {
     const carry = this.flags.get('c') ? 1 : 0;
     const shifted = (value << 1) | carry;
 
-    this.flags.set('z', (shifted & 0xFF) === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
     this.flags.set('c', (value & 0b10000000) > 0);
 
+    if (resetZeroFlag) {
+      this.flags.set('z', false);
+    } else {
+      this.flags.set('z', (shifted & 0xFF) === 0);
+    }
+
     return shifted;
   }
 
-  rotateRight({ value }) {
+  rotateRight({ value, resetZeroFlag }) {
     const shifted = ((value & 1) << 7) | (value >> 1);
 
-    this.flags.set('z', shifted === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
     this.flags.set('c', (value & 1) > 0);
 
+    if (resetZeroFlag) {
+      this.flags.set('z', false);
+    } else {
+      this.flags.set('z', (shifted & 0xFF) === 0);
+    }
+
     return shifted;
   }
 
-  rotateRightUsingCarry({ value }) {
+  rotateRightUsingCarry({ value, resetZeroFlag }) {
     const carry = this.flags.get('c') ? 1 : 0;
     const shifted = (carry << 7) | (value >> 1);
 
-    this.flags.set('z', shifted === 0);
     this.flags.set('n', false);
     this.flags.set('h', false);
     this.flags.set('c', (value & 1) > 0);
+
+    if (resetZeroFlag) {
+      this.flags.set('z', false);
+    } else {
+      this.flags.set('z', (shifted & 0xFF) === 0);
+    }
 
     return shifted;
   }
