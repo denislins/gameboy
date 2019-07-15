@@ -2,6 +2,7 @@ import RegisterSet from './registers/RegisterSet.js';
 import BaseInstructionSet from './instructions/BaseInstructionSet.js';
 import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
 import InstructionResolver from './instructions/InstructionResolver.js';
+import InterruptHandler from './InterruptHandler.js';
 
 export default class Cpu {
   constructor(mmu) {
@@ -11,7 +12,8 @@ export default class Cpu {
     this.registers = new RegisterSet();
     this.instructions = new BaseInstructionSet();
 
-    this.resolver = new InstructionResolver(this.registers, this.mmu);
+    this.interrupts = new InterruptHandler(this.mmu);
+    this.resolver = new InstructionResolver(this.registers, this.mmu, this.interrupts);
   }
 
   reset() {
@@ -27,7 +29,9 @@ export default class Cpu {
     }
 
     const cycles = this.resolver.resolve(instruction);
+
     this.cycles += cycles;
+    this.serviceInterrupts();
 
     return cycles;
   }
@@ -56,5 +60,12 @@ export default class Cpu {
     }
 
     return this.mmu.read(address);
+  }
+
+  serviceInterrupts() {
+    this.interrupts.service((address) => {
+      this.resolver.serviceInterrupt(address);
+      this.cycles += 16;
+    });
   }
 }

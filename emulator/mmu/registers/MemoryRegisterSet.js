@@ -3,6 +3,8 @@ import CartridgeTypeRegister from './CartridgeTypeRegister.js';
 import LcdControllerRegister from './LcdControllerRegister.js';
 import LcdStatusRegister from './LcdStatusRegister.js';
 import TimerControllerRegister from './TimerControllerRegister.js';
+import InterruptRequestRegister from './interrupts/InterruptRequestRegister.js';
+import InterruptEnabledRegister from './interrupts/InterruptEnabledRegister.js';
 
 export default class MemoryRegisterSet {
   constructor(mmu) {
@@ -45,7 +47,8 @@ export default class MemoryRegisterSet {
   }
 
   initInterruputRegisters() {
-
+    this.registers.interruptRequest = new InterruptRequestRegister(this.mmu);
+    this.registers.interruptEnabled = new InterruptEnabledRegister(this.mmu);
   }
 
   add(register, address) {

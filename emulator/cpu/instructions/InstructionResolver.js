@@ -1,7 +1,8 @@
 export default class InstructionResolver {
-  constructor(registers, mmu) {
+  constructor(registers, mmu, interrupts) {
     this.registers = registers;
     this.mmu = mmu;
+    this.interrupts = interrupts;
     this.flags = this.registers.get('f');
   }
 
@@ -333,15 +334,15 @@ export default class InstructionResolver {
   }
 
   halt() {
-    // TODO
+
   }
 
   stop() {
     // TODO
   }
 
-  toggleInterrupts() {
-    // TODO
+  toggleInterrupts({ flag }) {
+    this.interrupts.setMasterEnabled(flag);
   }
 
   rotateLeft({ value, resetZeroFlag }) {
@@ -466,5 +467,12 @@ export default class InstructionResolver {
   nextInstructionAddress() {
     const currentAddress = this.readRegister({ register: 'pc' });
     return (currentAddress + 2) & 0xFFFF;
+  }
+
+  serviceInterrupt(address) {
+    const currentAddress = this.readRegister({ register: 'pc' });
+
+    this.push({ value: currentAddress });
+    this.writeRegister({ register: 'pc', address });
   }
 }

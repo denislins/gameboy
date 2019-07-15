@@ -50,6 +50,10 @@ export default class Mmu {
     page[mappedAddress] = value & 0xFF;
   }
 
+  requestInterrupt(type) {
+    this.registers.get('interruptRequest').request(type);
+  }
+
   getPage(address) {
     if (address < 0x100 && !this.registers.read('disableBootrom')) {
       return this.bootrom;

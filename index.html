@@ -64,7 +64,10 @@
     window.breakpoints = [];
     window.isDebuggerActive = false;
 
-    emulator.load('./roms/cpu_tests.gb');
+    // not implemented yet
+    emulator.load('./roms/individual/02-interrupts.gb');
+
+    // emulator.load('./roms/cpu_tests.gb');
     emulator.boot();
 
     // emulator.bootWithMemoryDump('./dumps/cpu_tests.dump');

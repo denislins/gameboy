@@ -49,6 +49,8 @@ export default class Gpu {
 
       if (this.currentMode === 'dmaTransfer') {
         this.execDmaTransfer();
+      } else if (this.currentMode === 'vblank') {
+        this.mmu.requestInterrupt('vblank');
       }
     }
   }
