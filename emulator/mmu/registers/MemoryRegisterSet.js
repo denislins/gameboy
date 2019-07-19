@@ -3,6 +3,7 @@ import CartridgeTypeRegister from './system/CartridgeTypeRegister.js';
 import LcdControllerRegister from './lcd/LcdControllerRegister.js';
 import LcdStatusRegister from './lcd/LcdStatusRegister.js';
 import TimerControllerRegister from './timer/TimerControllerRegister.js';
+import TimerDividerRegister from './timer/TimerDividerRegister.js';
 import InterruptRequestRegister from './interrupts/InterruptRequestRegister.js';
 import InterruptEnabledRegister from './interrupts/InterruptEnabledRegister.js';
 
@@ -15,6 +16,7 @@ export default class MemoryRegisterSet {
     this.initVideoRegisters();
     this.initTimerRegisters();
     this.initInterruputRegisters();
+    this.compileAddressIndex();
   }
 
   initSystemRegisters() {
@@ -39,6 +41,7 @@ export default class MemoryRegisterSet {
 
   initTimerRegisters() {
     this.registers.timerController = new TimerControllerRegister(this.mmu);
+    this.registers.timerDivider = new TimerDividerRegister(this.mmu);
     this.registers.timerCounter = new SimpleMemoryRegister(this.mmu, 0xFF05);
     this.registers.timerModulator = new SimpleMemoryRegister(this.mmu, 0xFF06);
   }
@@ -48,8 +51,20 @@ export default class MemoryRegisterSet {
     this.registers.interruptEnabled = new InterruptEnabledRegister(this.mmu);
   }
 
+  compileAddressIndex() {
+    this.registerAddresses = {};
+
+    Object.values(this.registers).forEach((register) => {
+      this.registerAddresses[register.address] = register;
+    });
+  }
+
   get(register) {
     return this.registers[register];
+  }
+
+  findByAddress(address) {
+    return this.registerAddresses[address];
   }
 
   read(register) {

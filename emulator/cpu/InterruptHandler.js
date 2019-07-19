@@ -5,11 +5,11 @@ export default class InterruptHandler {
     this.masterEnabled = false;
 
     this.types = {
-      vblank: { mask: 0, address: 0x40 },
-      lcd: { mask: 1, address: 0x48 },
-      timer: { mask: 1 << 2, address: 0x50 },
-      serial: { mask: 1 << 3, address: 0x58 },
-      joypad: { mask: 1 << 4, address: 0x60 },
+      vblank: { mask: 1, address: 0x40 },
+      lcd: { mask: 2, address: 0x48 },
+      timer: { mask: 4, address: 0x50 },
+      serial: { mask: 8, address: 0x58 },
+      joypad: { mask: 16, address: 0x60 },
     };
 
     this.enabledRegister = this.mmu.registers.get('interruptEnabled');
@@ -48,7 +48,7 @@ export default class InterruptHandler {
     this.masterEnabled = false;
 
     const value = this.requestRegister.read();
-    this.requestRegister.write(value & interrupt.mask);
+    this.requestRegister.write(value & ~interrupt.mask);
 
     callback(interrupt.address);
   }

@@ -39,6 +39,16 @@ export default class Mmu {
       return;
     }
 
+    const register = this.registers.findByAddress(address);
+
+    if (register) {
+      register.writeFromBus(value);
+    } else {
+      this.forceWrite(address, value);
+    }
+  }
+
+  forceWrite(address, value) {
     const page = this.getPage(address);
     const mappedAddress = this.mapAddress(address);
 

@@ -334,7 +334,7 @@ export default class InstructionResolver {
   }
 
   halt() {
-
+    this.halted = true;
   }
 
   stop() {
@@ -473,6 +473,6 @@ export default class InstructionResolver {
     const currentAddress = this.readRegister({ register: 'pc' });
 
     this.push({ value: currentAddress });
-    this.writeRegister({ register: 'pc', address });
+    this.writeRegister({ register: 'pc', value: address });
   }
 }

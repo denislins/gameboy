@@ -13,6 +13,10 @@ export default class AbstractMemoryRegister {
   }
 
   write(value) {
-    return this.mmu.write(this.address, value);
+    return this.mmu.forceWrite(this.address, value);
+  }
+
+  writeFromBus(value) {
+    return this.write(value);
   }
 }

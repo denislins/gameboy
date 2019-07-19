@@ -29,11 +29,16 @@ export default class Cpu {
     }
 
     const cycles = this.resolver.resolve(instruction);
-
     this.cycles += cycles;
-    this.serviceInterrupts();
 
     return cycles;
+  }
+
+  serviceInterrupts() {
+    this.interrupts.service((address) => {
+      this.resolver.serviceInterrupt(address);
+      this.cycles += 16;
+    });
   }
 
   getNextInstruction(instructionSet) {
@@ -60,12 +65,5 @@ export default class Cpu {
     }
 
     return this.mmu.read(address);
-  }
-
-  serviceInterrupts() {
-    this.interrupts.service((address) => {
-      this.resolver.serviceInterrupt(address);
-      this.cycles += 16;
-    });
   }
 }

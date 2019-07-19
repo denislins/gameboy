@@ -17,7 +17,7 @@ export default class Gpu {
   tick(cpuCycles) {
     this.cycles += cpuCycles;
 
-    if (this.cycles > 456) {
+    if (this.cycles >= 456) {
       this.cycles = this.cycles % 456;
       this.incrementCurrentRow();
     }

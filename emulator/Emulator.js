@@ -2,6 +2,7 @@ import Cpu from './cpu/Cpu.js';
 import Gpu from './gpu/Gpu.js';
 import Ppu from './gpu/Ppu.js';
 import Mmu from './mmu/Mmu.js';
+import Timer from './timer/Timer.js';
 import Display from './display/Display.js';
 import Cartridge from './cartridge/Cartridge.js';
 
@@ -10,6 +11,11 @@ export default class Emulator {
     this.mmu = new Mmu();
     this.cpu = new Cpu(this.mmu);
     this.gpu = new Gpu(this.mmu);
+    this.timer = new Timer(this.mmu);
+
+    // I hate this.
+    window.timer = this.timer;
+
     this.display = new Display(canvas);
   }
 
@@ -36,7 +42,11 @@ export default class Emulator {
 
     while (this.cpu.cycles <= limit) {
       const cycles = this.cpu.tick();
+
+      this.timer.tick(cycles);
       this.gpu.tick(cycles);
+
+      this.cpu.serviceInterrupts();
     }
 
     this.display.draw(this.gpu.pixels);
