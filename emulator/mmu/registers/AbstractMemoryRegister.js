@@ -1,7 +1,11 @@
-export default class MemoryRegister {
-  constructor(mmu, address) {
+export default class AbstractMemoryRegister {
+  constructor(mmu) {
     this.mmu = mmu;
-    this.address = address;
+    this.onInit();
+  }
+
+  onInit() {
+
   }
 
   read() {

@@ -1,8 +1,8 @@
-import MemoryRegister from './MemoryRegister.js';
+import AbstractMemoryRegister from '../AbstractMemoryRegister.js';
 
-export default class LcdStatusRegister extends MemoryRegister {
-  constructor(mmu) {
-    super(mmu, 0xFF41);
+export default class LcdStatusRegister extends AbstractMemoryRegister {
+  onInit() {
+    this.address =  0xFF41;
     this.modes = ['hblank', 'vblank', 'oamSearch', 'dmaTransfer'];
   }
 

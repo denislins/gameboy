@@ -1,8 +1,8 @@
-import MemoryRegister from './MemoryRegister.js';
-import CartridgeTypeRegister from './CartridgeTypeRegister.js';
-import LcdControllerRegister from './LcdControllerRegister.js';
-import LcdStatusRegister from './LcdStatusRegister.js';
-import TimerControllerRegister from './TimerControllerRegister.js';
+import SimpleMemoryRegister from './SimpleMemoryRegister.js';
+import CartridgeTypeRegister from './system/CartridgeTypeRegister.js';
+import LcdControllerRegister from './lcd/LcdControllerRegister.js';
+import LcdStatusRegister from './lcd/LcdStatusRegister.js';
+import TimerControllerRegister from './timer/TimerControllerRegister.js';
 import InterruptRequestRegister from './interrupts/InterruptRequestRegister.js';
 import InterruptEnabledRegister from './interrupts/InterruptEnabledRegister.js';
 
@@ -19,40 +19,33 @@ export default class MemoryRegisterSet {
 
   initSystemRegisters() {
     this.registers.cartridgeType = new CartridgeTypeRegister(this.mmu);
-
-    this.add('disableBootrom', 0xFF50);
+    this.registers.disableBootrom = new SimpleMemoryRegister(this.mmu, 0xFF50);
   }
 
   initVideoRegisters() {
     this.registers.lcdController = new LcdControllerRegister(this.mmu);
     this.registers.lcdStatus = new LcdStatusRegister(this.mmu);
-
-    this.add('scrollY', 0xFF42);
-    this.add('scrollX', 0xFF43);
-    this.add('scanline', 0xFF44);
-    this.add('scanlineCompare', 0xFF45);
-    this.add('dmaTransfer', 0xFF46);
-    this.add('backgroundPallete', 0xFF47);
-    this.add('objectPallete0', 0xFF48);
-    this.add('objectPallete1', 0xFF49);
-    this.add('windowY', 0xFF4A);
-    this.add('windowX', 0xFF4B);
+    this.registers.scrollY = new SimpleMemoryRegister(this.mmu, 0xFF42);
+    this.registers.scrollX = new SimpleMemoryRegister(this.mmu, 0xFF43);
+    this.registers.scanline = new SimpleMemoryRegister(this.mmu, 0xFF44);
+    this.registers.scanlineCompare = new SimpleMemoryRegister(this.mmu, 0xFF45);
+    this.registers.dmaTransfer = new SimpleMemoryRegister(this.mmu, 0xFF46);
+    this.registers.backgroundPallete = new SimpleMemoryRegister(this.mmu, 0xFF47);
+    this.registers.objectPallete0 = new SimpleMemoryRegister(this.mmu, 0xFF48);
+    this.registers.objectPallete1 = new SimpleMemoryRegister(this.mmu, 0xFF49);
+    this.registers.windowY = new SimpleMemoryRegister(this.mmu, 0xFF4A);
+    this.registers.windowX = new SimpleMemoryRegister(this.mmu, 0xFF4B);
   }
 
   initTimerRegisters() {
-    this.registers.tmc = new TimerControllerRegister(this.mmu);
-
-    this.add('timerCounter', 0xFF05);
-    this.add('timerModulo', 0xFF06);
+    this.registers.timerController = new TimerControllerRegister(this.mmu);
+    this.registers.timerCounter = new SimpleMemoryRegister(this.mmu, 0xFF05);
+    this.registers.timerModulator = new SimpleMemoryRegister(this.mmu, 0xFF06);
   }
 
   initInterruputRegisters() {
     this.registers.interruptRequest = new InterruptRequestRegister(this.mmu);
     this.registers.interruptEnabled = new InterruptEnabledRegister(this.mmu);
-  }
-
-  add(register, address) {
-    this.registers[register] = new MemoryRegister(this.mmu, address);
   }
 
   get(register) {

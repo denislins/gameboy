@@ -1,8 +1,8 @@
-import MemoryRegister from '../MemoryRegister.js';
+import AbstractMemoryRegister from '../AbstractMemoryRegister.js';
 
-export default class InterruptRequestRegister extends MemoryRegister {
-  constructor(mmu) {
-    super(mmu, 0xFF0F);
+export default class InterruptRequestRegister extends AbstractMemoryRegister {
+  onInit() {
+    this.address = 0xFF0F;
     this.types = ['vblank', 'lcd', 'timer', 'serial', 'joypad'];
   }
 

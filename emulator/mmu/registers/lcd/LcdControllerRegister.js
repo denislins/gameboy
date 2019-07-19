@@ -1,8 +1,8 @@
-import MemoryRegister from './MemoryRegister.js';
+import AbstractMemoryRegister from '../AbstractMemoryRegister.js';
 
-export default class LcdControllerRegister extends MemoryRegister {
-  constructor(mmu) {
-    super(mmu, 0xFF40);
+export default class LcdControllerRegister extends AbstractMemoryRegister {
+  onInit() {
+    this.address = 0xFF40;
   }
 
   isDisplayEnabled() {
