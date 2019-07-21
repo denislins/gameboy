@@ -1,3 +1,4 @@
+import Observer from '../../../Observer.js';
 import AbstractMemoryRegister from '../AbstractMemoryRegister.js';
 
 export default class TimerControllerRegister extends AbstractMemoryRegister {
@@ -7,13 +8,12 @@ export default class TimerControllerRegister extends AbstractMemoryRegister {
   }
 
   writeFromBus(value) {
-    if ((value & 3) === (this.read() & 3)) {
-      return;
-    }
+    Observer.trigger('mmu.registers.timerController.written', {
+      newValue: value,
+      previousValue: this.read(),
+    });
 
-    this.write(value);
-
-    window.timer.timerCounter = window.timer.timerCounter % this.getClockFrequencyInCycles();
+    return this.write(value & 7);
   }
 
   getClockFrequencyInCycles() {

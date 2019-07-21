@@ -11,9 +11,8 @@ export default class Cpu {
 
     this.registers = new RegisterSet();
     this.instructions = new BaseInstructionSet();
-
     this.interrupts = new InterruptHandler(this.mmu);
-    this.resolver = new InstructionResolver(this.registers, this.mmu, this.interrupts);
+    this.resolver = new InstructionResolver(this.registers, this.mmu);
   }
 
   reset() {

@@ -1,3 +1,4 @@
+import Observer from '../../../Observer.js';
 import AbstractMemoryRegister from '../AbstractMemoryRegister.js';
 
 export default class TimerDividerRegister extends AbstractMemoryRegister {
@@ -6,7 +7,7 @@ export default class TimerDividerRegister extends AbstractMemoryRegister {
   }
 
   writeFromBus(value) {
-    window.timer.timerCounter = 0;
+    Observer.trigger('mmu.registers.timerDivider.written');
     return this.write(0);
   }
 }

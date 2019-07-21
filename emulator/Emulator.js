@@ -12,10 +12,6 @@ export default class Emulator {
     this.cpu = new Cpu(this.mmu);
     this.gpu = new Gpu(this.mmu);
     this.timer = new Timer(this.mmu);
-
-    // I hate this.
-    window.timer = this.timer;
-
     this.display = new Display(canvas);
   }
 
@@ -68,19 +64,5 @@ export default class Emulator {
       this.fps = 1;
       this.currentSecond = new Date().getSeconds();
     }
-  }
-
-  async bootWithMemoryDump(path) {
-    const cartridge = new Cartridge(path);
-    await this.mmu.loadCartridge(cartridge);
-
-    const ppu = new Ppu(this.mmu);
-    const pixels = [];
-
-    for (let row = 0; row < 144; row++) {
-      pixels.push(...ppu.draw(row));
-    }
-
-    this.display.draw(pixels);
   }
 }

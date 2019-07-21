@@ -1,3 +1,4 @@
+import Observer from '../Observer.js';
 import Ppu from './Ppu.js';
 
 export default class Gpu {
@@ -50,7 +51,7 @@ export default class Gpu {
       if (this.currentMode === 'dmaTransfer') {
         this.execDmaTransfer();
       } else if (this.currentMode === 'vblank') {
-        this.mmu.requestInterrupt('vblank');
+        Observer.trigger('interrupts.request', { type: 'vblank' });
       }
     }
   }

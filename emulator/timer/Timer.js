@@ -1,15 +1,29 @@
+import Observer from '../Observer.js';
+
 export default class Timer {
   constructor(mmu) {
     this.mmu = mmu;
     this.timerCounter = 0;
     this.dividerCounter = 0;
+
     this.initRegisters();
+    this.initEventHandlers();
   }
 
   initRegisters() {
     this.controller = this.mmu.registers.get('timerController');
     this.timerRegister = this.mmu.registers.get('timerCounter');
     this.dividerRegister = this.mmu.registers.get('timerDivider');
+  }
+
+  initEventHandlers() {
+    Observer.on('mmu.registers.timerController.written', (params) => {
+      this.resetTimerCounter(params);
+    });
+
+    Observer.on('mmu.registers.timerDivider.written', () => {
+      this.timerCounter = 0;
+    });
   }
 
   tick(cpuCycles) {
@@ -50,11 +64,17 @@ export default class Timer {
       const nextValue = this.timerRegister.read() + 1;
 
       if (nextValue > 255) {
-        this.mmu.requestInterrupt('timer');
+        Observer.trigger('interrupts.request', { type: 'timer' });
         this.updateCounterFlag = true;
       }
 
       this.timerRegister.write(nextValue);
+    }
+  }
+
+  resetTimerCounter({ newValue, previousValue }) {
+    if ((newValue & 3) !== (previousValue & 3)) {
+      this.timerCounter = this.timerCounter % this.timerThreshold;
     }
   }
 

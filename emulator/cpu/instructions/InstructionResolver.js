@@ -1,8 +1,9 @@
+import Observer from '../../Observer.js';
+
 export default class InstructionResolver {
-  constructor(registers, mmu, interrupts) {
+  constructor(registers, mmu) {
     this.registers = registers;
     this.mmu = mmu;
-    this.interrupts = interrupts;
     this.flags = this.registers.get('f');
   }
 
@@ -342,7 +343,7 @@ export default class InstructionResolver {
   }
 
   toggleInterrupts({ flag }) {
-    this.interrupts.setMasterEnabled(flag);
+    Observer.trigger('interrupts.master', { flag });
   }
 
   rotateLeft({ value, resetZeroFlag }) {

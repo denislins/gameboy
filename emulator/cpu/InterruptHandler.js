@@ -1,9 +1,17 @@
+import Observer from '../Observer.js';
+
 export default class InterruptHandler {
   constructor(mmu, resolver) {
     this.mmu = mmu;
     this.resolver = resolver;
     this.masterEnabled = false;
 
+    this.initTypes();
+    this.initRegisters();
+    this.initEventHandlers();
+  }
+
+  initTypes() {
     this.types = {
       vblank: { mask: 1, address: 0x40 },
       lcd: { mask: 2, address: 0x48 },
@@ -11,13 +19,28 @@ export default class InterruptHandler {
       serial: { mask: 8, address: 0x58 },
       joypad: { mask: 16, address: 0x60 },
     };
+  }
 
+  initRegisters() {
     this.enabledRegister = this.mmu.registers.get('interruptEnabled');
     this.requestRegister = this.mmu.registers.get('interruptRequest');
   }
 
-  setMasterEnabled(flag) {
-    this.masterEnabled = flag;
+  initEventHandlers() {
+    Observer.on('interrupts.master', ({ flag }) => {
+      this.masterEnabled = flag;
+    });
+
+    Observer.on('interrupts.request', ({ type }) => {
+      this.request(type);
+    });
+  }
+
+  request(type) {
+    const value = this.requestRegister.read();
+    const mask = this.types[type].mask;
+
+    this.requestRegister.write(value | mask);
   }
 
   service(callback) {
