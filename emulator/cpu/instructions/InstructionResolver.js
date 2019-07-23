@@ -14,7 +14,9 @@ export default class InstructionResolver {
 
     instruction.resolve((reduced, piece) => {
       const [operation, defaultArgs] = piece;
-      const args = { value: reduced, ...defaultArgs };
+
+      // destructuring is 4-5 times slower
+      const args = Object.assign({ value: reduced }, defaultArgs);
 
       if (window.isDebuggerActive) {
         console.log(operation, args);

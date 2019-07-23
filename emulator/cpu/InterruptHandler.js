@@ -50,14 +50,14 @@ export default class InterruptHandler {
       return;
     }
 
-    const types = Object.entries(this.types);
+    Object.keys(this.types).forEach((type) => {
+      const attrs = this.types[type];
 
-    for (let [type, attrs] of types) {
       if ((requested & attrs.mask) > 0) {
         Observer.trigger('interrupts.serviced');
         this.serviceType(attrs, callback);
       }
-    }
+    });
   }
 
   getRequestedInterrupts() {

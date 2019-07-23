@@ -62,7 +62,9 @@ export default class Gpu {
     }
 
     const rowPixels = this.ppu.draw(this.currentRow);
-    this.pixels.push(...rowPixels);
+
+    // destructuring is about 4x slower
+    Array.prototype.push.apply(this.pixels, rowPixels);
   }
 
   get currentMode() {
