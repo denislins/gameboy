@@ -335,7 +335,7 @@ export default class InstructionResolver {
   }
 
   halt() {
-    this.halted = true;
+    Observer.trigger('cpu.halted');
   }
 
   stop() {

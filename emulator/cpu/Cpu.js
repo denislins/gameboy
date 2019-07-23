@@ -1,3 +1,4 @@
+import Observer from '../Observer.js';
 import RegisterSet from './registers/RegisterSet.js';
 import BaseInstructionSet from './instructions/BaseInstructionSet.js';
 import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
@@ -13,6 +14,18 @@ export default class Cpu {
     this.instructions = new BaseInstructionSet();
     this.interrupts = new InterruptHandler(this.mmu);
     this.resolver = new InstructionResolver(this.registers, this.mmu);
+
+    this.initEventHandlers();
+  }
+
+  initEventHandlers() {
+    Observer.on('cpu.halted', () => {
+      this.halt();
+    });
+
+    Observer.on('interrupts.serviced', () => {
+      this.halted = false;
+    });
   }
 
   reset() {
@@ -20,7 +33,13 @@ export default class Cpu {
   }
 
   tick() {
-    const instruction = this.getNextInstruction();
+    let instruction;
+
+    if (this.halted) {
+      instruction = this.instructions.find(0x76);
+    } else {
+      instruction = this.getNextInstruction();
+    }
 
     if (window.isDebuggerActive) {
       console.log(instruction.repr);
@@ -33,10 +52,22 @@ export default class Cpu {
     return cycles;
   }
 
+  halt() {
+    const requested = this.interrupts.getRequestedInterrupts();
+
+    if (this.interrupts.masterEnabled || requested === 0) {
+      this.halted = true;
+    } else {
+      this.wasHalted = true;
+    }
+  }
+
   serviceInterrupts() {
     this.interrupts.service((address) => {
       this.resolver.serviceInterrupt(address);
-      this.cycles += 16;
+
+      this.halted = false;
+      this.cycles += 12;
     });
   }
 
@@ -53,7 +84,12 @@ export default class Cpu {
 
   getNextOpcode() {
     const address = this.registers.read('pc');
-    this.registers.write('pc', address + 1);
+
+    if (this.wasHalted) {
+      this.wasHalted = false;
+    } else {
+      this.registers.write('pc', address + 1);
+    }
 
     if (window.breakpoints.indexOf(address) !== -1) {
       window.isDebuggerActive = true;

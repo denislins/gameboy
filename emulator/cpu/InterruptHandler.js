@@ -46,7 +46,7 @@ export default class InterruptHandler {
   service(callback) {
     const requested = this.getRequestedInterrupts();
 
-    if (!this.masterEnabled || requested === 0) {
+    if (requested === 0) {
       return;
     }
 
@@ -54,7 +54,7 @@ export default class InterruptHandler {
 
     for (let [type, attrs] of types) {
       if ((requested & attrs.mask) > 0) {
-        console.log(`servicing interrupt: ${type}`)
+        Observer.trigger('interrupts.serviced');
         this.serviceType(attrs, callback);
       }
     }
@@ -68,11 +68,13 @@ export default class InterruptHandler {
   }
 
   serviceType(interrupt, callback) {
-    this.masterEnabled = false;
+    if (this.masterEnabled) {
+      this.masterEnabled = false;
 
-    const value = this.requestRegister.read();
-    this.requestRegister.write(value & ~interrupt.mask);
+      const value = this.requestRegister.read();
+      this.requestRegister.write(value & ~interrupt.mask);
 
-    callback(interrupt.address);
+      callback(interrupt.address);
+    }
   }
 }
