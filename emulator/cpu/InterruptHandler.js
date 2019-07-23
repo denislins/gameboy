@@ -64,7 +64,7 @@ export default class InterruptHandler {
     const enabled = this.enabledRegister.read();
     const requested = this.requestRegister.read();
 
-    return enabled & requested;
+    return enabled & requested & 0x1F;
   }
 
   serviceType(interrupt, callback) {
