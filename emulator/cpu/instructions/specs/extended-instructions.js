@@ -713,7 +713,7 @@ export default [
   {
     opcode: 0x46,
     repr: 'BIT 0, (HL)',
-    cycles: 16,
+    cycles: 12,
     chain: [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
@@ -948,7 +948,7 @@ export default [
   {
     opcode: 0x4E,
     repr: 'BIT 1, (HL)',
-    cycles: 16,
+    cycles: 12,
     chain: [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
@@ -1183,7 +1183,7 @@ export default [
   {
     opcode: 0x56,
     repr: 'BIT 2, (HL)',
-    cycles: 16,
+    cycles: 12,
     chain: [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
@@ -1418,7 +1418,7 @@ export default [
   {
     opcode: 0x5E,
     repr: 'BIT 3, (HL)',
-    cycles: 16,
+    cycles: 12,
     chain: [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
@@ -1653,7 +1653,7 @@ export default [
   {
     opcode: 0x66,
     repr: 'BIT 4, (HL)',
-    cycles: 16,
+    cycles: 12,
     chain: [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
@@ -1888,7 +1888,7 @@ export default [
   {
     opcode: 0x6E,
     repr: 'BIT 5, (HL)',
-    cycles: 16,
+    cycles: 12,
     chain: [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
@@ -2123,7 +2123,7 @@ export default [
   {
     opcode: 0x76,
     repr: 'BIT 6, (HL)',
-    cycles: 16,
+    cycles: 12,
     chain: [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],
@@ -2358,7 +2358,7 @@ export default [
   {
     opcode: 0x7E,
     repr: 'BIT 7, (HL)',
-    cycles: 16,
+    cycles: 12,
     chain: [
       ['readRegister', { register: 'hl' }],
       ['readMemory'],

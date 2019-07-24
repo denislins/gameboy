@@ -1244,7 +1244,7 @@ describe('ExtendedInstructionSet', function() {
 
       it('executes in the correct number of cycles', function() {
         const cycles = this.resolver.resolve(this.instruction);
-        expect(cycles).toEqual(16);
+        expect(cycles).toEqual(12);
       });
 
       describe(`when the bit ${bit} is set`, function() {

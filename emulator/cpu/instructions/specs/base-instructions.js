@@ -2098,7 +2098,7 @@ export default [
   {
     opcode: 0x18,
     repr: 'JR sbyte',
-    cycles: 8,
+    cycles: 12,
     chain: [
       ['readSignedByte'],
       ['addToRegister', { register: 'pc' }],

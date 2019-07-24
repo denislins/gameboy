@@ -4690,7 +4690,7 @@ describe('BaseInstructionSet', function() {
 
     it('executes in the correct number of cycles', function() {
       const cycles = this.resolver.resolve(this.instruction);
-      expect(cycles).toEqual(8);
+      expect(cycles).toEqual(12);
     });
 
     describe('when the byte is positive', function() {
