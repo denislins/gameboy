@@ -17,8 +17,8 @@ export default class Timer {
   }
 
   initEventHandlers() {
-    Observer.on('mmu.registers.timerController.written', (params) => {
-      this.resetTimerCounter(params);
+    Observer.on('mmu.registers.timerController.written', ({ newValue, previousValue }) => {
+      this.resetTimerCounter(newValue, previousValue);
     });
 
     Observer.on('mmu.registers.timerDivider.written', () => {
@@ -56,11 +56,10 @@ export default class Timer {
   }
 
   updateCounterRegister(cpuCycles) {
-    this.timerCounter += cpuCycles;
+    let cyclesOverflown = (this.timerCounter % this.timerThreshold) + cpuCycles;
 
-    while (this.timerCounter >= this.timerThreshold) {
-      this.timerCounter = this.timerCounter % this.timerThreshold;
-
+    while (cyclesOverflown >= this.timerThreshold) {
+      cyclesOverflown -= this.timerThreshold;
       const nextValue = this.timerRegister.read() + 1;
 
       if (nextValue > 255) {
@@ -70,9 +69,11 @@ export default class Timer {
 
       this.timerRegister.write(nextValue);
     }
+
+    this.timerCounter = (this.timerCounter + cpuCycles) % this.timerThreshold;
   }
 
-  resetTimerCounter({ newValue, previousValue }) {
+  resetTimerCounter(newValue, previousValue) {
     if ((newValue & 3) !== (previousValue & 3)) {
       this.timerCounter = this.timerCounter % this.timerThreshold;
     }
