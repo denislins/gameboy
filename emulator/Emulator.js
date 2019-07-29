@@ -26,11 +26,10 @@ export default class Emulator {
     this.gpu.reset();
 
     this.fps = 0;
+    this.fpsContainer = document.getElementById('fps');
     this.currentSecond = new Date().getSeconds();
 
-    this.counter = document.getElementById('fps');
-
-    window.requestAnimationFrame(() => this.tick());
+    this.tick();
   }
 
   tick() {
@@ -45,12 +44,16 @@ export default class Emulator {
       this.cpu.serviceInterrupts();
     }
 
+    window.requestAnimationFrame(() => this.updateDisplay());
+  }
+
+  updateDisplay() {
     this.display.draw(this.gpu.pixels);
 
     this.gpu.reset();
     this.updateFps();
 
-    window.requestAnimationFrame(() => this.tick());
+    setTimeout(() => this.tick(), 0);
   }
 
   updateFps() {
@@ -59,7 +62,7 @@ export default class Emulator {
     if (currentSecond === this.currentSecond) {
       this.fps++;
     } else {
-      this.counter.innerText = this.fps;
+      this.fpsContainer.innerText = this.fps;
 
       this.fps = 1;
       this.currentSecond = new Date().getSeconds();
