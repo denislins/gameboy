@@ -11,5 +11,6 @@ module.exports = {
     "no-console": "off",
     "no-debugger": "off",
     "no-else-return": "off",
+    "consistent-return": "off",
   },
 };

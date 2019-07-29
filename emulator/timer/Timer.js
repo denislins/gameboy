@@ -83,4 +83,3 @@ export default class Timer {
     return this.controller.getClockFrequencyInCycles();
   }
 }
-

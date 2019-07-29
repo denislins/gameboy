@@ -38,7 +38,7 @@ export default class InterruptHandler {
 
   request(type) {
     const value = this.requestRegister.read();
-    const mask = this.types[type].mask;
+    const { mask } = this.types[type];
 
     this.requestRegister.write(value | mask);
   }

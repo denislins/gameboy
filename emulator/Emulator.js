@@ -1,6 +1,5 @@
 import Cpu from './cpu/Cpu.js';
 import Gpu from './gpu/Gpu.js';
-import Ppu from './gpu/Ppu.js';
 import Mmu from './mmu/Mmu.js';
 import Timer from './timer/Timer.js';
 import Display from './display/Display.js';

@@ -13,7 +13,7 @@ export default class Mmu {
     this.ram = Array(0x8000).fill(0);
     this.addressSpace = Array(0x10000).fill(0);
 
-    this.memoryBankingMode = 'rom'
+    this.memoryBankingMode = 'rom';
 
     this.currentRomBank = 1;
     this.currentRamBank = 0;

@@ -6,7 +6,7 @@ export default class TimerDividerRegister extends AbstractMemoryRegister {
     this.address = 0xFF04;
   }
 
-  writeFromBus(value) {
+  writeFromBus() {
     Observer.trigger('mmu.registers.timerDivider.written');
     return this.write(0);
   }
