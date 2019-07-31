@@ -12,6 +12,7 @@ export default class Gpu {
     this.pixels = [];
     this.cycles = 0;
 
+    this.mmu.registers.write('scanline', 0);
     this.changeMode('oamSearch');
   }
 
