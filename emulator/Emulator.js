@@ -32,6 +32,7 @@ export default class Emulator {
   }
 
   tick() {
+    // number of clocks per frame: 154 lines * 456 clocks per line
     const limit = this.cpu.cycles + 70224;
 
     while (this.cpu.cycles <= limit) {

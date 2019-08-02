@@ -1,113 +1,31 @@
+import WindowRenderer from './renderers/WindowRenderer.js';
+import BackgroundRenderer from './renderers/BackgroundRenderer.js';
+import SpriteRenderer from './renderers/SpriteRenderer.js';
+
 export default class Ppu {
   constructor(mmu) {
     this.mmu = mmu;
-    this.controller = this.mmu.registers.get('lcdController');
+    this.windowRenderer = new WindowRenderer(mmu);
+    this.backgroundRenderer = new BackgroundRenderer(mmu);
+    this.spriteRenderer = new SpriteRenderer(mmu);
   }
 
   draw(row) {
     const pixels = [];
 
     for (let column = 0; column < 160; column++) {
-      let pixel;
-
-      if (this.isWindowEnabled(row, column)) {
-        pixel = this.renderWindowPixel(row, column);
-      } else {
-        pixel = this.renderBackgroundPixel(row, column);
-      }
-
+      const pixel = this.renderPixel(row, column);
       pixels.push(pixel);
     }
 
     return pixels;
   }
 
-  isWindowEnabled(row, column) {
-    if (!this.controller.isWindowEnabled()) {
-      return false;
-    } else if (this.mmu.registers.read('windowY') > row) {
-      return false;
-    } else if ((this.mmu.registers.read('windowX') - 7) > column) {
-      return false;
+  renderPixel(row, column) {
+    if (this.windowRenderer.isWindowEnabledAt(row, column)) {
+      return this.windowRenderer.renderPixel(row, column);
     }
 
-    return true;
-  }
-
-  renderWindowPixel(row, column) {
-    const actualRow = row - this.mmu.registers.read('windowY');
-    const windowY = this.mmu.registers.read('windowX');
-
-    let actualColumn;
-
-    if (column >= windowY) {
-      actualColumn = column - windowY + 7;
-    } else {
-      actualColumn = this.mmu.registers.read('scrollX') + column;
-    }
-
-    const windowBaseAddress = this.controller.getWindowBaseAddress();
-
-    return this.renderPixel(windowBaseAddress, actualRow, actualColumn);
-  }
-
-  renderBackgroundPixel(row, column) {
-    const actualRow = (this.mmu.registers.read('scrollY') + row) % 256;
-    const actualColumn = (this.mmu.registers.read('scrollX') + column) % 256;
-
-    const backgroundBaseAddress = this.controller.getBackgroundBaseAddress();
-
-    return this.renderPixel(backgroundBaseAddress, actualRow, actualColumn);
-  }
-
-  renderPixel(baseAddress, row, column) {
-    const tileNumber = this.calculateTileNumber(baseAddress, row, column);
-    const tileAddress = this.calculateTileAddress(tileNumber);
-
-    const tileAddressOffset = (row % 8) * 2;
-    const tileRowAddress = tileAddress + tileAddressOffset;
-
-    const internalColor = this.calculateInternalColor(tileRowAddress, column % 8);
-    const displayColor = this.mapDisplayColor(internalColor);
-
-    return displayColor;
-  }
-
-  calculateTileNumber(baseAddress, row, column) {
-    const tileIdentityOffset = Math.floor(row / 8) * 32 + Math.floor(column / 8);
-    const tileIdentityAddress = baseAddress + tileIdentityOffset;
-
-    return this.mmu.read(tileIdentityAddress);
-  }
-
-  calculateTileAddress(tileNumber) {
-    const tileBaseAddress = this.controller.getTilesBaseAddress();
-
-    if (tileBaseAddress === 0x8800) {
-      return tileBaseAddress + (tileNumber ^ 0x80) * 16;
-    }
-
-    return tileBaseAddress + tileNumber * 16;
-  }
-
-  calculateInternalColor(baseAddress, pixel) {
-    const byte1 = this.mmu.read(baseAddress);
-    const byte2 = this.mmu.read(baseAddress + 1);
-
-    const mask = 1 << (7 - pixel);
-
-    const bit1 = (byte1 & mask) >> (7 - pixel);
-    const bit2 = (byte2 & mask) >> (7 - pixel);
-
-    return (bit2 << 1) | bit1;
-  }
-
-  mapDisplayColor(color) {
-    const pallete = this.mmu.registers.read('backgroundPallete');
-
-    const shift = color * 2;
-    const mask = 0b11 << shift;
-
-    return (pallete & mask) >> shift;
+    return this.backgroundRenderer.renderPixel(row, column);
   }
 }

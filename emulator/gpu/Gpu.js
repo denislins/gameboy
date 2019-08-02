@@ -39,7 +39,7 @@ export default class Gpu {
     } else if (this.cycles <= 80) {
       return 'oamSearch';
     } else if (this.cycles <= 252) {
-      return 'dmaTransfer';
+      return 'pixelTransfer';
     }
 
     return 'hblank';
@@ -49,15 +49,15 @@ export default class Gpu {
     if (this.currentMode !== newMode) {
       this.lcdStatus.changeMode(newMode);
 
-      if (this.currentMode === 'dmaTransfer') {
-        this.execDmaTransfer();
+      if (this.currentMode === 'pixelTransfer') {
+        this.execPixelTransfer();
       } else if (this.currentMode === 'vblank') {
         Observer.trigger('interrupts.request', { type: 'vblank' });
       }
     }
   }
 
-  execDmaTransfer() {
+  execPixelTransfer() {
     if (this.currentRow === 0) {
       this.pixels = [];
     }

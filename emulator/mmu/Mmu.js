@@ -32,6 +32,8 @@ export default class Mmu {
   write(address, value) {
     if (address < 0x8000) {
       return this.handleBankSwitching(address, value);
+    } else if (address === 0xFF46) {
+      return this.startDmaTransfer(value);
     }
 
     if (address >= 0xA000 && address <= 0xBFFF && !this.ramBankingEnabled) {
@@ -156,6 +158,17 @@ export default class Mmu {
     } else {
       this.memoryBankingMode = 'rom';
       this.currentRamBank = 0;
+    }
+  }
+
+  startDmaTransfer(startAddress) {
+    const baseAddress = startAddress << 8;
+
+    for (let i = 0; i < 0xA0; i++) {
+      const address = 0xFE00 + i;
+      const value = this.read(baseAddress + i);
+
+      this.forceWrite(address, value);
     }
   }
 
