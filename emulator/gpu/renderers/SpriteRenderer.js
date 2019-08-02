@@ -1,7 +1,7 @@
 import AbstractRenderer from './AbstractRenderer.js';
 
 export default class SpriteRenderer extends AbstractRenderer {
-  renderPixel(row, column) {
+  renderPixel(_row, _column) {
     return null;
   }
 

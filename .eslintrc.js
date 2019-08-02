@@ -5,6 +5,7 @@ module.exports = {
   },
   "rules": {
     "import/extensions": ["error", "always"],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-bitwise": "off",
     "no-plusplus": "off",
     "class-methods-use-this": "off",

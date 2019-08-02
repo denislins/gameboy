@@ -4,7 +4,7 @@ export default class AbstractRenderer {
     this.controller = mmu.registers.get('lcdController');
   }
 
-  renderPixel(row, column) {
+  renderPixel(_row, _column) {
     throw new Error('not implemented');
   }
 
