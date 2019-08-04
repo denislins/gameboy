@@ -8,17 +8,17 @@ export default class AbstractRenderer {
     throw new Error('not implemented');
   }
 
-  calculatePixelColor(row, column) {
-    const tileNumber = this.calculateTileNumber(row, column);
+  calculatePixelColor(tileNumber, row, column) {
     const tileAddress = this.calculateTileAddress(tileNumber);
 
     const tileAddressOffset = (row % 8) * 2;
     const tileRowAddress = tileAddress + tileAddressOffset;
 
     const internalColor = this.calculateInternalColor(tileRowAddress, column % 8);
-    const displayColor = this.mapDisplayColor(internalColor);
 
-    return displayColor;
+    if (internalColor !== undefined) {
+      return this.mapDisplayColor(internalColor);
+    }
   }
 
   calculateTileNumber(row, column) {
@@ -29,13 +29,11 @@ export default class AbstractRenderer {
   }
 
   calculateTileAddress(tileNumber) {
-    const tileBaseAddress = this.controller.getTilesBaseAddress();
-
-    if (tileBaseAddress === 0x8800) {
-      return tileBaseAddress + (tileNumber ^ 0x80) * 16;
+    if (this.tilesBaseAddress === 0x8800) {
+      return this.tilesBaseAddress + (tileNumber ^ 0x80) * 16;
     }
 
-    return tileBaseAddress + tileNumber * 16;
+    return this.tilesBaseAddress + tileNumber * 16;
   }
 
   calculateInternalColor(baseAddress, pixel) {
@@ -54,14 +52,14 @@ export default class AbstractRenderer {
     const shift = color * 2;
     const mask = 0b11 << shift;
 
-    return (this.backgroundPallete & mask) >> shift;
+    return (this.palette & mask) >> shift;
   }
 
   get tableBaseAddress() {
     throw new Error('not implemented');
   }
 
-  get backgroundPallete() {
-    return this.mmu.registers.read('backgroundPallete');
+  get tilesBaseAddress() {
+    return this.controller.getTilesBaseAddress();
   }
 }

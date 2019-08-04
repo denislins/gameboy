@@ -11,6 +11,11 @@ export default class Ppu {
   }
 
   draw(row) {
+    this.spriteRenderer.findVisibleSpritesAtRow(row);
+    return this.renderRow(row);
+  }
+
+  renderRow(row) {
     const pixels = [];
 
     for (let column = 0; column < 160; column++) {
@@ -22,10 +27,20 @@ export default class Ppu {
   }
 
   renderPixel(row, column) {
+    let basePixel;
+
     if (this.windowRenderer.isWindowEnabledAt(row, column)) {
-      return this.windowRenderer.renderPixel(row, column);
+      basePixel = this.windowRenderer.renderPixel(row, column);
+    } else {
+      basePixel = this.backgroundRenderer.renderPixel(row, column);
     }
 
-    return this.backgroundRenderer.renderPixel(row, column);
+    const spritePixel = this.spriteRenderer.renderPixel(row, column);
+
+    if (spritePixel !== undefined) {
+      return spritePixel;
+    }
+
+    return basePixel;
   }
 }

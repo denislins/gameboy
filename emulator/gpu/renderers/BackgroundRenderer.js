@@ -4,8 +4,9 @@ export default class BackgroundRenderer extends AbstractRenderer {
   renderPixel(row, column) {
     const actualRow = (this.scrollY + row) % 256;
     const actualColumn = (this.scrollX + column) % 256;
+    const tileNumber = this.calculateTileNumber(actualRow, actualColumn);
 
-    return this.calculatePixelColor(actualRow, actualColumn);
+    return this.calculatePixelColor(tileNumber, actualRow, actualColumn);
   }
 
   get scrollX() {
@@ -18,5 +19,9 @@ export default class BackgroundRenderer extends AbstractRenderer {
 
   get tableBaseAddress() {
     return this.controller.getBackgroundBaseAddress();
+  }
+
+  get palette() {
+    return this.mmu.registers.read('backgroundPalette');
   }
 }

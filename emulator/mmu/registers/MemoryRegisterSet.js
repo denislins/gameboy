@@ -32,9 +32,9 @@ export default class MemoryRegisterSet {
     this.registers.scanline = new SimpleMemoryRegister(this.mmu, 0xFF44);
     this.registers.scanlineCompare = new SimpleMemoryRegister(this.mmu, 0xFF45);
     this.registers.dmaTransfer = new SimpleMemoryRegister(this.mmu, 0xFF46);
-    this.registers.backgroundPallete = new SimpleMemoryRegister(this.mmu, 0xFF47);
-    this.registers.objectPallete0 = new SimpleMemoryRegister(this.mmu, 0xFF48);
-    this.registers.objectPallete1 = new SimpleMemoryRegister(this.mmu, 0xFF49);
+    this.registers.backgroundPalette = new SimpleMemoryRegister(this.mmu, 0xFF47);
+    this.registers.objectPalette0 = new SimpleMemoryRegister(this.mmu, 0xFF48);
+    this.registers.objectPalette1 = new SimpleMemoryRegister(this.mmu, 0xFF49);
     this.registers.windowY = new SimpleMemoryRegister(this.mmu, 0xFF4A);
     this.registers.windowX = new SimpleMemoryRegister(this.mmu, 0xFF4B);
   }

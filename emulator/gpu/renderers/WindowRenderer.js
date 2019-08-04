@@ -23,7 +23,9 @@ export default class WindowRenderer extends AbstractRenderer {
     }
 
     const actualRow = row - this.windowY;
-    return this.calculatePixelColor(actualRow, actualColumn);
+    const tileNumber = this.calculateTileNumber(actualRow, actualColumn);
+
+    return this.calculatePixelColor(tileNumber, actualRow, actualColumn);
   }
 
   get windowX() {
@@ -40,5 +42,9 @@ export default class WindowRenderer extends AbstractRenderer {
 
   get tableBaseAddress() {
     return this.controller.getWindowBaseAddress();
+  }
+
+  get palette() {
+    return this.mmu.registers.read('backgroundPalette');
   }
 }
