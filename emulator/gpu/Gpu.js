@@ -22,6 +22,7 @@ export default class Gpu {
     if (this.cycles >= 456) {
       this.cycles = this.cycles % 456;
       this.incrementCurrentRow();
+      this.compareScanlineInterrupt();
     }
 
     const newMode = this.getNewMode();
@@ -31,6 +32,19 @@ export default class Gpu {
   incrementCurrentRow() {
     const nextRow = (this.currentRow + 1) % 154;
     this.mmu.registers.write('scanline', nextRow);
+  }
+
+  compareScanlineInterrupt() {
+    const comparedRow = this.mmu.registers.read('scanlineCompare');
+
+    if (this.currentRow === comparedRow) {
+      const value = this.lcdStatus.read();
+      this.lcdStatus.write(value | 4);
+
+      if (value & 0x40) {
+        Observer.trigger('interrupts.request', { type: 'lcd' });
+      }
+    }
   }
 
   getNewMode() {

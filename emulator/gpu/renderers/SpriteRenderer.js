@@ -47,14 +47,12 @@ export default class SpriteRenderer extends AbstractRenderer {
   }
 
   getVisibleSpriteAtColumn(column) {
-    for (let sprite of this.visibleSprites) {
+    return this.visibleSprites.find((sprite) => {
       const xStart = sprite.getHorizontalPosition();
       const xFinish = xStart + 8;
 
-      if (column >= xStart && column < xFinish) {
-        return sprite;
-      }
-    }
+      return column >= xStart && column < xFinish;
+    });
   }
 
   loadSpritePalette(sprite) {

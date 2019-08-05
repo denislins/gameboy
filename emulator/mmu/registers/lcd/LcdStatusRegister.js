@@ -7,7 +7,7 @@ export default class LcdStatusRegister extends AbstractMemoryRegister {
   }
 
   getCurrentMode() {
-    const mode = this.read() & 0b11;
+    const mode = this.read() & 3;
     return this.modes[mode];
   }
 

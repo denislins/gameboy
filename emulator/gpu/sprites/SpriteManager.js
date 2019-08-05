@@ -12,7 +12,7 @@ export default class SpriteManager {
       this.refreshSpriteHeight();
     }
 
-    const filtered = this.sprites.filter(sprite => {
+    const filtered = this.sprites.filter((sprite) => {
       const yStart = sprite.getVerticalPosition();
       const yFinish = yStart + this.spriteHeight;
 
