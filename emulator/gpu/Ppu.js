@@ -5,6 +5,8 @@ import SpriteRenderer from './renderers/SpriteRenderer.js';
 export default class Ppu {
   constructor(mmu) {
     this.mmu = mmu;
+    this.controller = mmu.registers.get('lcdController');
+
     this.windowRenderer = new WindowRenderer(mmu);
     this.backgroundRenderer = new BackgroundRenderer(mmu);
     this.spriteRenderer = new SpriteRenderer(mmu);
@@ -12,6 +14,10 @@ export default class Ppu {
 
   draw(row) {
     this.spriteRenderer.findVisibleSpritesAtRow(row);
+
+    this.isBackgroundEnabled = this.controller.isBackgroundEnabled();
+    this.areSpritesEnabled = this.controller.areSpritesEnabled();
+
     return this.renderRow(row);
   }
 
@@ -27,20 +33,31 @@ export default class Ppu {
   }
 
   renderPixel(row, column) {
-    let basePixel;
-
-    if (this.windowRenderer.isWindowEnabledAt(row, column)) {
-      basePixel = this.windowRenderer.renderPixel(row, column);
-    } else {
-      basePixel = this.backgroundRenderer.renderPixel(row, column);
-    }
-
-    const spritePixel = this.spriteRenderer.renderPixel(row, column);
+    const basePixel = this.renderBasePixel(row, column);
+    const spritePixel = this.renderSpritePixel(row, column);
 
     if (spritePixel !== undefined) {
       return spritePixel;
     }
 
     return basePixel;
+  }
+
+  renderBasePixel(row, column) {
+    if (!this.isBackgroundEnabled) {
+      return 0;
+    } else if (this.windowRenderer.isWindowEnabledAt(row, column)) {
+      return this.windowRenderer.renderPixel(row, column);
+    }
+
+    return this.backgroundRenderer.renderPixel(row, column);
+  }
+
+  renderSpritePixel(row, column) {
+    if (!this.areSpritesEnabled) {
+      return undefined;
+    }
+
+    return this.spriteRenderer.renderPixel(row, column);
   }
 }

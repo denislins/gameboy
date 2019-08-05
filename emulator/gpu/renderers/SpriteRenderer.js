@@ -65,9 +65,12 @@ export default class SpriteRenderer extends AbstractRenderer {
   calculateInternalColor(baseAddress, pixel) {
     const color = super.calculateInternalColor(baseAddress, pixel);
 
-    if (color > 0) {
-      return color;
+    // white is transparent for sprites
+    if (color === 0) {
+      return undefined;
     }
+
+    return color;
   }
 
   get tableBaseAddress() {
