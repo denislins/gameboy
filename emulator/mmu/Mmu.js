@@ -26,6 +26,11 @@ export default class Mmu {
     const page = this.getPage(address);
     const mappedAddress = this.mapAddress(address);
 
+    // hack until joypad implementation is finished
+    if (mappedAddress === 0xFF00) {
+      return 0xF;
+    }
+
     return page[mappedAddress];
   }
 

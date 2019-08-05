@@ -4,6 +4,7 @@ export default class SpriteManager {
   constructor(mmu) {
     this.mmu = mmu;
     this.controller = mmu.registers.get('lcdController');
+    this.sprites = [];
   }
 
   findVisibleSpritesAtRow(row) {

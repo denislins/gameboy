@@ -21,6 +21,7 @@ export default class Gpu {
 
     if (this.cycles >= 456) {
       this.cycles = this.cycles % 456;
+
       this.incrementCurrentRow();
       this.compareScanlineInterrupt();
     }
@@ -35,15 +36,17 @@ export default class Gpu {
   }
 
   compareScanlineInterrupt() {
+    const value = this.lcdStatus.read();
     const comparedRow = this.mmu.registers.read('scanlineCompare');
 
     if (this.currentRow === comparedRow) {
-      const value = this.lcdStatus.read();
       this.lcdStatus.write(value | 4);
 
-      if (value & 0x40) {
+      if (this.lcdStatus.isScanlineCompareInterruptEnabled()) {
         Observer.trigger('interrupts.request', { type: 'lcd' });
       }
+    } else {
+      this.lcdStatus.write(value & ~4);
     }
   }
 
@@ -68,6 +71,8 @@ export default class Gpu {
       } else if (this.currentMode === 'vblank') {
         Observer.trigger('interrupts.request', { type: 'vblank' });
       }
+
+      this.requestModeChangedInterrupt();
     }
   }
 
@@ -80,6 +85,28 @@ export default class Gpu {
 
     // destructuring is about 4x slower
     Array.prototype.push.apply(this.pixels, rowPixels);
+  }
+
+  requestModeChangedInterrupt() {
+    let shouldRequestInterrupt = false;
+
+    switch (this.currentMode) {
+      case 'hblank':
+        shouldRequestInterrupt = this.lcdStatus.isHblankInterruptEnabled();
+        break;
+
+      case 'vblank':
+        shouldRequestInterrupt = this.lcdStatus.isVblankInterruptEnabled();
+        break;
+
+      case 'oamSearch':
+        shouldRequestInterrupt = this.lcdStatus.isOamSearchInterruptEnabled();
+        break;
+    }
+
+    if (shouldRequestInterrupt) {
+      Observer.trigger('interrupts.request', { type: 'lcd' });
+    }
   }
 
   get currentMode() {

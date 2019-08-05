@@ -13,8 +13,28 @@ export default class LcdStatusRegister extends AbstractMemoryRegister {
 
   changeMode(modeStr) {
     const mode = this.modes.indexOf(modeStr);
-    const newMode = (this.read() & 0b11111100) | mode;
+    const newMode = (this.read() & 0xFC) | mode;
 
     this.write(newMode);
+  }
+
+  isHblankInterruptEnabled() {
+    return this.testBit(3);
+  }
+
+  isVblankInterruptEnabled() {
+    return this.testBit(4);
+  }
+
+  isOamSearchInterruptEnabled() {
+    return this.testBit(5);
+  }
+
+  isScanlineCompareInterruptEnabled() {
+    return this.testBit(6);
+  }
+
+  testBit(bit) {
+    return this.read() & (1 << bit);
   }
 }
