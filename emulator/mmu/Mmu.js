@@ -23,13 +23,18 @@ export default class Mmu {
   }
 
   read(address) {
+    const register = this.registers.findByAddress(address);
+
+    if (register) {
+      return register.readFromBus();
+    }
+
+    return this.forceRead(address);
+  }
+
+  forceRead(address) {
     const page = this.getPage(address);
     const mappedAddress = this.mapAddress(address);
-
-    // hack until joypad implementation is finished
-    if (mappedAddress === 0xFF00) {
-      return 0xF;
-    }
 
     return page[mappedAddress];
   }

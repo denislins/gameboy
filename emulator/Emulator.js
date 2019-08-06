@@ -2,6 +2,7 @@ import Cpu from './cpu/Cpu.js';
 import Gpu from './gpu/Gpu.js';
 import Mmu from './mmu/Mmu.js';
 import Timer from './timer/Timer.js';
+import Joypad from './joypad/Joypad.js';
 import Display from './display/Display.js';
 import Cartridge from './cartridge/Cartridge.js';
 
@@ -11,6 +12,7 @@ export default class Emulator {
     this.cpu = new Cpu(this.mmu);
     this.gpu = new Gpu(this.mmu);
     this.timer = new Timer(this.mmu);
+    this.joypad = new Joypad(this.mmu);
     this.display = new Display(canvas);
   }
 
@@ -23,6 +25,7 @@ export default class Emulator {
 
     this.cpu.reset();
     this.gpu.reset();
+    this.joypad.install();
 
     this.fps = 0;
     this.fpsContainer = document.getElementById('fps');

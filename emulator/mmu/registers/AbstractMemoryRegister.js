@@ -9,11 +9,15 @@ export default class AbstractMemoryRegister {
   }
 
   read() {
-    return this.mmu.read(this.address);
+    return this.mmu.forceRead(this.address);
   }
 
   write(value) {
     return this.mmu.forceWrite(this.address, value);
+  }
+
+  readFromBus() {
+    return this.read();
   }
 
   writeFromBus(value) {

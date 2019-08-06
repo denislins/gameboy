@@ -1,5 +1,6 @@
 import SimpleMemoryRegister from './SimpleMemoryRegister.js';
 import CartridgeTypeRegister from './system/CartridgeTypeRegister.js';
+import JoypadRegister from './system/JoypadRegister.js';
 import LcdControllerRegister from './lcd/LcdControllerRegister.js';
 import LcdStatusRegister from './lcd/LcdStatusRegister.js';
 import TimerControllerRegister from './timer/TimerControllerRegister.js';
@@ -21,6 +22,7 @@ export default class MemoryRegisterSet {
 
   initSystemRegisters() {
     this.registers.cartridgeType = new CartridgeTypeRegister(this.mmu);
+    this.registers.joypad = new JoypadRegister(this.mmu);
     this.registers.disableBootrom = new SimpleMemoryRegister(this.mmu, 0xFF50);
   }
 
