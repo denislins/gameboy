@@ -63,18 +63,16 @@ export default class Gpu {
   }
 
   changeMode(newMode) {
-    const currentMode = this.lcdStatus.getCurrentMode();
-
-    if (currentMode !== newMode) {
+    if (this.currentMode !== newMode) {
       this.lcdStatus.changeMode(newMode);
 
-      if (currentMode === 'pixelTransfer') {
+      if (newMode === 'pixelTransfer') {
         this.execPixelTransfer();
-      } else if (currentMode === 'vblank') {
+      } else if (newMode === 'vblank') {
         Observer.trigger('interrupts.request', { type: 'vblank' });
       }
 
-      this.requestModeChangedInterrupt();
+      this.requestModeChangedInterrupt(newMode);
     }
   }
 
@@ -89,21 +87,24 @@ export default class Gpu {
     Array.prototype.push.apply(this.pixels, rowPixels);
   }
 
-  requestModeChangedInterrupt() {
-    const currentMode = this.lcdStatus.getCurrentMode();
+  requestModeChangedInterrupt(mode) {
     let shouldRequestInterrupt = false;
 
-    if (currentMode === 'hblank') {
+    if (mode === 'hblank') {
       shouldRequestInterrupt = this.lcdStatus.isHblankInterruptEnabled();
-    } else if (currentMode === 'vblank') {
+    } else if (mode === 'vblank') {
       shouldRequestInterrupt = this.lcdStatus.isVblankInterruptEnabled();
-    } else if (currentMode === 'oamSearch') {
+    } else if (mode === 'oamSearch') {
       shouldRequestInterrupt = this.lcdStatus.isOamSearchInterruptEnabled();
     }
 
     if (shouldRequestInterrupt) {
       Observer.trigger('interrupts.request', { type: 'lcd' });
     }
+  }
+
+  get currentMode() {
+    return this.lcdStatus.getCurrentMode();
   }
 
   get currentRow() {

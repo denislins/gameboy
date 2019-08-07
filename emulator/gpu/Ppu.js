@@ -13,10 +13,12 @@ export default class Ppu {
   }
 
   draw(row) {
-    this.spriteRenderer.findVisibleSpritesAtRow(row);
-
     this.isBackgroundEnabled = this.controller.isBackgroundEnabled();
     this.areSpritesEnabled = this.controller.areSpritesEnabled();
+
+    if (this.areSpritesEnabled) {
+      this.spriteRenderer.findVisibleSpritesAtRow(row);
+    }
 
     return this.renderRow(row);
   }
@@ -44,10 +46,10 @@ export default class Ppu {
   }
 
   renderBasePixel(row, column) {
-    if (!this.isBackgroundEnabled) {
-      return 0;
-    } else if (this.windowRenderer.isWindowEnabledAt(row, column)) {
+    if (this.windowRenderer.isWindowEnabledAt(row, column)) {
       return this.windowRenderer.renderPixel(row, column);
+    } else if (!this.isBackgroundEnabled) {
+      return 0;
     }
 
     return this.backgroundRenderer.renderPixel(row, column);
