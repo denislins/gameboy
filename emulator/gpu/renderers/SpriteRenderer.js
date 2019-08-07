@@ -17,33 +17,18 @@ export default class SpriteRenderer extends AbstractRenderer {
     if (sprite) {
       this.loadSpritePalette(sprite);
 
-      const actualRow = this.calculateActualRow(sprite, row);
-      const actualColumn = this.calculateActualColumn(sprite, column);
+      const spriteRow = this.calculateSpriteRow(sprite, row);
+      const spriteColumn = this.calculateSpriteColumn(sprite, column);
 
-      return this.calculatePixelColor(sprite.tileNumber, actualRow, actualColumn);
+      return this.calculatePixelColor(sprite.tileNumber, spriteRow, spriteColumn);
     }
   }
 
-  calculateActualRow(sprite, row) {
-    let actualRow = row - sprite.getVerticalPosition();
+  loadSpritePalette(sprite) {
+    const paletteNumber = sprite.getPaletteNumber();
+    const register = `objectPalette${paletteNumber}`;
 
-    if (sprite.isFlippedVertically()) {
-      actualRow -= this.spriteManager.getSpriteHeight() - 1;
-      actualRow *= -1;
-    }
-
-    return actualRow;
-  }
-
-  calculateActualColumn(sprite, column) {
-    let actualColumn = column - sprite.getHorizontalPosition();
-
-    if (sprite.isFlippedHorizontally()) {
-      actualColumn -= 7;
-      actualColumn *= -1;
-    }
-
-    return actualColumn;
+    this.palette = this.mmu.registers.read(register);
   }
 
   getVisibleSpriteAtColumn(column) {
@@ -55,11 +40,26 @@ export default class SpriteRenderer extends AbstractRenderer {
     });
   }
 
-  loadSpritePalette(sprite) {
-    const paletteNumber = sprite.getPaletteNumber();
-    const register = `objectPalette${paletteNumber}`;
+  calculateSpriteRow(sprite, row) {
+    let actualRow = row - sprite.getVerticalPosition();
 
-    this.palette = this.mmu.registers.read(register);
+    if (sprite.isFlippedVertically()) {
+      actualRow -= this.spriteManager.getSpriteHeight() - 1;
+      actualRow *= -1;
+    }
+
+    return actualRow;
+  }
+
+  calculateSpriteColumn(sprite, column) {
+    let actualColumn = column - sprite.getHorizontalPosition();
+
+    if (sprite.isFlippedHorizontally()) {
+      actualColumn -= 7;
+      actualColumn *= -1;
+    }
+
+    return actualColumn;
   }
 
   calculateInternalColor(baseAddress, pixel) {

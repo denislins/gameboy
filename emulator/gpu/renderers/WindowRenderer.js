@@ -14,18 +14,18 @@ export default class WindowRenderer extends AbstractRenderer {
   }
 
   renderPixel(row, column) {
-    let actualColumn;
+    let windowColumn;
 
     if (column >= this.windowX) {
-      actualColumn = column - this.windowX + 7;
+      windowColumn = column - this.windowX + 7;
     } else {
-      actualColumn = this.scrollX + column;
+      windowColumn = this.scrollX + column;
     }
 
-    const actualRow = row - this.windowY;
-    const tileNumber = this.calculateTileNumber(actualRow, actualColumn);
+    const windowRow = row - this.windowY;
+    const tileNumber = this.calculateTileNumber(windowRow, windowColumn);
 
-    return this.calculatePixelColor(tileNumber, actualRow, actualColumn);
+    return this.calculatePixelColor(tileNumber, windowRow, windowColumn);
   }
 
   get windowX() {
