@@ -16,9 +16,11 @@ export default class AbstractRenderer {
 
     const internalColor = this.calculateInternalColor(tileRowAddress, column % 8);
 
-    if (internalColor !== undefined) {
-      return this.mapDisplayColor(internalColor);
+    if (internalColor === undefined) {
+      return undefined;
     }
+
+    return this.mapDisplayColor(internalColor);
   }
 
   calculateTileNumber(row, column) {

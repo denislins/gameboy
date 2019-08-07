@@ -4,31 +4,13 @@ import SpriteManager from '../sprites/SpriteManager.js';
 export default class SpriteRenderer extends AbstractRenderer {
   constructor(mmu) {
     super(mmu);
+
     this.spriteManager = new SpriteManager(mmu);
+    this.visibleSprites = [];
   }
 
-  findVisibleSpritesAtRow(row) {
+  refreshVisibleSprites(row) {
     this.visibleSprites = this.spriteManager.findVisibleSpritesAtRow(row);
-  }
-
-  renderPixel(row, column) {
-    const sprite = this.getVisibleSpriteAtColumn(column);
-
-    if (sprite) {
-      this.loadSpritePalette(sprite);
-
-      const spriteRow = this.calculateSpriteRow(sprite, row);
-      const spriteColumn = this.calculateSpriteColumn(sprite, column);
-
-      return this.calculatePixelColor(sprite.tileNumber, spriteRow, spriteColumn);
-    }
-  }
-
-  loadSpritePalette(sprite) {
-    const paletteNumber = sprite.getPaletteNumber();
-    const register = `objectPalette${paletteNumber}`;
-
-    this.palette = this.mmu.registers.read(register);
   }
 
   getVisibleSpriteAtColumn(column) {
@@ -38,6 +20,22 @@ export default class SpriteRenderer extends AbstractRenderer {
 
       return column >= xStart && column < xFinish;
     });
+  }
+
+  renderPixel(sprite, row, column) {
+    this.loadSpritePalette(sprite);
+
+    const spriteRow = this.calculateSpriteRow(sprite, row);
+    const spriteColumn = this.calculateSpriteColumn(sprite, column);
+
+    return this.calculatePixelColor(sprite.tileNumber, spriteRow, spriteColumn);
+  }
+
+  loadSpritePalette(sprite) {
+    const paletteNumber = sprite.getPaletteNumber();
+    const register = `objectPalette${paletteNumber}`;
+
+    this.palette = this.mmu.registers.read(register);
   }
 
   calculateSpriteRow(sprite, row) {

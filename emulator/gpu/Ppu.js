@@ -17,7 +17,7 @@ export default class Ppu {
     this.areSpritesEnabled = this.controller.areSpritesEnabled();
 
     if (this.areSpritesEnabled) {
-      this.spriteRenderer.findVisibleSpritesAtRow(row);
+      this.spriteRenderer.refreshVisibleSprites(row);
     }
 
     return this.renderRow(row);
@@ -36,7 +36,15 @@ export default class Ppu {
 
   renderPixel(row, column) {
     const basePixel = this.renderBasePixel(row, column);
-    const spritePixel = this.renderSpritePixel(row, column);
+    const sprite = this.getSpriteAtPixel(row, column);
+
+    if (!sprite) {
+      return basePixel;
+    } else if (sprite.isUnderBackground() && basePixel > 0) {
+      return basePixel;
+    }
+
+    const spritePixel = this.spriteRenderer.renderPixel(sprite, row, column);
 
     if (spritePixel !== undefined) {
       return spritePixel;
@@ -55,11 +63,9 @@ export default class Ppu {
     return this.backgroundRenderer.renderPixel(row, column);
   }
 
-  renderSpritePixel(row, column) {
-    if (!this.areSpritesEnabled) {
-      return undefined;
+  getSpriteAtPixel(row, column) {
+    if (this.areSpritesEnabled) {
+      return this.spriteRenderer.getVisibleSpriteAtColumn(column);
     }
-
-    return this.spriteRenderer.renderPixel(row, column);
   }
 }
