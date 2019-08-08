@@ -6,7 +6,7 @@ export default class WindowRenderer extends AbstractRenderer {
       return false;
     } else if (this.windowY > row) {
       return false;
-    } else if (this.windowX - 7 > column) {
+    } else if (this.windowX > column) {
       return false;
     }
 
@@ -17,7 +17,7 @@ export default class WindowRenderer extends AbstractRenderer {
     let windowColumn;
 
     if (column >= this.windowX) {
-      windowColumn = column - this.windowX + 7;
+      windowColumn = column - this.windowX;
     } else {
       windowColumn = this.scrollX + column;
     }
@@ -29,7 +29,7 @@ export default class WindowRenderer extends AbstractRenderer {
   }
 
   get windowX() {
-    return this.mmu.registers.read('windowX');
+    return this.mmu.registers.read('windowX') - 7;
   }
 
   get windowY() {
