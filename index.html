@@ -47,27 +47,8 @@
     const canvas = document.getElementById('screen');
     const emulator = new Emulator(canvas);
 
-    window.r = (address) => {
-      return emulator.mmu.read(address).toString(16);
-    };
-
-    window.rr = new Proxy({}, {
-      get: function(target, name) {
-        return emulator.cpu.registers.read(name).toString(16);
-      },
-    });
-
-    window._ = (number) => {
-      console.log(number.toString(16).toUpperCase());
-    };
-
-    window.breakpoints = [];
-    window.isDebuggerActive = false;
-
     emulator.load('./roms/tetris.gb');
     emulator.boot();
-
-    window.e = emulator;
   </script>
   <div id="fps"></div>
 </body>

@@ -18,10 +18,6 @@ export default class InstructionResolver {
       // destructuring is 4-5 times slower
       const args = Object.assign({ value: reduced }, defaultArgs);
 
-      if (window.isDebuggerActive) {
-        console.log(operation, args);
-      }
-
       return this[operation](args);
     });
 

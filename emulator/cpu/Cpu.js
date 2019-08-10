@@ -41,11 +41,6 @@ export default class Cpu {
       instruction = this.getNextInstruction();
     }
 
-    if (window.isDebuggerActive) {
-      console.log(instruction.repr);
-      debugger;
-    }
-
     const cycles = this.resolver.resolve(instruction);
     this.cycles += cycles;
 
@@ -89,14 +84,6 @@ export default class Cpu {
       this.wasHalted = false;
     } else {
       this.registers.write('pc', address + 1);
-    }
-
-    if (window.breakpoints.indexOf(address) !== -1) {
-      window.isDebuggerActive = true;
-    }
-
-    if (window.isDebuggerActive) {
-      console.log(`PC at 0x${address.toString(16).toUpperCase()}`);
     }
 
     return this.mmu.read(address);
