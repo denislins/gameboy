@@ -18,8 +18,15 @@
       font-family: Arial;
     }
 
-    canvas {
+    #screen-container {
+      min-width: 160px;
+      max-width: 640px;
+      min-height: 144px;
+      max-height: 576px;
       margin: 50px auto 0;
+    }
+
+    canvas {
       background: #FFF;
     }
 
@@ -40,11 +47,18 @@
   </style>
 </head>
 <body>
-  <canvas id="screen" width="640" height="576"></canvas>
+  <div id="screen-container">
+    <canvas id="screen"></canvas>
+  </div>
   <script type="module">
     import Emulator from './emulator/Emulator.js';
 
+    const container = document.getElementById('screen-container');
     const canvas = document.getElementById('screen');
+
+    canvas.setAttribute('width', container.offsetWidth);
+    canvas.setAttribute('height', container.offsetWidth / 160 * 144);
+
     const emulator = new Emulator(canvas);
 
     emulator.load('./roms/tetris.gb');
