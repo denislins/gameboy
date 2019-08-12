@@ -1,4 +1,5 @@
 import Observer from '../Observer.js';
+import Phaser from '../common/Phaser.js';
 import RegisterSet from './registers/RegisterSet.js';
 import BaseInstructionSet from './instructions/BaseInstructionSet.js';
 import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
@@ -8,14 +9,41 @@ import InterruptHandler from './InterruptHandler.js';
 export default class Cpu {
   constructor(mmu) {
     this.mmu = mmu;
-    this.cycles = 0;
+
+    this.instructionPhaser = new Phaser(0);
+    this.serviceableInterrupts = [];
 
     this.registers = new RegisterSet();
-    this.instructions = new BaseInstructionSet();
     this.interrupts = new InterruptHandler(this.mmu);
+
+    this.instructions = new BaseInstructionSet();
     this.resolver = new InstructionResolver(this.registers, this.mmu);
 
+    this.initInterruptPhaser();
     this.initEventHandlers();
+  }
+
+  reset() {
+    this.registers.reset();
+  }
+
+  tick() {
+    if (this.currentInterruptAddress) {
+      return this.interruptPhaser.tick();
+    }
+
+    if (!this.currentInstruction) {
+      this.mountInstruction();
+    }
+
+    this.instructionPhaser.tick();
+  }
+
+  // private
+
+  initInterruptPhaser() {
+    this.interruptPhaser = new Phaser(12);
+    this.interruptPhaser.whenFinished(() => this.serviceCurrentInterrupt());
   }
 
   initEventHandlers() {
@@ -28,42 +56,21 @@ export default class Cpu {
     });
   }
 
-  reset() {
-    this.registers.reset();
-  }
-
-  tick() {
-    let instruction;
-
+  mountInstruction() {
     if (this.halted) {
-      instruction = this.instructions.find(0x76);
+      // loops executing no-ops when halted
+      this.currentInstruction = this.instructions.find(0x76);
     } else {
-      instruction = this.getNextInstruction();
+      this.currentInstruction = this.getNextInstruction();
     }
 
-    const cycles = this.resolver.resolve(instruction);
-    this.cycles += cycles;
-
-    return cycles;
-  }
-
-  halt() {
-    const requested = this.interrupts.getRequestedInterrupts();
-
-    if (this.interrupts.masterEnabled || requested === 0) {
-      this.halted = true;
+    if (this.currentInstruction.requirements) {
+      this.instructionPhaser.setLimit(this.currentInstruction.baseCycles);
+      this.instructionPhaser.whenFinished(() => this.validateCurrentInstruction());
     } else {
-      this.wasHalted = true;
+      this.instructionPhaser.setLimit(this.currentInstruction.cycles);
+      this.instructionPhaser.whenFinished(() => this.executeCurrentInstruction());
     }
-  }
-
-  serviceInterrupts() {
-    this.interrupts.service((address) => {
-      this.resolver.serviceInterrupt(address);
-
-      this.halted = false;
-      this.cycles += 12;
-    });
   }
 
   getNextInstruction(instructionSet) {
@@ -87,5 +94,58 @@ export default class Cpu {
     }
 
     return this.mmu.read(address);
+  }
+
+  validateCurrentInstruction() {
+    const isInstructionValid = this.resolver.validateInstruction(this.currentInstruction);
+
+    if (isInstructionValid) {
+      const remainingCycles = this.currentInstruction.cycles - this.currentInstruction.baseCycles;
+
+      this.instructionPhaser.setLimit(remainingCycles);
+      this.instructionPhaser.whenFinished(() => this.executeCurrentInstruction());
+    } else {
+      this.currentInstruction = undefined;
+      this.serviceInterrupts();
+    }
+  }
+
+  executeCurrentInstruction() {
+    this.resolver.resolve(this.currentInstruction);
+    this.currentInstruction = undefined;
+    this.serviceInterrupts();
+  }
+
+  halt() {
+    const requested = this.interrupts.getRequestedInterrupts();
+
+    if (this.interrupts.masterEnabled || requested === 0) {
+      this.halted = true;
+    } else {
+      this.wasHalted = true;
+    }
+  }
+
+  serviceInterrupts() {
+    this.serviceableInterrupts = this.interrupts.getServiceableInterrupts();
+    this.updateCurrentInterrupt();
+  }
+
+  updateCurrentInterrupt() {
+    const interrupt = this.serviceableInterrupts.shift();
+
+    if (interrupt) {
+      this.halted = false;
+      this.currentInterruptAddress = this.interrupts.getInterruptAddress(interrupt);
+
+      if (!this.currentInterruptAddress) {
+        this.updateCurrentInterrupt();
+      }
+    }
+  }
+
+  serviceCurrentInterrupt() {
+    this.resolver.serviceInterrupt(this.currentInterruptAddress);
+    this.updateCurrentInterrupt();
   }
 }

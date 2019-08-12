@@ -1,6 +1,7 @@
 import Cpu from './cpu/Cpu.js';
 import Gpu from './gpu/Gpu.js';
 import Mmu from './mmu/Mmu.js';
+import Apu from './apu/Apu.js';
 import Timer from './timer/Timer.js';
 import Joypad from './joypad/Joypad.js';
 import Display from './display/Display.js';
@@ -11,6 +12,7 @@ export default class Emulator {
     this.mmu = new Mmu();
     this.cpu = new Cpu(this.mmu);
     this.gpu = new Gpu(this.mmu);
+    this.apu = new Apu(this.mmu);
     this.timer = new Timer(this.mmu);
     this.joypad = new Joypad(this.mmu);
     this.display = new Display(canvas);
@@ -24,27 +26,22 @@ export default class Emulator {
     await this.mmu.loadCartridge(this.cartridge);
 
     this.cpu.reset();
-    this.gpu.reset();
     this.joypad.install();
 
     this.fps = 0;
     this.fpsContainer = document.getElementById('fps');
     this.currentSecond = new Date().getSeconds();
 
-    this.tick();
+    this.renderFrame();
   }
 
-  tick() {
-    // number of clocks per frame: 154 lines * 456 clocks per line
-    const limit = this.cpu.cycles + 70224;
-
-    while (this.cpu.cycles <= limit) {
-      const cycles = this.cpu.tick();
-
-      this.timer.tick(cycles);
-      this.gpu.tick(cycles);
-
-      this.cpu.serviceInterrupts();
+  renderFrame() {
+    // number of machine clocks per frame: 154 lines * 114 clocks
+    for (let i = 0; i < 17556; i++) {
+      this.cpu.tick();
+      this.timer.tick();
+      this.gpu.tick();
+      // this.apu.tick();
     }
 
     window.requestAnimationFrame(() => this.updateDisplay());
@@ -52,11 +49,9 @@ export default class Emulator {
 
   updateDisplay() {
     this.display.draw(this.gpu.pixels);
-
-    this.gpu.reset();
     this.updateFps();
 
-    setTimeout(() => this.tick(), 0);
+    setTimeout(() => this.renderFrame(), 0);
   }
 
   updateFps() {

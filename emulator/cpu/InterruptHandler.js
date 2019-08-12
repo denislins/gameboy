@@ -4,12 +4,55 @@ export default class InterruptHandler {
   constructor(mmu, resolver) {
     this.mmu = mmu;
     this.resolver = resolver;
+
     this.masterEnabled = false;
+    this.currentInterruptAddress = undefined;
 
     this.initTypes();
     this.initRegisters();
     this.initEventHandlers();
   }
+
+  getServiceableInterrupts(callback) {
+    const requested = this.getRequestedInterrupts();
+
+    if (requested === 0) {
+      return [];
+    }
+
+    return Object.keys(this.types).filter((type) => {
+      const attrs = this.types[type];
+
+      if ((requested & attrs.mask) > 0) {
+        Observer.trigger('interrupts.serviced');
+        return true;
+      }
+    });
+  }
+
+  getInterruptAddress(type) {
+    if (!this.masterEnabled) {
+      return undefined;
+    }
+
+    this.masterEnabled = false;
+
+    const value = this.requestRegister.read();
+    const interrupt = this.types[type];
+
+    this.requestRegister.write(value & ~interrupt.mask);
+
+    return interrupt.address;
+  }
+
+  getRequestedInterrupts() {
+    const enabled = this.enabledRegister.read();
+    const requested = this.requestRegister.read();
+
+    return enabled & requested & 0x1F;
+  }
+
+  // private
 
   initTypes() {
     this.types = {
@@ -41,40 +84,5 @@ export default class InterruptHandler {
     const { mask } = this.types[type];
 
     this.requestRegister.write(value | mask);
-  }
-
-  service(callback) {
-    const requested = this.getRequestedInterrupts();
-
-    if (requested === 0) {
-      return;
-    }
-
-    Object.keys(this.types).forEach((type) => {
-      const attrs = this.types[type];
-
-      if ((requested & attrs.mask) > 0) {
-        Observer.trigger('interrupts.serviced');
-        this.serviceType(attrs, callback);
-      }
-    });
-  }
-
-  getRequestedInterrupts() {
-    const enabled = this.enabledRegister.read();
-    const requested = this.requestRegister.read();
-
-    return enabled & requested & 0x1F;
-  }
-
-  serviceType(interrupt, callback) {
-    if (this.masterEnabled) {
-      this.masterEnabled = false;
-
-      const value = this.requestRegister.read();
-      this.requestRegister.write(value & ~interrupt.mask);
-
-      callback(interrupt.address);
-    }
   }
 }

@@ -8,10 +8,6 @@ export default class InstructionResolver {
   }
 
   resolve(instruction) {
-    if (instruction.requirements && !this.validateInstruction(instruction)) {
-      return instruction.baseCycles;
-    }
-
     instruction.resolve((reduced, piece) => {
       const [operation, defaultArgs] = piece;
 
