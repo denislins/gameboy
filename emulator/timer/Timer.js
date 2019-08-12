@@ -1,14 +1,26 @@
 import Observer from '../Observer.js';
+import Phaser from '../common/Phaser.js';
 
 export default class Timer {
   constructor(mmu) {
     this.mmu = mmu;
-    this.timerCounter = 0;
-    this.dividerCounter = 0;
 
     this.initRegisters();
     this.initEventHandlers();
+    this.initTimerPhaser();
+    this.initDividerPhaser();
   }
+
+  tick() {
+    this.dividerPhaser.tick();
+    this.updateCounterWithModulator();
+
+    if (this.controller.isTimerEnabled()) {
+      this.timerPhaser.tick();
+    }
+  }
+
+  // private
 
   initRegisters() {
     this.controller = this.mmu.registers.get('timerController');
@@ -18,32 +30,38 @@ export default class Timer {
 
   initEventHandlers() {
     Observer.on('mmu.registers.timerController.written', ({ newValue, previousValue }) => {
-      this.resetTimerCounter(newValue, previousValue);
+      this.updateCounterThreshold(newValue, previousValue);
     });
 
     Observer.on('mmu.registers.timerDivider.written', () => {
-      this.timerCounter = 0;
+      this.timerPhaser.reset();
     });
   }
 
-  tick(cpuCycles) {
-    this.updateDividerRegister(cpuCycles);
-    this.updateCounterWithModulator();
-
-    if (this.controller.isTimerEnabled()) {
-      this.updateCounterRegister(cpuCycles);
-    }
+  initTimerPhaser() {
+    this.timerPhaser = new Phaser(1024);
+    this.timerPhaser.whenFinished(() => this.updateCounterRegister());
   }
 
-  updateDividerRegister(cpuCycles) {
-    this.dividerCounter += cpuCycles;
+  initDividerPhaser() {
+    this.dividerPhaser = new Phaser(256);
+    this.dividerPhaser.whenFinished(() => this.updateDividerRegister());
+  }
 
-    if (this.dividerCounter >= 256) {
-      const newValue = this.dividerRegister.read() + 1;
+  updateCounterRegister() {
+    const nextValue = this.timerRegister.read() + 1;
 
-      this.dividerRegister.write(newValue);
-      this.dividerCounter = this.dividerCounter % 256;
+    if (nextValue > 255) {
+      Observer.trigger('interrupts.request', { type: 'timer' });
+      this.updateCounterFlag = true;
     }
+
+    this.timerRegister.write(nextValue);
+  }
+
+  updateDividerRegister() {
+    const newValue = this.dividerRegister.read() + 1;
+    this.dividerRegister.write(newValue);
   }
 
   updateCounterWithModulator() {
@@ -55,31 +73,10 @@ export default class Timer {
     }
   }
 
-  updateCounterRegister(cpuCycles) {
-    let cyclesOverflown = (this.timerCounter % this.timerThreshold) + cpuCycles;
-
-    while (cyclesOverflown >= this.timerThreshold) {
-      cyclesOverflown -= this.timerThreshold;
-      const nextValue = this.timerRegister.read() + 1;
-
-      if (nextValue > 255) {
-        Observer.trigger('interrupts.request', { type: 'timer' });
-        this.updateCounterFlag = true;
-      }
-
-      this.timerRegister.write(nextValue);
-    }
-
-    this.timerCounter = (this.timerCounter + cpuCycles) % this.timerThreshold;
-  }
-
-  resetTimerCounter(newValue, previousValue) {
+  updateCounterThreshold(newValue, previousValue) {
     if ((newValue & 3) !== (previousValue & 3)) {
-      this.timerCounter = this.timerCounter % this.timerThreshold;
+      const threshold = this.controller.getClockFrequencyInCycles();
+      this.timerPhaser.setLimit(threshold);
     }
-  }
-
-  get timerThreshold() {
-    return this.controller.getClockFrequencyInCycles();
   }
 }

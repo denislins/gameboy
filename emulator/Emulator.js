@@ -40,9 +40,11 @@ export default class Emulator {
 
     while (this.cpu.cycles <= limit) {
       const cycles = this.cpu.tick();
-
-      this.timer.tick(cycles);
       this.gpu.tick(cycles);
+
+      for (var i = 0; i < cycles; i += 4) {
+        this.timer.tick();
+      }
 
       this.cpu.serviceInterrupts();
     }

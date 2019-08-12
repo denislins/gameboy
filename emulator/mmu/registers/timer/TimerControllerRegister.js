@@ -8,12 +8,13 @@ export default class TimerControllerRegister extends AbstractMemoryRegister {
   }
 
   writeFromBus(value) {
+    const previousValue = this.read();
+    this.write(value & 7);
+
     Observer.trigger('mmu.registers.timerController.written', {
       newValue: value,
-      previousValue: this.read(),
+      previousValue,
     });
-
-    return this.write(value & 7);
   }
 
   getClockFrequencyInCycles() {
