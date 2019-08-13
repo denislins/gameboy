@@ -24,7 +24,6 @@ export default class Emulator {
     await this.mmu.loadCartridge(this.cartridge);
 
     this.cpu.reset();
-    this.gpu.reset();
     this.joypad.install();
 
     this.fps = 0;
@@ -40,9 +39,9 @@ export default class Emulator {
 
     while (this.cpu.cycles <= limit) {
       const cycles = this.cpu.tick();
-      this.gpu.tick(cycles);
 
-      for (var i = 0; i < cycles; i += 4) {
+      for (let i = 0; i < cycles; i += 4) {
+        this.gpu.tick();
         this.timer.tick();
       }
 
@@ -53,9 +52,7 @@ export default class Emulator {
   }
 
   updateDisplay() {
-    this.display.draw(this.gpu.pixels);
-
-    this.gpu.reset();
+    this.display.refresh();
     this.updateFps();
 
     setTimeout(() => this.tick(), 0);

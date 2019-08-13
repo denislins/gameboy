@@ -19,7 +19,7 @@ export default class Phaser {
     this.cycles += 4;
 
     if (this.callbacks[this.cycles]) {
-      this.callbacks[this.cycles].call();
+      this.callbacks[this.cycles](this.cycles);
     }
 
     if (this.cycles >= this.limit) {

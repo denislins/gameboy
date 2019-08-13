@@ -1,90 +1,87 @@
 import Observer from '../Observer.js';
+import Phaser from '../common/Phaser.js';
 import Ppu from './Ppu.js';
 
 export default class Gpu {
   constructor(mmu) {
     this.mmu = mmu;
+
     this.ppu = new Ppu(this.mmu);
+    this.pixels = [];
+
+    this.initRegisters();
+    this.initPhaser();
+  }
+
+  tick() {
+    this.phaser.tick();
+  }
+
+  // private
+
+  initRegisters() {
+    this.scanline = this.mmu.registers.get('scanline');
     this.lcdStatus = this.mmu.registers.get('lcdStatus');
   }
 
-  reset() {
-    this.pixels = [];
-    this.cycles = 0;
-
-    this.mmu.registers.write('scanline', 0);
-    this.changeMode('oamSearch');
+  initPhaser() {
+    this.phaser = new Phaser(456);
+    this.phaser.when(80, cycles => this.updateMode(cycles));
+    this.phaser.when(252, cycles => this.updateMode(cycles));
+    this.phaser.whenFinished(() => this.updateScanline());
   }
 
-  tick(cpuCycles) {
-    this.cycles += cpuCycles;
+  updateMode(cycles) {
+    const newMode = this.getNewMode(cycles);
+    const currentMode = this.getCurrentMode();
 
-    if (this.cycles >= 456) {
-      this.cycles = this.cycles % 456;
-
-      this.incrementCurrentRow();
-      this.compareScanlineInterrupt();
-    }
-
-    const newMode = this.getNewMode();
-    this.changeMode(newMode);
-  }
-
-  incrementCurrentRow() {
-    const nextRow = (this.currentRow + 1) % 154;
-    this.mmu.registers.write('scanline', nextRow);
-  }
-
-  compareScanlineInterrupt() {
-    const value = this.lcdStatus.read();
-    const comparedRow = this.mmu.registers.read('scanlineCompare');
-
-    if (this.currentRow === comparedRow) {
-      this.lcdStatus.write(value | 4);
-
-      if (this.lcdStatus.isScanlineCompareInterruptEnabled()) {
-        Observer.trigger('interrupts.request', { type: 'lcd' });
-      }
-    } else {
-      this.lcdStatus.write(value & ~4);
-    }
-  }
-
-  getNewMode() {
-    if (this.currentRow > 143) {
-      return 'vblank';
-    } else if (this.cycles <= 80) {
-      return 'oamSearch';
-    } else if (this.cycles <= 252) {
-      return 'pixelTransfer';
-    }
-
-    return 'hblank';
-  }
-
-  changeMode(newMode) {
-    if (this.currentMode !== newMode) {
+    if (currentMode !== newMode) {
       this.lcdStatus.changeMode(newMode);
 
       if (newMode === 'pixelTransfer') {
         this.execPixelTransfer();
       } else if (newMode === 'vblank') {
-        Observer.trigger('interrupts.request', { type: 'vblank' });
+        this.execVblank();
       }
 
       this.requestModeChangedInterrupt(newMode);
     }
   }
 
-  execPixelTransfer() {
-    if (this.currentRow === 0) {
-      this.pixels = [];
+  getNewMode(cycles) {
+    const currentRow = this.getCurrentRow();
+
+    if (currentRow > 143) {
+      return 'vblank';
+    } else if (cycles === 80) {
+      return 'pixelTransfer';
+    } else if (cycles === 252) {
+      return 'hblank';
     }
 
-    const rowPixels = this.ppu.draw(this.currentRow);
+    return 'oamSearch';
+  }
+
+  updateScanline() {
+    const currentRow = this.incrementCurrentRow();
+
+    this.compareScanlineInterrupt(currentRow);
+    this.updateMode(456);
+  }
+
+  execPixelTransfer() {
+    const row = this.getCurrentRow();
+    const rowPixels = this.ppu.draw(row);
 
     // destructuring is about 4x slower
     Array.prototype.push.apply(this.pixels, rowPixels);
+  }
+
+  execVblank() {
+    Observer.trigger('interrupts.request', { type: 'vblank' });
+    Observer.trigger('gpu.frameRendered', { pixels: this.pixels });
+
+    this.pixels = [];
   }
 
   requestModeChangedInterrupt(mode) {
@@ -103,11 +100,35 @@ export default class Gpu {
     }
   }
 
-  get currentMode() {
+  incrementCurrentRow() {
+    const currentRow = this.getCurrentRow();
+    const nextRow = (currentRow + 1) % 154;
+
+    this.scanline.write(nextRow);
+
+    return nextRow;
+  }
+
+  compareScanlineInterrupt(currentRow) {
+    const value = this.lcdStatus.read();
+    const comparedRow = this.mmu.registers.read('scanlineCompare');
+
+    if (currentRow === comparedRow) {
+      this.lcdStatus.write(value | 4);
+
+      if (this.lcdStatus.isScanlineCompareInterruptEnabled()) {
+        Observer.trigger('interrupts.request', { type: 'lcd' });
+      }
+    } else {
+      this.lcdStatus.write(value & ~4);
+    }
+  }
+
+  getCurrentMode() {
     return this.lcdStatus.getCurrentMode();
   }
 
-  get currentRow() {
-    return this.mmu.registers.read('scanline');
+  getCurrentRow() {
+    return this.scanline.read();
   }
 }

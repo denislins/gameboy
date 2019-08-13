@@ -1,3 +1,4 @@
+import Observer from '../Observer.js';
 import Pixel from './Pixel.js';
 
 export default class Display {
@@ -9,9 +10,21 @@ export default class Display {
     this.height = 144;
 
     this.image = this.context.createImageData(this.canvas.width, this.canvas.height);
+    this.colors = [];
 
     this.initPixels();
+    this.initEventListeners();
   }
+
+  refresh() {
+    this.pixels.forEach((pixel, index) => {
+      pixel.draw(this.image, this.colors[index]);
+    });
+
+    this.context.putImageData(this.image, 0, 0);
+  }
+
+  // private
 
   initPixels() {
     let row = -1;
@@ -27,11 +40,9 @@ export default class Display {
     });
   }
 
-  draw(colors) {
-    this.pixels.forEach((pixel, index) => {
-      pixel.draw(this.image, colors[index]);
+  initEventListeners() {
+    Observer.on('gpu.frameRendered', ({ pixels }) => {
+      this.colors = pixels;
     });
-
-    this.context.putImageData(this.image, 0, 0);
   }
 }
