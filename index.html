@@ -28,6 +28,8 @@
 
     canvas {
       background: #FFF;
+      width: 640px;
+      height: 576px;
     }
 
     #fps {
@@ -61,7 +63,7 @@
 
     const emulator = new Emulator(canvas);
 
-    emulator.load('./roms/tetris.gb');
+    emulator.load('./roms/drmario.gb');
     emulator.boot();
   </script>
   <div id="fps"></div>

@@ -5,13 +5,10 @@ export default class InstructionResolver {
     this.registers = registers;
     this.mmu = mmu;
     this.flags = this.registers.get('f');
+    this.initEventListeners();
   }
 
   resolve(instruction) {
-    if (instruction.requirements && !this.validateInstruction(instruction)) {
-      return instruction.baseCycles;
-    }
-
     instruction.resolve((reduced, piece) => {
       const [operation, defaultArgs] = piece;
 
@@ -36,6 +33,14 @@ export default class InstructionResolver {
     }
 
     return false;
+  }
+
+  // private
+
+  initEventListeners() {
+    Observer.on('cpu.interrupts.service', ({ address }) => {
+      this.serviceInterrupt(address);
+    });
   }
 
   readByte() {

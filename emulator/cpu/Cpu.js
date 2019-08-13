@@ -1,31 +1,22 @@
 import Observer from '../Observer.js';
+import Phaser from '../common/Phaser.js';
 import RegisterSet from './registers/RegisterSet.js';
-import BaseInstructionSet from './instructions/BaseInstructionSet.js';
-import ExtendedInstructionSet from './instructions/ExtendedInstructionSet.js';
-import InstructionResolver from './instructions/InstructionResolver.js';
+import InstructionFetcher from './instructions/InstructionFetcher.js';
 import InterruptHandler from './InterruptHandler.js';
 
 export default class Cpu {
   constructor(mmu) {
     this.mmu = mmu;
-    this.cycles = 0;
+
+    this.serviceableInterrupts = [];
+    this.currentInterruptAddress = undefined;
 
     this.registers = new RegisterSet();
-    this.instructions = new BaseInstructionSet();
+    this.instructionFetcher = new InstructionFetcher(this.registers, this.mmu);
     this.interrupts = new InterruptHandler(this.mmu);
-    this.resolver = new InstructionResolver(this.registers, this.mmu);
 
+    this.initInterruptPhaser();
     this.initEventHandlers();
-  }
-
-  initEventHandlers() {
-    Observer.on('cpu.halted', () => {
-      this.halt();
-    });
-
-    Observer.on('interrupts.serviced', () => {
-      this.halted = false;
-    });
   }
 
   reset() {
@@ -33,59 +24,57 @@ export default class Cpu {
   }
 
   tick() {
-    let instruction;
-
-    if (this.halted) {
-      instruction = this.instructions.find(0x76);
+    if (this.currentInterruptAddress) {
+      this.interruptPhaser.tick();
     } else {
-      instruction = this.getNextInstruction();
+      this.instructionFetcher.tick();
     }
+  }
 
-    const cycles = this.resolver.resolve(instruction);
-    this.cycles += cycles;
+  // private
 
-    return cycles;
+  initInterruptPhaser() {
+    this.interruptPhaser = new Phaser(12);
+    this.interruptPhaser.whenFinished(() => this.serviceCurrentInterrupt());
+  }
+
+  initEventHandlers() {
+    Observer.on('cpu.halted', () => this.halt());
+    Observer.on('cpu.interrupts.startServicing', () => this.serviceInterrupts());
   }
 
   halt() {
     const requested = this.interrupts.getRequestedInterrupts();
 
     if (this.interrupts.masterEnabled || requested === 0) {
-      this.halted = true;
+      this.instructionFetcher.halt();
     } else {
-      this.wasHalted = true;
+      this.instructionFetcher.triggerHaltBug();
     }
   }
 
   serviceInterrupts() {
-    this.interrupts.service((address) => {
-      this.resolver.serviceInterrupt(address);
-
-      this.halted = false;
-      this.cycles += 12;
-    });
+    this.serviceableInterrupts = this.interrupts.getServiceableInterrupts();
+    this.updateCurrentInterrupt();
   }
 
-  getNextInstruction(instructionSet) {
-    const opcode = this.getNextOpcode();
-    const instruction = (instructionSet || this.instructions).find(opcode);
+  updateCurrentInterrupt() {
+    const interrupt = this.serviceableInterrupts.shift();
 
-    if (instruction instanceof ExtendedInstructionSet) {
-      return this.getNextInstruction(instruction);
-    }
+    if (interrupt) {
+      this.instructionFetcher.resume();
+      this.currentInterruptAddress = this.interrupts.getInterruptAddress(interrupt);
 
-    return instruction;
-  }
-
-  getNextOpcode() {
-    const address = this.registers.read('pc');
-
-    if (this.wasHalted) {
-      this.wasHalted = false;
+      if (!this.currentInterruptAddress) {
+        this.updateCurrentInterrupt();
+      }
     } else {
-      this.registers.write('pc', address + 1);
+      this.currentInterruptAddress = undefined;
     }
+  }
 
-    return this.mmu.read(address);
+  serviceCurrentInterrupt() {
+    Observer.trigger('cpu.interrupts.service', { address: this.currentInterruptAddress });
+    this.updateCurrentInterrupt();
   }
 }
