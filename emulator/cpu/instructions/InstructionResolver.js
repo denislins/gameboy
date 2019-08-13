@@ -1,4 +1,4 @@
-import Observer from '../../Observer.js';
+import Observer from '../../common/Observer.js';
 
 export default class InstructionResolver {
   constructor(registers, mmu) {

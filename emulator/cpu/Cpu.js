@@ -1,4 +1,4 @@
-import Observer from '../Observer.js';
+import Observer from '../common/Observer.js';
 import Phaser from '../common/Phaser.js';
 import RegisterSet from './registers/RegisterSet.js';
 import InstructionFetcher from './instructions/InstructionFetcher.js';

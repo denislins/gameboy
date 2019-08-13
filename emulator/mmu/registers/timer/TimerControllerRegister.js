@@ -1,4 +1,4 @@
-import Observer from '../../../Observer.js';
+import Observer from '../../../common/Observer.js';
 import AbstractMemoryRegister from '../AbstractMemoryRegister.js';
 
 export default class TimerControllerRegister extends AbstractMemoryRegister {

@@ -1,4 +1,4 @@
-import Observer from '../Observer.js';
+import Observer from '../common/Observer.js';
 import Pixel from './Pixel.js';
 
 export default class Display {
