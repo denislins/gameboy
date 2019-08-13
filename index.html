@@ -18,18 +18,9 @@
       font-family: Arial;
     }
 
-    #screen-container {
-      min-width: 160px;
-      max-width: 640px;
-      min-height: 144px;
-      max-height: 576px;
-      margin: 50px auto 0;
-    }
-
     canvas {
+      margin: 50px auto 0;
       background: #FFF;
-      width: 640px;
-      height: 576px;
     }
 
     #fps {
@@ -49,17 +40,29 @@
   </style>
 </head>
 <body>
-  <div id="screen-container">
-    <canvas id="screen"></canvas>
-  </div>
+  <canvas id="screen"></canvas>
   <script type="module">
     import Emulator from './emulator/Emulator.js';
 
-    const container = document.getElementById('screen-container');
     const canvas = document.getElementById('screen');
 
-    canvas.setAttribute('width', container.offsetWidth);
-    canvas.setAttribute('height', container.offsetWidth / 160 * 144);
+    window.onresize = () => {
+      const width = getMaximumWidth();
+      const height = width / 160 * 144;
+
+      canvas.setAttribute('width', width);
+      canvas.setAttribute('height', height);
+    };
+
+    const getMaximumWidth = () => {
+      if (window.innerWidth >= 740) {
+        return 640;
+      }
+
+      return window.innerWidth - 100;
+    };
+
+    window.onresize();
 
     const emulator = new Emulator(canvas);
 
