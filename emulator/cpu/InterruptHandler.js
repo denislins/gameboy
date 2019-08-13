@@ -13,7 +13,7 @@ export default class InterruptHandler {
     this.initEventHandlers();
   }
 
-  getServiceableInterrupts(callback) {
+  getServiceableInterrupts() {
     const requested = this.getRequestedInterrupts();
 
     if (requested === 0) {
