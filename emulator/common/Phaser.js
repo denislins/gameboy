@@ -24,7 +24,7 @@ export default class Phaser {
 
     if (this.cycles >= this.limit) {
       this.callbacks.finished.call();
-      this.reset();
+      this.cycles = this.cycles % this.limit;
     }
   }
 

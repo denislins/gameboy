@@ -3,6 +3,7 @@ import CartridgeTypeRegister from './system/CartridgeTypeRegister.js';
 import JoypadRegister from './system/JoypadRegister.js';
 import LcdControllerRegister from './lcd/LcdControllerRegister.js';
 import LcdStatusRegister from './lcd/LcdStatusRegister.js';
+import SoundChannelControllerRegister from './sound/SoundChannelControllerRegister.js';
 import TimerControllerRegister from './timer/TimerControllerRegister.js';
 import TimerDividerRegister from './timer/TimerDividerRegister.js';
 import InterruptRequestRegister from './interrupts/InterruptRequestRegister.js';
@@ -15,6 +16,7 @@ export default class MemoryRegisterSet {
 
     this.initSystemRegisters();
     this.initVideoRegisters();
+    this.initSoundRegisters();
     this.initTimerRegisters();
     this.initInterruptRegisters();
     this.compileAddressIndex();
@@ -39,6 +41,10 @@ export default class MemoryRegisterSet {
     this.registers.objectPalette1 = new SimpleMemoryRegister(this.mmu, 0xFF49);
     this.registers.windowY = new SimpleMemoryRegister(this.mmu, 0xFF4A);
     this.registers.windowX = new SimpleMemoryRegister(this.mmu, 0xFF4B);
+  }
+
+  initSoundRegisters() {
+    this.registers.soundChannelController = new SoundChannelControllerRegister(this.mmu);
   }
 
   initTimerRegisters() {
