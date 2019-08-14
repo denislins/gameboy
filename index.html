@@ -23,6 +23,18 @@
       background: #FFF;
     }
 
+    #controls {
+      max-width: 640px;
+      background: #FFF;
+      margin: 50px auto 0;
+      padding: 15px 0;
+    }
+
+    #controls span {
+      padding: 0 15px;
+      white-space: nowrap;
+    }
+
     #fps {
       position: fixed;
       top: 0;
@@ -40,7 +52,15 @@
   </style>
 </head>
 <body>
-  <canvas id="screen"></canvas>
+  <div>
+    <canvas id="screen"></canvas>
+  </div>
+  <div id="controls">
+    <span><strong>D-pad:</strong> arrows</span>
+    <span><strong>A/B buttons:</strong> A/S</span>
+    <span><strong>Select:</strong> spacebar</span>
+    <span><strong>Start:</strong> enter</span>
+  </div>
   <script type="module">
     import Emulator from './emulator/Emulator.js';
 
