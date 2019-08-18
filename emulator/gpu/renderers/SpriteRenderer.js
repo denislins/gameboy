@@ -13,22 +13,32 @@ export default class SpriteRenderer extends AbstractRenderer {
     this.visibleSprites = this.spriteManager.findVisibleSpritesAtRow(row);
   }
 
-  getVisibleSpriteAtColumn(column) {
+  renderPixel(row, column) {
     return this.visibleSprites.find((sprite) => {
-      const xStart = sprite.getHorizontalPosition();
-      const xFinish = xStart + 8;
+      if (this.isSpriteVisible(sprite, column)) {
+        this.renderSprite(sprite, row, column);
 
-      return column >= xStart && column < xFinish;
+        if (sprite.color !== undefined) {
+          return sprite;
+        }
+      }
     });
   }
 
-  renderPixel(sprite, row, column) {
+  isSpriteVisible(sprite, column) {
+    const xStart = sprite.getHorizontalPosition();
+    const xFinish = xStart + 8;
+
+    return column >= xStart && column < xFinish;
+  }
+
+  renderSprite(sprite, row, column) {
     this.loadSpritePalette(sprite);
 
     const spriteRow = this.calculateSpriteRow(sprite, row);
     const spriteColumn = this.calculateSpriteColumn(sprite, column);
 
-    return this.calculatePixelColor(sprite.tileNumber, spriteRow, spriteColumn);
+    sprite.color = this.calculatePixelColor(sprite.tileNumber, spriteRow, spriteColumn);
   }
 
   loadSpritePalette(sprite) {

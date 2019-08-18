@@ -4,6 +4,11 @@ export default class Sprite {
     this.y = y;
     this.tileNumber = tileNumber;
     this.attributes = attributes;
+    this.color = undefined;
+  }
+
+  setColor(color) {
+    this.color = color;
   }
 
   getHorizontalPosition() {

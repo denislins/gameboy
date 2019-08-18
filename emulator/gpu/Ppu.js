@@ -42,15 +42,11 @@ export default class Ppu {
       return basePixel;
     } else if (sprite.isUnderBackground() && basePixel > 0) {
       return basePixel;
+    } else if (sprite.color === undefined) {
+      return basePixel;
     }
 
-    const spritePixel = this.spriteRenderer.renderPixel(sprite, row, column);
-
-    if (spritePixel !== undefined) {
-      return spritePixel;
-    }
-
-    return basePixel;
+    return sprite.color;
   }
 
   renderBasePixel(row, column) {
@@ -65,7 +61,7 @@ export default class Ppu {
 
   getSpriteAtPixel(row, column) {
     if (this.areSpritesEnabled) {
-      return this.spriteRenderer.getVisibleSpriteAtColumn(column);
+      return this.spriteRenderer.renderPixel(row, column);
     }
   }
 }
