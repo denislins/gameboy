@@ -28,20 +28,6 @@
       background: #FFF;
     }
 
-    #rom-loader:hover {
-      display: block !important;
-    }
-
-    #screen canvas:hover + #rom-loader {
-      display: block !important;
-    }
-
-    #rom-loader {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-
     #controls {
       max-width: 640px;
       background: #FFF;
@@ -55,7 +41,6 @@
     }
 
     #fps {
-      display: none;
       position: fixed;
       top: 0;
       right: 0;
@@ -69,44 +54,11 @@
     #fps::before {
       content: "FPS: ";
     }
-
-    #rom-file {
-      border: 0;
-      clip: rect(0, 0, 0, 0);
-      height: 1px;
-      overflow: hidden;
-      padding: 0;
-      position: absolute !important;
-      white-space: nowrap;
-      width: 1px;
-    }
-
-    #rom-file + label {
-      background-color: #444;
-      padding: 10px;
-      color: #fff;
-      cursor: pointer;
-      display: inline-block;
-      padding-left: 2rem 4rem;
-    }
-
-    #rom-file:focus + label,
-    #rom-file + label:hover {
-        background-color: #222;
-    }
-
-    #rom-file:focus + label {
-      outline: 1px dotted #000;
-    }
   </style>
 </head>
 <body>
   <div id="screen">
     <canvas width="640" height="576"></canvas>
-    <div id="rom-loader">
-      <input type="file" id="rom-file" />
-      <label for="rom-file" />Choose a ROM file</label>
-    </div>
   </div>
   <div id="controls">
     <span><strong>D-pad:</strong> arrows</span>
@@ -117,19 +69,13 @@
   <script type="module">
     import Emulator from './emulator/Emulator.js';
 
-    const canvas = document.querySelector('canvas');
-    const emulator = new Emulator(canvas);
+    (async () => {
+      const canvas = document.querySelector('canvas');
+      const emulator = new Emulator(canvas);
 
-    const fpsCounter = document.getElementById('fps');
-    const romLoader = document.getElementById('rom-loader');
-
-    romLoader.querySelector('input').addEventListener('input', (e) => {
-      romLoader.style.display = 'none';
-      fpsCounter.style.display = 'block';
-
-      emulator.load(e.target.files[0]);
+      await emulator.loadFromUrl('./roms/mario.gb');
       emulator.boot();
-    });
+    })();
   </script>
   <div id="fps"></div>
 </body>

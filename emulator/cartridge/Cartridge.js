@@ -1,22 +1,26 @@
 export default class Cartridge {
-  constructor(path) {
-    this.path = path;
-  }
-
-  async read() {
+  static async fromUrl(url) {
     let response;
 
     try {
-      response = await fetch(this.path);
+      response = await fetch(url);
     } catch (e) {
       throw new Error('Could not read cartridge');
     }
 
-    return this.parseResponse(response);
+    const contents = await response.blob();
+    return new Cartridge(contents);
   }
 
-  async parseResponse(response) {
-    const blob = await response.blob();
+  constructor(file) {
+    this.file = file;
+  }
+
+  async read() {
+    return this.parseContents(this.file);
+  }
+
+  async parseContents(file) {
     const reader = new FileReader();
 
     return new Promise((resolve) => {
@@ -25,7 +29,7 @@ export default class Cartridge {
         resolve(byteArray);
       };
 
-      reader.readAsBinaryString(blob);
+      reader.readAsBinaryString(file);
     });
   }
 

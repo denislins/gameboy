@@ -20,6 +20,10 @@ export default class Emulator {
     this.cartridge = new Cartridge(path);
   }
 
+  async loadFromUrl(path) {
+    this.cartridge = await Cartridge.fromUrl(path);
+  }
+
   async boot() {
     await this.mmu.loadCartridge(this.cartridge);
 
