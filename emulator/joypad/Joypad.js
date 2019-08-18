@@ -13,8 +13,8 @@ export default class Joypad {
 
   initKeystrokes() {
     this.keystrokes = {
-      65: { column: 0, mask: 1 },
-      83: { column: 0, mask: 2 },
+      83: { column: 0, mask: 1 },
+      65: { column: 0, mask: 2 },
       32: { column: 0, mask: 4 },
       13: { column: 0, mask: 8 },
       39: { column: 1, mask: 1 },
