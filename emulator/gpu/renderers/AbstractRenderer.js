@@ -8,10 +8,10 @@ export default class AbstractRenderer {
     throw new Error('not implemented');
   }
 
-  calculatePixelColor(tileNumber, row, column) {
+  calculatePixelColor(tileNumber, row, column, spriteHeight = 8) {
     const tileAddress = this.calculateTileAddress(tileNumber);
 
-    const tileAddressOffset = (row % 8) * 2;
+    const tileAddressOffset = (row % spriteHeight) * 2;
     const tileRowAddress = tileAddress + tileAddressOffset;
 
     const internalColor = this.calculateInternalColor(tileRowAddress, column % 8);

@@ -38,7 +38,10 @@ export default class SpriteRenderer extends AbstractRenderer {
     const spriteRow = this.calculateSpriteRow(sprite, row);
     const spriteColumn = this.calculateSpriteColumn(sprite, column);
 
-    sprite.color = this.calculatePixelColor(sprite.tileNumber, spriteRow, spriteColumn);
+    const { tileNumber } = sprite;
+    const spriteHeight = this.spriteManager.getSpriteHeight();
+
+    sprite.color = this.calculatePixelColor(tileNumber, spriteRow, spriteColumn, spriteHeight);
   }
 
   loadSpritePalette(sprite) {
