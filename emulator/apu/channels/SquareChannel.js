@@ -1,11 +1,13 @@
 import Phaser from '../../common/Phaser.js';
 import Observer from '../../common/Observer.js';
+import SquareChannelRegisters from './registers/SquareChannelRegisters.js';
 
 export default class SquareChannel {
   constructor(mmu) {
-    this.mmu = mmu;
+    this.registers = new SquareChannelRegisters(mmu, 0xFF10);
     this.currentCycle = 0;
     this.lengthCounter = 0;
+    this.volume = 0;
 
     this.initDutyCycles();
     this.initPhaser();
@@ -21,19 +23,22 @@ export default class SquareChannel {
   }
 
   execLengthCounter() {
-    if (this.lengthCounter > 0 && this.isLenghtCounterEnabled()) {
+    if (this.lengthCounter > 0 && this.registers.isLengthCounterEnabled()) {
       this.lengthCounter--;
 
       if (this.lengthCounter === 0) {
-        const value = this.mmu.read(0xFF14) & 0x7F;
-        this.mmu.write(0xFF14, value);
+        this.registers.disableChannel();
       }
     }
   }
 
+  execFrequencySweep() {
+
+  }
+
   generateSample() {
-    if (this.isEnabled() && this.isDacEnabled() && this.isDutyCycleActive()) {
-      return 0.1;
+    if (this.registers.isChannelEnabled() && this.registers.isDacEnabled() && this.isDutyCycleActive()) {
+      return this.volume / 15;
     } else {
       return 0;
     }
@@ -69,42 +74,20 @@ export default class SquareChannel {
   enable(value) {
     if (value & 0x80) {
       this.lengthCounter = 64;
+      this.volume = this.registers.getVolume();
       this.resetPhaser();
     }
   }
 
   resetPhaser() {
-    const frequency = this.getFrequency();
+    const frequency = this.registers.getFrequency();
     const timer = (2048 - frequency) * 16;
 
     this.phaser.setLimit(timer);
   }
 
-  getFrequency() {
-    const lowBits = this.mmu.read(0xFF13);
-    const highBits = this.mmu.read(0xFF14) & 7;
-
-    return (highBits << 8) | lowBits;
-  }
-
-  getVolume() {
-    return this.mmu.read(0xFF12) >> 4;
-  }
-
-  isEnabled() {
-    return this.mmu.read(0xFF14) & 0x80;
-  }
-
-  isDacEnabled() {
-    return this.mmu.read(0xFF12) & 0xF8;
-  }
-
-  isLenghtCounterEnabled() {
-    return this.mmu.read(0xFF14) & 0x40;
-  }
-
   isDutyCycleActive() {
-    const index = this.mmu.read(0xFF11) >> 6;
+    const index = this.registers.getActiveDutyCycle();
     const dutyCycle = this.dutyCycles[index];
 
     return dutyCycle[this.currentCycle];

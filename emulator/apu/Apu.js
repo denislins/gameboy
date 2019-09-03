@@ -38,8 +38,13 @@ export default class Apu {
 
   initFrameSequencer() {
     this.frameSequencer = new FrameSequencer();
+
     this.frameSequencer.onLengthCounter(() => {
       this.channels.forEach(channel => channel.execLengthCounter());
+    });
+
+    this.frameSequencer.onFrequencySweep(() => {
+      this.channels.forEach(channel => channel.execFrequencySweep());
     });
   }
 
