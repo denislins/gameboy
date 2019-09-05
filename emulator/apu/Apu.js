@@ -46,6 +46,10 @@ export default class Apu {
     this.frameSequencer.onFrequencySweep(() => {
       this.channels.forEach(channel => channel.execFrequencySweep());
     });
+
+    this.frameSequencer.onVolumeEnvelope(() => {
+      this.channels.forEach(channel => channel.execVolumeEnvelope());
+    });
   }
 
   generateSamples() {

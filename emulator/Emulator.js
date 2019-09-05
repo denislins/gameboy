@@ -50,6 +50,8 @@ export default class Emulator {
     }
 
     window.requestAnimationFrame(() => this.refreshDisplay());
+
+    window.denis.play();
   }
 
   refreshDisplay() {
