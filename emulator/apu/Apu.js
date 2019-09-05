@@ -23,6 +23,10 @@ export default class Apu {
     this.channels.forEach(channel => channel.tick());
   }
 
+  play() {
+    this.player.play();
+  }
+
   // private
 
   initChannels() {
@@ -45,6 +49,10 @@ export default class Apu {
 
     this.frameSequencer.onFrequencySweep(() => {
       this.channels.forEach(channel => channel.execFrequencySweep());
+    });
+
+    this.frameSequencer.onVolumeEnvelope(() => {
+      this.channels.forEach(channel => channel.execVolumeEnvelope());
     });
   }
 

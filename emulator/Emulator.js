@@ -50,9 +50,12 @@ export default class Emulator {
     }
 
     window.requestAnimationFrame(() => this.refreshDisplay());
+
   }
 
   refreshDisplay() {
+    this.apu.play();
+
     this.display.refresh();
     this.updateFps();
 

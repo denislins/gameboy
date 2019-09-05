@@ -4,10 +4,12 @@ import JoypadRegister from './system/JoypadRegister.js';
 import LcdControllerRegister from './lcd/LcdControllerRegister.js';
 import LcdStatusRegister from './lcd/LcdStatusRegister.js';
 import SoundChannelControllerRegister from './sound/SoundChannelControllerRegister.js';
+import SoundPowerControlRegister from './sound/SoundPowerControlRegister.js';
 import TimerControllerRegister from './timer/TimerControllerRegister.js';
 import TimerDividerRegister from './timer/TimerDividerRegister.js';
 import InterruptRequestRegister from './interrupts/InterruptRequestRegister.js';
 import InterruptEnabledRegister from './interrupts/InterruptEnabledRegister.js';
+import TestRegister from './sound/TestRegister.js';
 
 export default class MemoryRegisterSet {
   constructor(mmu) {
@@ -45,6 +47,8 @@ export default class MemoryRegisterSet {
 
   initSoundRegisters() {
     this.registers.soundChannelController = new SoundChannelControllerRegister(this.mmu);
+    this.registers.soundPowerControl = new SoundPowerControlRegister(this.mmu);
+    // this.registers.teasyudbasud = new TestRegister(this.mmu);
   }
 
   initTimerRegisters() {

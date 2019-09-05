@@ -50,7 +50,6 @@ export default class Mmu {
       console.debug('skipping write to disabled RAM');
       return;
     }
-
     const register = this.registers.findByAddress(address);
 
     if (register) {
