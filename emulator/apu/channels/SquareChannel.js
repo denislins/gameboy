@@ -77,7 +77,7 @@ export default class SquareChannel {
   }
 
   generateSample() {
-    if (this.registers.isChannelEnabled() && this.registers.isDacEnabled() && this.isDutyCycleActive()) {
+    if (this.registers.isChannelEnabled() && this.isDutyCycleActive()) {
       return this.volume / 45;
     } else {
       return 0;

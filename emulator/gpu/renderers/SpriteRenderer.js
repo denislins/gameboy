@@ -22,6 +22,8 @@ export default class SpriteRenderer extends AbstractRenderer {
           return sprite;
         }
       }
+
+      return undefined;
     });
   }
 
@@ -41,6 +43,7 @@ export default class SpriteRenderer extends AbstractRenderer {
     const { tileNumber } = sprite;
     const spriteHeight = this.spriteManager.getSpriteHeight();
 
+    // eslint-disable-next-line no-param-reassign
     sprite.color = this.calculatePixelColor(tileNumber, spriteRow, spriteColumn, spriteHeight);
   }
 

@@ -50,7 +50,6 @@ export default class Emulator {
     }
 
     window.requestAnimationFrame(() => this.refreshDisplay());
-
   }
 
   refreshDisplay() {

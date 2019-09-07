@@ -18,11 +18,11 @@
   },
   "homepage": "https://gitlab.com/denislins/gameboy#README",
   "devDependencies": {
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.17.2",
+    "eslint": "^6.3.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2",
     "jasmine": "^3.4.0",
-    "karma": "^4.1.0",
+    "karma": "^4.3.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^2.0.1"
   }

@@ -57,10 +57,7 @@ export default class Apu {
   }
 
   generateSamples() {
-    const samples = this.channels.map((channel) => {
-      return channel.generateSample();
-    });
-
+    const samples = this.channels.map(channel => channel.generateSample());
     this.player.addSamples(samples);
   }
 }

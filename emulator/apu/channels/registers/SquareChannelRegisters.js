@@ -21,15 +21,14 @@ export default class SquareChannelRegisters {
   }
 
   isChannelEnabled() {
-    return this.read(4) & 0x80;
+    const isChannelEnabled = this.read(4) & 0x80;
+    const isDacEnabled = this.read(2) & 0xF8;
+
+    return isChannelEnabled && isDacEnabled;
   }
 
   getVolume() {
     return this.read(2) >> 4;
-  }
-
-  isDacEnabled() {
-    return this.read(2) & 0xF8;
   }
 
   getActiveDutyCycle() {

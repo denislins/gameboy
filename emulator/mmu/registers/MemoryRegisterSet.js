@@ -9,7 +9,7 @@ import TimerControllerRegister from './timer/TimerControllerRegister.js';
 import TimerDividerRegister from './timer/TimerDividerRegister.js';
 import InterruptRequestRegister from './interrupts/InterruptRequestRegister.js';
 import InterruptEnabledRegister from './interrupts/InterruptEnabledRegister.js';
-import TestRegister from './sound/TestRegister.js';
+// import TestRegister from './sound/TestRegister.js';
 
 export default class MemoryRegisterSet {
   constructor(mmu) {
