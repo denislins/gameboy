@@ -1,42 +1,44 @@
 export default class Player {
   constructor() {
     this.context = new AudioContext();
-    this.resetSamples();
+    this.samples = [];
+    this.enqueued = 0;
   }
 
   addSamples(samples) {
-    samples.forEach((sample, index) => {
-      this.samples[index].push(sample);
-    });
+    this.samples.push(...samples);
+
+    if (this.samples.length >= 4096) {
+      this.play();
+    }
   }
+
+  // private
 
   play() {
     const source = this.context.createBufferSource();
+
+    source.onended = () => {
+      if (--this.enqueued <= 0) {
+        console.log('wrong', this.enqueued);
+      }
+    };
 
     source.buffer = this.createBuffer();
     source.connect(this.context.destination);
     source.start();
 
-    this.resetSamples();
-  }
-
-  // private
-
-  resetSamples() {
-    this.samples = [[]];
+    this.enqueued++;
+    this.samples = [];
   }
 
   createBuffer() {
-    const duration = this.samples[0].length;
-    const buffer = this.context.createBuffer(1, duration, 44100);
+    const buffer = this.context.createBuffer(1, 4096, 44100);
+    const data = buffer.getChannelData(0);
 
-    this.samples.forEach((samples, channel) => {
-      const data = buffer.getChannelData(channel);
-
-      samples.forEach((sample, index) => {
-        data[index] = sample;
-      });
-    });
+    for (let index = 0; index < 4096; index++) {
+      data[index] = this.samples[index];
+    }
 
     return buffer;
   }

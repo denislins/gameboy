@@ -53,8 +53,6 @@ export default class Emulator {
   }
 
   refreshDisplay() {
-    this.apu.play();
-
     this.display.refresh();
     this.updateFps();
 
