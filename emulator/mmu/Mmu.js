@@ -47,9 +47,9 @@ export default class Mmu {
     }
 
     if (address >= 0xA000 && address <= 0xBFFF && !this.ramBankingEnabled) {
-      console.debug('skipping write to disabled RAM');
       return;
     }
+
     const register = this.registers.findByAddress(address);
 
     if (register) {
@@ -64,7 +64,6 @@ export default class Mmu {
     const mappedAddress = this.mapAddress(address);
 
     if (mappedAddress >= 0xFEA0 && mappedAddress < 0xFF00) {
-      console.debug('skipping write to unused space');
       return;
     }
 

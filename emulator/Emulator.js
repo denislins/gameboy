@@ -49,7 +49,13 @@ export default class Emulator {
       this.timer.tick();
     }
 
-    window.requestAnimationFrame(() => this.refreshDisplay());
+    this.apu.player.play();
+
+    if (this.apu.player.enqueued > 5) {
+      window.requestAnimationFrame(() => this.refreshDisplay());
+    } else {
+      this.renderFrame();
+    }
   }
 
   refreshDisplay() {
