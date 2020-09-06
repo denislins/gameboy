@@ -12,7 +12,7 @@ export default class Emulator {
     this.mmu = new Mmu();
     this.cpu = new Cpu(this.mmu);
     this.gpu = new Gpu(this.mmu);
-    this.apu = new Apu(this.mmu);
+    // this.apu = new Apu(this.mmu);
     this.timer = new Timer(this.mmu);
     this.joypad = new Joypad(this.mmu);
     this.display = new Display(canvas);
@@ -30,7 +30,7 @@ export default class Emulator {
     await this.mmu.loadCartridge(this.cartridge);
 
     this.cpu.reset();
-    this.apu.reset();
+    // this.apu.reset();
     this.joypad.install();
 
     this.fps = 0;
@@ -45,17 +45,19 @@ export default class Emulator {
     for (let i = 0; i < 17556; i++) {
       this.cpu.tick();
       this.gpu.tick();
-      this.apu.tick();
+      // this.apu.tick();
       this.timer.tick();
     }
 
-    this.apu.player.play();
+    // this.apu.player.play();
 
-    if (this.apu.player.enqueued > 5) {
-      window.requestAnimationFrame(() => this.refreshDisplay());
-    } else {
-      this.renderFrame();
-    }
+    // if (this.apu.player.enqueued > 5) {
+    //   window.requestAnimationFrame(() => this.refreshDisplay());
+    // } else {
+    //   this.renderFrame();
+    // }
+
+    window.requestAnimationFrame(() => this.refreshDisplay());
   }
 
   refreshDisplay() {
