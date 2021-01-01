@@ -9,7 +9,6 @@ import TimerControllerRegister from './timer/TimerControllerRegister.js';
 import TimerDividerRegister from './timer/TimerDividerRegister.js';
 import InterruptRequestRegister from './interrupts/InterruptRequestRegister.js';
 import InterruptEnabledRegister from './interrupts/InterruptEnabledRegister.js';
-// import TestRegister from './sound/TestRegister.js';
 
 export default class MemoryRegisterSet {
   constructor(mmu) {
@@ -48,7 +47,6 @@ export default class MemoryRegisterSet {
   initSoundRegisters() {
     this.registers.soundChannelController = new SoundChannelControllerRegister(this.mmu);
     this.registers.soundPowerControl = new SoundPowerControlRegister(this.mmu);
-    // this.registers.teasyudbasud = new TestRegister(this.mmu);
   }
 
   initTimerRegisters() {

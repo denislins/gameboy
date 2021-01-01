@@ -42,7 +42,7 @@ export default class InstructionFetcher {
 
   mountInstruction() {
     if (this.halted) {
-      // loops executing no-ops when halted
+      // loop no-ops when halted
       this.currentInstruction = this.instructions.find(0x76);
     } else {
       this.currentInstruction = this.getNextInstruction();

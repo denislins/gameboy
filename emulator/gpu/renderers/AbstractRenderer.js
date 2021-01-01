@@ -27,7 +27,7 @@ export default class AbstractRenderer {
     const tileIdentityOffset = Math.floor(row / 8) * 32 + Math.floor(column / 8);
     const tileIdentityAddress = this.tableBaseAddress + tileIdentityOffset;
 
-    return this.mmu.read(tileIdentityAddress);
+    return this.mmu.forceRead(tileIdentityAddress);
   }
 
   calculateTileAddress(tileNumber) {
@@ -39,8 +39,8 @@ export default class AbstractRenderer {
   }
 
   calculateInternalColor(baseAddress, pixel) {
-    const byte1 = this.mmu.read(baseAddress);
-    const byte2 = this.mmu.read(baseAddress + 1);
+    const byte1 = this.mmu.forceRead(baseAddress);
+    const byte2 = this.mmu.forceRead(baseAddress + 1);
 
     const mask = 1 << (7 - pixel);
 
