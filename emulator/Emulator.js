@@ -37,13 +37,18 @@ export default class Emulator {
     this.fpsContainer = document.getElementById('fps');
     this.currentSecond = new Date().getSeconds();
 
-    while (this.apu.getEnqueuedCount() < 4) {
+    requestAnimationFrame(() => this.renderFrame());
+  }
+
+  renderFrame() {
+    do {
       this.runCycle();
-    }
+    } while (this.apu.getEnqueuedSampleCount() <= 3);
 
-    this.apu.play();
+    this.display.refresh();
+    this.updateFps();
 
-    setInterval(() => this.renderFrame(), 17);
+    requestAnimationFrame(() => this.renderFrame());
   }
 
   runCycle() {
@@ -54,18 +59,6 @@ export default class Emulator {
       this.apu.tick();
       this.timer.tick();
     }
-
-    this.apu.enqueueFrame();
-  }
-
-  renderFrame() {
-    if (this.apu.getEnqueuedCount() >= 16) {
-      throw new Error('this actually happened, wtf');
-    }
-
-    this.runCycle();
-    this.display.refresh();
-    this.updateFps();
   }
 
   updateFps() {

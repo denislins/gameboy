@@ -67,10 +67,10 @@ export default class SquareChannelRegisters {
   // private
 
   read(address) {
-    return this.mmu.read(this.baseAddress + address);
+    return this.mmu.forceRead(this.baseAddress + address);
   }
 
   write(address, value) {
-    return this.mmu.write(this.baseAddress + address, value);
+    return this.mmu.forceWrite(this.baseAddress + address, value);
   }
 }

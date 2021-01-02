@@ -6,7 +6,6 @@ import SquareChannel from './channels/SquareChannel.js';
 export default class Apu {
   constructor(mmu) {
     this.mmu = mmu;
-    this.enqueuedFrames = [];
     this.currentFrame = [];
     this.player = new Player();
 
@@ -16,8 +15,8 @@ export default class Apu {
   }
 
   reset() {
-    this.enqueuedFrames = [];
     this.currentFrame = [];
+    this.player.reset();
     this.channels.forEach(channel => channel.reset());
   }
 
@@ -27,17 +26,8 @@ export default class Apu {
     this.channels.forEach(channel => channel.tick());
   }
 
-  enqueueFrame() {
-    this.enqueuedFrames.push(this.currentFrame);
-    this.currentFrame = [];
-  }
-
-  getEnqueuedCount() {
-    return this.enqueuedFrames.length;
-  }
-
-  play() {
-    setInterval(() => this.executeFrame(), 16);
+  getEnqueuedSampleCount() {
+    return this.player.enqueuedFrames;
   }
 
   // private
@@ -72,10 +62,14 @@ export default class Apu {
   generateSamples() {
     const samples = this.channels.map(channel => channel.generateSample());
     this.currentFrame.push(...samples);
+
+    if (this.currentFrame.length === 400) {
+      this.enqueueFrame();
+    }
   }
 
-  executeFrame() {
-    const frame = this.enqueuedFrames.shift();
-    this.player.play(frame);
+  enqueueFrame() {
+    this.player.enqueue(this.currentFrame);
+    this.currentFrame = [];
   }
 }
