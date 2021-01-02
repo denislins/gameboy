@@ -1,6 +1,7 @@
 export default class BasicSquareChannelRegisters {
   constructor(mmu) {
     this.mmu = mmu;
+    this.baseAddress = 0xFF15;
   }
 
   getFrequency() {
@@ -54,10 +55,10 @@ export default class BasicSquareChannelRegisters {
   // private
 
   read(address) {
-    return this.mmu.forceRead(0xFF15 + address);
+    return this.mmu.forceRead(this.baseAddress + address);
   }
 
   write(address, value) {
-    return this.mmu.forceWrite(0xFF15 + address, value);
+    return this.mmu.forceWrite(this.baseAddress + address, value);
   }
 }

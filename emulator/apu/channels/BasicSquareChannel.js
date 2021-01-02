@@ -4,7 +4,6 @@ import BasicSquareChannelRegisters from './registers/BasicSquareChannelRegisters
 
 export default class BasicSquareChannel {
   constructor(mmu) {
-    this.registers = new BasicSquareChannelRegisters(mmu);
     this.currentCycle = 0;
     this.lengthCounter = 0;
     this.volume = 0;
@@ -12,6 +11,7 @@ export default class BasicSquareChannel {
     this.isEnvelopeEnabled = false;
     this.envelopePeriod = 0;
 
+    this.initRegisters(mmu);
     this.initDutyCycles();
     this.initPhaser();
     this.initEventListeners();
@@ -63,13 +63,17 @@ export default class BasicSquareChannel {
 
   generateSample() {
     if (this.registers.isChannelEnabled() && this.isDutyCycleActive()) {
-      return this.volume / 45;
+      return this.volume / 100;
     } else {
       return 0;
     }
   }
 
   // private
+
+  initRegisters(mmu) {
+    this.registers = new BasicSquareChannelRegisters(mmu);
+  }
 
   initDutyCycles() {
     this.dutyCycles = [
@@ -100,6 +104,7 @@ export default class BasicSquareChannel {
     if (value & 0x80) {
       this.resetLengthCounter();
       this.resetPhaser();
+      this.resetSweepRegisters();
 
       this.volume = this.registers.getVolume();
       this.envelopePeriod = this.registers.getEnvelopePeriod();
@@ -113,6 +118,10 @@ export default class BasicSquareChannel {
     const timer = (2048 - frequency) * 4;
 
     this.phaser.setLimit(timer);
+  }
+
+  resetSweepRegisters() {
+    // not supported
   }
 
   isDutyCycleActive() {

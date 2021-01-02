@@ -43,7 +43,7 @@ export default class Emulator {
   renderFrame() {
     do {
       this.runCycle();
-    } while (this.apu.getEnqueuedSampleCount() <= 3);
+    } while (this.apu.enqueuedFrames <= 3);
 
     this.display.refresh();
     this.updateFps();

@@ -14,8 +14,8 @@ export default class FrameSequencer {
     });
 
     this.phaser.when(98304, () => {
-      this.callbacks.lengthCounter();
       this.callbacks.frequencySweep();
+      this.callbacks.lengthCounter();
     });
 
     this.phaser.when(163840, () => {
@@ -23,8 +23,8 @@ export default class FrameSequencer {
     });
 
     this.phaser.when(229376, () => {
-      this.callbacks.lengthCounter();
       this.callbacks.frequencySweep();
+      this.callbacks.lengthCounter();
     });
 
     this.phaser.whenFinished(() => {
