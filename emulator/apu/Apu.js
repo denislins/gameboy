@@ -1,12 +1,14 @@
 import Phaser from '../common/Phaser.js';
+import Frame from './Frame.js';
 import FrameSequencer from './FrameSequencer.js';
 import Player from './Player.js';
-import SquareChannel from './channels/SquareChannel.js';
+import SweepSquareChannel from './channels/SweepSquareChannel.js';
+import BasicSquareChannel from './channels/BasicSquareChannel.js';
 
 export default class Apu {
   constructor(mmu) {
     this.mmu = mmu;
-    this.currentFrame = [];
+    this.currentFrame = undefined;
     this.player = new Player();
 
     this.initChannels();
@@ -15,7 +17,7 @@ export default class Apu {
   }
 
   reset() {
-    this.currentFrame = [];
+    this.currentFrame = new Frame();
     this.player.reset();
     this.channels.forEach(channel => channel.reset());
   }
@@ -34,7 +36,8 @@ export default class Apu {
 
   initChannels() {
     this.channels = [
-      new SquareChannel(this.mmu),
+      new SweepSquareChannel(this.mmu),
+      new BasicSquareChannel(this.mmu),
     ];
   }
 
@@ -61,15 +64,16 @@ export default class Apu {
 
   generateSamples() {
     const samples = this.channels.map(channel => channel.generateSample());
-    this.currentFrame.push(...samples);
 
-    if (this.currentFrame.length === 400) {
+    this.currentFrame.push(samples);
+
+    if (this.currentFrame.getSampleCount() === 400) {
       this.enqueueFrame();
     }
   }
 
   enqueueFrame() {
     this.player.enqueue(this.currentFrame);
-    this.currentFrame = [];
+    this.currentFrame = new Frame();
   }
 }

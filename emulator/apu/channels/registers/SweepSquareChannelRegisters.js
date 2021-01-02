@@ -1,7 +1,6 @@
-export default class SquareChannelRegisters {
-  constructor(mmu, baseAddress) {
+export default class SweepSquareChannelRegisters {
+  constructor(mmu) {
     this.mmu = mmu;
-    this.baseAddress = baseAddress;
   }
 
   getFrequency() {
@@ -67,10 +66,10 @@ export default class SquareChannelRegisters {
   // private
 
   read(address) {
-    return this.mmu.forceRead(this.baseAddress + address);
+    return this.mmu.forceRead(0xFF10 + address);
   }
 
   write(address, value) {
-    return this.mmu.forceWrite(this.baseAddress + address, value);
+    return this.mmu.forceWrite(0xFF10 + address, value);
   }
 }

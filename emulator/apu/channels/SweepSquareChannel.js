@@ -1,10 +1,10 @@
 import Phaser from '../../common/Phaser.js';
 import Observer from '../../common/Observer.js';
-import SquareChannelRegisters from './registers/SquareChannelRegisters.js';
+import SweepSquareChannelRegisters from './registers/SweepSquareChannelRegisters.js';
 
-export default class SquareChannel {
+export default class SweepSquareChannel {
   constructor(mmu) {
-    this.registers = new SquareChannelRegisters(mmu, 0xFF10);
+    this.registers = new SweepSquareChannelRegisters(mmu);
     this.currentCycle = 0;
     this.lengthCounter = 0;
     this.volume = 0;
@@ -78,7 +78,7 @@ export default class SquareChannel {
 
   generateSample() {
     if (this.registers.isChannelEnabled() && this.isDutyCycleActive()) {
-      return this.volume / 45;
+      return this.volume / 100;
     } else {
       return 0;
     }
