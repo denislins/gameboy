@@ -1,13 +1,13 @@
 import Observer from '../../../common/Observer.js';
 import AbstractMemoryRegister from '../AbstractMemoryRegister.js';
 
-export default class SoundChannelControllerRegister extends AbstractMemoryRegister {
+export default class BasicSquareChannelControllerRegister extends AbstractMemoryRegister {
   onInit() {
-    this.address = 0xFF14;
+    this.address = 0xFF19;
   }
 
   writeFromBus(value) {
-    Observer.trigger('apu.channels.controller.written', { value });
+    Observer.trigger('apu.channels.basicSquare.written', { value });
     return this.write(value);
   }
 }

@@ -3,7 +3,9 @@ import CartridgeTypeRegister from './system/CartridgeTypeRegister.js';
 import JoypadRegister from './system/JoypadRegister.js';
 import LcdControllerRegister from './lcd/LcdControllerRegister.js';
 import LcdStatusRegister from './lcd/LcdStatusRegister.js';
-import SoundChannelControllerRegister from './sound/SoundChannelControllerRegister.js';
+import SweepSquareChannelControllerRegister from './sound/SweepSquareChannelControllerRegister.js';
+import BasicSquareChannelControllerRegister from './sound/BasicSquareChannelControllerRegister.js';
+import WaveChannelControllerRegister from './sound/WaveChannelControllerRegister.js';
 import SoundPowerControlRegister from './sound/SoundPowerControlRegister.js';
 import TimerControllerRegister from './timer/TimerControllerRegister.js';
 import TimerDividerRegister from './timer/TimerDividerRegister.js';
@@ -45,7 +47,9 @@ export default class MemoryRegisterSet {
   }
 
   initSoundRegisters() {
-    this.registers.soundChannelController = new SoundChannelControllerRegister(this.mmu);
+    this.registers.sweepSquareChannelController = new SweepSquareChannelControllerRegister(this.mmu);
+    this.registers.basicSquareChannelController = new BasicSquareChannelControllerRegister(this.mmu);
+    this.registers.waveChannelController = new WaveChannelControllerRegister(this.mmu);
     this.registers.soundPowerControl = new SoundPowerControlRegister(this.mmu);
   }
 

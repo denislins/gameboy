@@ -1,5 +1,3 @@
-import Phaser from '../../common/Phaser.js';
-import Observer from '../../common/Observer.js';
 import BasicSquareChannel from './BasicSquareChannel.js';
 import SweepSquareChannelRegisters from './registers/SweepSquareChannelRegisters.js';
 
@@ -31,6 +29,10 @@ export default class SweepSquareChannel extends BasicSquareChannel {
 
   initRegisters(mmu) {
     this.registers = new SweepSquareChannelRegisters(mmu);
+  }
+
+  getControllerWrittenTopic() {
+    return 'apu.channels.sweepSquare.written';
   }
 
   resetSweepRegisters() {

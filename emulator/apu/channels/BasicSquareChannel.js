@@ -90,9 +90,15 @@ export default class BasicSquareChannel {
   }
 
   initEventListeners() {
-    Observer.on('apu.channels.controller.written', ({ value }) => {
+    const topic = this.getControllerWrittenTopic();
+
+    Observer.on(topic, ({ value }) => {
       this.enable(value);
     });
+  }
+
+  getControllerWrittenTopic() {
+    return 'apu.channels.basicSquare.written';
   }
 
   updateCurrentCycle() {

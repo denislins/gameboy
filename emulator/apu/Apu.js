@@ -68,7 +68,7 @@ export default class Apu {
       this.currentFrame[index].push(sample);
     });
 
-    if (this.currentFrame[0].length === 400) {
+    if (this.currentFrame[0].length === 4000) {
       this.enqueueFrame();
     }
   }

@@ -1,11 +1,6 @@
 import BasicSquareChannelRegisters from './BasicSquareChannelRegisters.js';
 
 export default class SweepSquareChannelRegisters extends BasicSquareChannelRegisters {
-  constructor(mmu) {
-    super(mmu);
-    this.baseAddress = 0xFF10;
-  }
-
   getSweepPeriod() {
     return (this.read(0) >> 4) & 7;
   }
@@ -16,5 +11,11 @@ export default class SweepSquareChannelRegisters extends BasicSquareChannelRegis
 
   isSweepNegateEnabled() {
     return this.read(0) & 8;
+  }
+
+  // private
+
+  getBaseAddress() {
+    return 0xFF10;
   }
 }

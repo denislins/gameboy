@@ -1,30 +1,9 @@
-export default class BasicSquareChannelRegisters {
-  constructor(mmu) {
-    this.mmu = mmu;
-    this.baseAddress = 0xFF15;
-  }
+import AbstractChannelRegisters from './AbstractChannelRegisters.js';
 
-  getFrequency() {
-    const lowBits = this.read(3);
-    const highBits = this.read(4) & 7;
-
-    return (highBits << 8) | lowBits;
-  }
-
-  setFrequency(frequency) {
-    this.write(3, frequency & 0xFF);
-
-    const baseValue = this.read(4) & 0xF8;
-    const highBits = baseValue | (frequency >> 8);
-
-    this.write(4, highBits);
-  }
-
+export default class BasicSquareChannelRegisters extends AbstractChannelRegisters {
   isChannelEnabled() {
-    const isChannelEnabled = this.read(4) & 0x80;
-    const isDacEnabled = this.read(2) & 0xF8;
-
-    return isChannelEnabled && isDacEnabled;
+    // https://gist.github.com/drhelius/3652407#file-game-boy-sound-operation-L342
+    return super.isChannelEnabled() && this.read(2) & 0xF8;
   }
 
   getVolume() {
@@ -33,15 +12,6 @@ export default class BasicSquareChannelRegisters {
 
   getActiveDutyCycle() {
     return this.read(1) >> 6;
-  }
-
-  isLengthCounterEnabled() {
-    return this.read(4) & 0x40;
-  }
-
-  disableChannel() {
-    const value = this.read(4) & 0x7F;
-    this.write(4, value);
   }
 
   getEnvelopePeriod() {
@@ -54,11 +24,7 @@ export default class BasicSquareChannelRegisters {
 
   // private
 
-  read(address) {
-    return this.mmu.forceRead(this.baseAddress + address);
-  }
-
-  write(address, value) {
-    return this.mmu.forceWrite(this.baseAddress + address, value);
+  getBaseAddress() {
+    return 0xFF15;
   }
 }
