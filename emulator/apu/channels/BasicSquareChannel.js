@@ -63,10 +63,10 @@ export default class BasicSquareChannel {
 
   generateSample() {
     if (this.registers.isChannelEnabled() && this.isDutyCycleActive()) {
-      return this.volume / 100;
-    } else {
-      return 0;
+      return this.volume / 45;
     }
+
+    return 0;
   }
 
   // private

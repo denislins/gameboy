@@ -3,6 +3,7 @@ import FrameSequencer from './FrameSequencer.js';
 import Player from './Player.js';
 import SweepSquareChannel from './channels/SweepSquareChannel.js';
 import BasicSquareChannel from './channels/BasicSquareChannel.js';
+import WaveChannel from './channels/WaveChannel.js';
 
 export default class Apu {
   constructor(mmu) {
@@ -38,6 +39,7 @@ export default class Apu {
     this.channels = [
       new SweepSquareChannel(this.mmu),
       new BasicSquareChannel(this.mmu),
+      new WaveChannel(this.mmu),
     ];
   }
 
