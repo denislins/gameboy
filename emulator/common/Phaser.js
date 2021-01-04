@@ -10,6 +10,10 @@ export default class Phaser {
     this.cycles = 0;
   }
 
+  setCycles(cycles) {
+    this.cycles = 0;
+  }
+
   setLimit(limit) {
     this.limit = limit;
     this.cycles = 0;

@@ -36,6 +36,11 @@ export default class FrameSequencer {
     this.phaser.tick();
   }
 
+  reset() {
+    const cycles = this.phaser.cycles % 32768;
+    this.phaser.setCycles(cycles);
+  }
+
   onLengthCounter(callback) {
     this.callbacks.lengthCounter = callback;
   }

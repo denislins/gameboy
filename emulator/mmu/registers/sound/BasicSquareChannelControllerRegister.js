@@ -8,6 +8,6 @@ export default class BasicSquareChannelControllerRegister extends AbstractMemory
 
   writeFromBus(value) {
     Observer.trigger('apu.channels.basicSquare.written', { value });
-    return this.write(value);
+    this.write(value);
   }
 }

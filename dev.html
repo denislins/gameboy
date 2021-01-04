@@ -69,13 +69,15 @@
   <script type="module">
     import Emulator from './emulator/Emulator.js';
 
-    (async () => {
-      const canvas = document.querySelector('canvas');
-      const emulator = new Emulator(canvas);
+    const canvas = document.querySelector('canvas');
+    const emulator = new Emulator(canvas);
 
-      await emulator.loadFromUrl('./roms/mario.gb');
-      emulator.boot();
-    })();
+    document.body.addEventListener('keypress', async (e) => {
+      if (e.code === 'KeyP') {
+        await emulator.loadFromUrl('./roms/mario.gb');
+        emulator.boot();
+      }
+    });
   </script>
   <div id="fps"></div>
 </body>

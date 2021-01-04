@@ -8,6 +8,6 @@ export default class WaveChannelControllerRegister extends AbstractMemoryRegiste
 
   writeFromBus(value) {
     Observer.trigger('apu.channels.wave.written', { value });
-    return this.write(value);
+    this.write(value);
   }
 }

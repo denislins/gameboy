@@ -8,7 +8,6 @@ export default class WaveChannel {
     this.registers = new WaveChannelRegisters(mmu);
 
     this.volume = 0;
-    this.lengthCounter = 0;
     this.currentPosition = 0;
 
     this.initPhaser();
@@ -28,10 +27,16 @@ export default class WaveChannel {
   }
 
   execLengthCounter() {
-    if (this.lengthCounter > 0 && this.registers.isLengthCounterEnabled()) {
-      this.lengthCounter--;
+    if (!this.registers.isLengthCounterEnabled()) {
+      return;
+    }
 
-      if (this.lengthCounter === 0) {
+    const lengthCounter = this.registers.getLengthCounter();
+
+    if (lengthCounter > 0) {
+      this.registers.setLengthCounter(--lengthCounter);
+
+      if (lengthCounter === 0) {
         this.registers.disableChannel();
       }
     }
@@ -103,8 +108,10 @@ export default class WaveChannel {
   }
 
   resetLengthCounter() {
-    if (this.lengthCounter === 0) {
-      this.lengthCounter = 256;
+    const lengthCounter = this.registers.getLengthCounter();
+
+    if (lengthCounter === 0) {
+      this.registers.setLengthCounter(255);
     }
   }
 }

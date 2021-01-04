@@ -26,10 +26,16 @@ export default class BasicSquareChannel {
   }
 
   execLengthCounter() {
-    if (this.lengthCounter > 0 && this.registers.isLengthCounterEnabled()) {
-      this.lengthCounter--;
+    if (!this.registers.isLengthCounterEnabled()) {
+      return;
+    }
 
-      if (this.lengthCounter === 0) {
+    let lengthCounter = this.registers.getLengthCounter();
+
+    if (lengthCounter > 0) {
+      this.registers.setLengthCounter(--lengthCounter);
+
+      if (lengthCounter === 0) {
         this.registers.disableChannel();
       }
     }
@@ -138,8 +144,10 @@ export default class BasicSquareChannel {
   }
 
   resetLengthCounter() {
-    if (this.lengthCounter === 0) {
-      this.lengthCounter = 64;
+    const lengthCounter = this.registers.getLengthCounter();
+
+    if (lengthCounter === 0) {
+      this.registers.setLengthCounter(64);
     }
   }
 }

@@ -36,6 +36,6 @@ export default class Sprite {
   }
 
   getPaletteNumber() {
-    return this.attributes & 0x10 ? 1 : 0;
+    return (this.attributes & 0x10) ? 1 : 0;
   }
 }

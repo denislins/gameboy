@@ -8,6 +8,6 @@ export default class SweepSquareChannelControllerRegister extends AbstractMemory
 
   writeFromBus(value) {
     Observer.trigger('apu.channels.sweepSquare.written', { value });
-    return this.write(value);
+    this.write(value);
   }
 }
