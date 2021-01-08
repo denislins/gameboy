@@ -16,11 +16,20 @@ export default class Ppu {
     this.isBackgroundEnabled = this.controller.isBackgroundEnabled();
     this.areSpritesEnabled = this.controller.areSpritesEnabled();
 
-    if (this.areSpritesEnabled) {
-      this.spriteRenderer.refreshVisibleSprites(row);
-    }
+    this.refreshRenderers(row);
 
     return this.renderRow(row);
+  }
+
+  // private
+
+  refreshRenderers(row) {
+    if (this.areSpritesEnabled) {
+      this.spriteRenderer.refreshState(row);
+    }
+
+    this.windowRenderer.refreshState(row);
+    this.backgroundRenderer.refreshState(row);
   }
 
   renderRow(row) {

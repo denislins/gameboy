@@ -5,11 +5,14 @@ export default class SpriteRenderer extends AbstractRenderer {
   constructor(mmu) {
     super(mmu);
 
+    this.tableBaseAddress = 0xFE00;
+    this.tilesBaseAddress = 0x8000;
+
     this.spriteManager = new SpriteManager(mmu);
     this.visibleSprites = [];
   }
 
-  refreshVisibleSprites(row) {
+  refreshState(row) {
     this.visibleSprites = this.spriteManager.findVisibleSpritesAtRow(row);
   }
 
@@ -85,13 +88,5 @@ export default class SpriteRenderer extends AbstractRenderer {
     }
 
     return color;
-  }
-
-  get tableBaseAddress() {
-    return 0xFE00;
-  }
-
-  get tilesBaseAddress() {
-    return 0x8000;
   }
 }

@@ -6,6 +6,6 @@ export default class InterruptEnabledRegister extends AbstractMemoryRegister {
   }
 
   read() {
-    return super.read() | 0xE0;
+    return this.mmu.forceRead(this.address) | 0xE0;
   }
 }

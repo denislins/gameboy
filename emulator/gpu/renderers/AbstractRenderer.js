@@ -1,7 +1,16 @@
 export default class AbstractRenderer {
   constructor(mmu) {
     this.mmu = mmu;
+
+    this.tableBaseAddress = undefined;
+    this.tilesBaseAddress = undefined;
+    this.palette = undefined;
+
     this.controller = mmu.registers.get('lcdController');
+  }
+
+  refreshState(_row) {
+    throw new Error('not implemented');
   }
 
   renderPixel(_row, _column) {
@@ -55,13 +64,5 @@ export default class AbstractRenderer {
     const mask = 0b11 << shift;
 
     return (this.palette & mask) >> shift;
-  }
-
-  get tableBaseAddress() {
-    throw new Error('not implemented');
-  }
-
-  get tilesBaseAddress() {
-    return this.controller.getTilesBaseAddress();
   }
 }
