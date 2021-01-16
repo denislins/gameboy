@@ -31,8 +31,8 @@ export default class SweepSquareChannel extends BasicSquareChannel {
     this.registers = new SweepSquareChannelRegisters(mmu);
   }
 
-  getControllerWrittenTopic() {
-    return 'apu.channels.sweepSquare.written';
+  getRegisterWrittenTopic() {
+    return 'apu.registers.sweepSquare.written';
   }
 
   resetSweepRegisters() {

@@ -66,7 +66,7 @@ export default class WaveChannel {
   }
 
   initEventListeners() {
-    Observer.on('apu.channels.wave.written', ({ value }) => {
+    Observer.on('apu.registers.wave.written', ({ register, value }) => {
       this.enable(value);
     });
   }

@@ -5,11 +5,10 @@ import BasicSquareChannelRegisters from './registers/BasicSquareChannelRegisters
 export default class BasicSquareChannel {
   constructor(mmu) {
     this.currentCycle = 0;
-    this.lengthCounter = 0;
+    this.lengthCounter = 64;
     this.volume = 0;
-
-    this.isEnvelopeEnabled = false;
     this.envelopePeriod = 0;
+    this.isEnvelopeEnabled = false;
 
     this.initRegisters(mmu);
     this.initDutyCycles();
@@ -18,6 +17,12 @@ export default class BasicSquareChannel {
   }
 
   reset() {
+    this.currentCycle = 0;
+    this.lengthCounter = 64;
+    this.volume = 0;
+    this.envelopePeriod = 0;
+    this.isEnvelopeEnabled = false;
+
     this.resetPhaser();
   }
 
@@ -26,16 +31,10 @@ export default class BasicSquareChannel {
   }
 
   execLengthCounter() {
-    if (!this.registers.isLengthCounterEnabled()) {
-      return;
-    }
+    if (this.registers.isLengthCounterEnabled() && this.lengthCounter > 0) {
+      this.lengthCounter--;
 
-    let lengthCounter = this.registers.getLengthCounter();
-
-    if (lengthCounter > 0) {
-      this.registers.setLengthCounter(--lengthCounter);
-
-      if (lengthCounter === 0) {
+      if (this.lengthCounter === 0) {
         this.registers.disableChannel();
       }
     }
@@ -96,15 +95,19 @@ export default class BasicSquareChannel {
   }
 
   initEventListeners() {
-    const topic = this.getControllerWrittenTopic();
+    const topic = this.getRegisterWrittenTopic();
 
-    Observer.on(topic, ({ value }) => {
-      this.enable(value);
+    Observer.on(topic, ({ register, value }) => {
+      if (register === 'nrx4' && (value & 0x80)) {
+        this.enableChannel();
+      } else if (register === 'nrx1') {
+        this.reloadLengthCounter();
+      }
     });
   }
 
-  getControllerWrittenTopic() {
-    return 'apu.channels.basicSquare.written';
+  getRegisterWrittenTopic() {
+    return 'apu.registers.basicSquare.written';
   }
 
   updateCurrentCycle() {
@@ -112,17 +115,15 @@ export default class BasicSquareChannel {
     this.resetPhaser();
   }
 
-  enable(value) {
-    if (value & 0x80) {
-      this.resetLengthCounter();
-      this.resetPhaser();
-      this.resetSweepRegisters();
+  enableChannel() {
+    this.resetLengthCounter();
+    this.resetPhaser();
+    this.resetSweepRegisters();
 
-      this.volume = this.registers.getVolume();
-      this.envelopePeriod = this.registers.getEnvelopePeriod();
+    this.volume = this.registers.getVolume();
+    this.envelopePeriod = this.registers.getEnvelopePeriod();
 
-      this.isEnvelopeEnabled = true;
-    }
+    this.isEnvelopeEnabled = true;
   }
 
   resetPhaser() {
@@ -143,11 +144,13 @@ export default class BasicSquareChannel {
     return dutyCycle[this.currentCycle];
   }
 
-  resetLengthCounter() {
-    const lengthCounter = this.registers.getLengthCounter();
+  reloadLengthCounter() {
+    this.lengthCounter = 64 - this.registers.getLengthCounter();
+  }
 
-    if (lengthCounter === 0) {
-      this.registers.setLengthCounter(64);
+  resetLengthCounter() {
+    if (this.lengthCounter === 0) {
+      this.lengthCounter = 64;
     }
   }
 }

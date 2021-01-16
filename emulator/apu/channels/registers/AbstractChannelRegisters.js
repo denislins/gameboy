@@ -30,7 +30,7 @@ export default class AbstractChannelRegisters {
 
   disableChannel() {
     debugger;
-    const value = this.read(4) | 0x80;
+    const value = this.read(4) & 0x7F;
     this.write(4, value);
   }
 
